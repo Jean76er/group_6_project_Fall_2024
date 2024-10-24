@@ -5,13 +5,14 @@ import Player from '../../lib/Player';
  * SillySharkPlayer extends the Player class and it adds a
  * _highScore which stores the highest score.
  * It also adds valus, _playerHeight and _playerWidth
- * 
+ *
  */
 export default class SillySharkPlayer extends Player {
   private _highScore: number;
-  private _playerHeight = 0;
-  private _playerWidth = 0;
 
+  private _playerHeight = 0;
+
+  private _playerWidth = 0;
 
   constructor(userName: string, townEmitter: TownEmitter) {
     super(userName, townEmitter);
@@ -22,11 +23,11 @@ export default class SillySharkPlayer extends Player {
     return this._highScore;
   }
 
-  get playerHeight(): number{
+  get playerHeight(): number {
     return this._playerHeight;
   }
 
-  get playerWidth(): number{
+  get playerWidth(): number {
     return this._playerWidth;
   }
 
