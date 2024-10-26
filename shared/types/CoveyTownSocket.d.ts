@@ -85,3 +85,41 @@ export interface ClientToServerEvents {
   playerMovement: (movementData: PlayerLocation) => void;
   interactableUpdate: (update: Interactable) => void;
 }
+
+export type GameInstanceID = string;
+export type InteractableID = string;
+export type PlayerID = string;
+
+/** 
+ * SINGLE_PLAYER_IN_PROGRESS: One player in game
+ * MULTI_PLAYER_IN_PROGRESS: Two players in game
+ * OVER: Game is over when both players have crashed into an obstacle and players are either restarting the game or leaving
+ * WAITING_TO_START: Game is waiting for player(s) to join
+ */
+export type GameStatus = 'SINGLE_PLAYER_IN_PROGRESS' | 'MULTI_PLAYER_IN_PROGRESS' | 'OVER' | 'WAITING_TO_START';
+
+/** 
+ * Base type for the state of the game
+*/
+export interface GameState{
+  status: GameStatus;
+}
+
+/**
+ * Type for the state of a game that can be won
+ */
+export interface WinnableGameState extends GameState{
+  winner?: PlayerID;
+}
+
+export interface GameResult{
+  gameID: gameInstanceID;
+  winner?: PlayerID;
+}
+
+export interface GameInstance<GS extends GameState> {
+  state: GS;
+  id: GameInstanceID;
+  players: PlayerID[];
+  result?: GameResult;
+}
