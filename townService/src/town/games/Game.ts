@@ -1,11 +1,6 @@
 import { nanoid } from 'nanoid';
 import Player from '../../lib/Player';
-import {
-  GameInstance,
-  GameInstanceID,
-  GameResult,
-  GameState,
-} from '../../types/CoveyTownSocket';
+import { GameInstance, GameInstanceID, GameResult, GameState } from '../../types/CoveyTownSocket';
 
 /* This file is a copy of the original Covey.town "Game.ts" file, slightly edited. */
 
@@ -13,7 +8,7 @@ import {
  * This class is the base class for all games. It is responsible for managing the
  * state of the game. @see GameArea
  */
-export default abstract class Game<StateType extends GameState, MoveType> {
+export default abstract class Game<StateType extends GameState> {
   private _state: StateType;
 
   public readonly id: GameInstanceID;
