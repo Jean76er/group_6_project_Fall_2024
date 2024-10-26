@@ -25,7 +25,6 @@ export type TownSettingsUpdate = {
 }
 
 export type Direction = 'front' | 'back' | 'left' | 'right';
-export type PlayerID = string;
 export interface Player {
   id: string;
   userName: string;
