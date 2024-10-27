@@ -1,33 +1,35 @@
 export default class Obstacle {
-    private _obstacleHeight: number;
-    private _obstacleWidth: number;
-    private _obstacleImage: HTMLImageElement;
-    private _passed = false;
+  private _obstacleHeight: number;
 
-    constructor(obstacleHeight: number, obstacleWidth: number, obstacleImage: HTMLImageElement) {
-        this._obstacleHeight = obstacleHeight;
-        this._obstacleWidth = obstacleWidth;
-        this._obstacleImage = obstacleImage;
-    }
+  private _obstacleWidth: number;
 
-    get obstacleHeight(): number {
-        return this._obstacleHeight;
-    }
+  private _obstacleImage: HTMLImageElement;
 
-    get obstacleWidth(): number {
-        return this._obstacleWidth;
-    }
+  private _passed = false;
 
-    get obstacleImage(): HTMLImageElement {
-        return this._obstacleImage;
-    }
+  constructor(obstacleHeight: number, obstacleWidth: number, obstacleImage: HTMLImageElement) {
+    this._obstacleHeight = obstacleHeight;
+    this._obstacleWidth = obstacleWidth;
+    this._obstacleImage = obstacleImage;
+  }
 
-    get passed(): boolean {
-        return this._passed;
-    }
+  get obstacleHeight(): number {
+    return this._obstacleHeight;
+  }
 
-    set passed(passed: boolean) {
-        this._passed = passed;
-    }
+  get obstacleWidth(): number {
+    return this._obstacleWidth;
+  }
 
+  get obstacleImage(): HTMLImageElement {
+    return this._obstacleImage;
+  }
+
+  get passed(): boolean {
+    return this._passed;
+  }
+
+  set passed(passed: boolean) {
+    this._passed = passed;
+  }
 }
