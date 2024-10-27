@@ -123,3 +123,9 @@ export interface GameInstance<GS extends GameState> {
   players: PlayerID[];
   result?: GameResult;
 }
+
+export interface SillySharkGameState extends WinnableGameState {
+  
+  player1?: PlayerID;
+  player2?: PlayerID;
+} 
