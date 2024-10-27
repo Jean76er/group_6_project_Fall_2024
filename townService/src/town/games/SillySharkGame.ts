@@ -48,7 +48,7 @@ export default class SillySharkGame extends Game<SillySharkGameState> {
       this.state.status = 'SINGLE_PLAYER_IN_PROGRESS';
       if (this.state.player1 === player.id) {
         this.state.winner = this.state.player2;
-      } else if (this.state.player2 === player.id){
+      } else if (this.state.player2 === player.id) {
         this.state.winner = this.state.player1;
       }
     } else {
