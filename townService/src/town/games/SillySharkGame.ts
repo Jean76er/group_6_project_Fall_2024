@@ -34,10 +34,30 @@ export default class SillySharkGame extends Game<SillySharkGameState> {
     }
   }
 
+  /**
+   * Allows a player to exit the game and declares a winner if in multi player mode
+   * Allows a player to continue playing in single player mode if second player leave prematurely
+   * DOES NOT handle instances where players want a rematch
+   * @param player The player to remove from the game
+   */
   public _leave(player: SillySharkPlayer) {
-    /* Delete this when implementing */
-    if (this.state.player1 === player.id) {
-      this.state.player1 = undefined;
+    if (this.state.player1 !== player.id && this.state.player2 !== player.id) {
+      throw new InvalidParametersError(paramerrors.PLAYER_NOT_IN_GAME_MESSAGE);
+    }
+    if (this.state.status === 'MULTI_PLAYER_IN_PROGRESS') {
+      this.state.status = 'SINGLE_PLAYER_IN_PROGRESS';
+      if (this.state.player1 === player.id) {
+        this.state.winner = this.state.player2;
+      } else if (this.state.player2 === player.id){
+        this.state.winner = this.state.player1;
+      }
+    } else {
+      if (this.state.player1 === player.id) {
+        this.state.player1 = undefined;
+      } else if (this.state.player2 === player.id) {
+        this.state.player2 = undefined;
+      }
+      this.state.status = 'WAITING_TO_START';
     }
   }
 }
