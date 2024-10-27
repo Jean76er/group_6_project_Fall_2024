@@ -17,7 +17,7 @@ export type TownJoinResponse = {
   interactables: Interactable[];
 }
 
-export type Interactable = ViewingArea | ConversationArea;
+export type Interactable = ViewingArea | ConversationArea | GameArea;
 
 export type TownSettingsUpdate = {
   friendlyName?: string;
@@ -129,3 +129,15 @@ export interface SillySharkGameState extends WinnableGameState {
   player1?: PlayerID;
   player2?: PlayerID;
 } 
+
+/**
+ * Base type for an area that can host a game
+ * @see GameInstance
+ */
+export interface GameArea<T extends GameState> extends Interactable {
+  id: string;
+  occupants: PlayerID[];
+  type: InteractableType;
+  game: GameInstance<T> | undefined;
+  history: GameResult[];
+}
