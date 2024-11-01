@@ -76,6 +76,23 @@ class TownController{
 }
 ```
 
+## Components of Silly Shark
+
+```
+classDiagram
+class Obstacle {
+    +number _obstacleHeight
+    +number _obstacleWidth
+    +HTMLImageElement _obstacleImage
+    +boolean _passed
+    +obstacleHeight()
+    +obstacleWidth()
+    +obstacleImage()
+    +passed()
+    +passed(passed)
+}
+```
+
 ## Event flows
 
 ### Before joining a town
