@@ -514,7 +514,7 @@
                  "id":39,
                  "name":"Silly Shark Placeholder",
                  "rotation":0,
-                 "type":"GameArea",
+                 "type":"ConversationArea",
                  "visible":true,
                  "width":166.333666666667,
                  "x":2933.33316666666,
