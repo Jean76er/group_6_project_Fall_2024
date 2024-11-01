@@ -1,7 +1,7 @@
 import { mock, mockClear, MockProxy } from 'jest-mock-extended';
 import { nanoid } from 'nanoid';
-import { ViewingArea } from '../generated/client';
-import TownController from './TownController';
+import { ViewingArea } from '../../generated/client';
+import TownController from '../TownController';
 import ViewingAreaController, { ViewingAreaEvents } from './ViewingAreaController';
 
 describe('[T2] ViewingAreaController', () => {

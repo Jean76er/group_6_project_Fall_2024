@@ -2,6 +2,7 @@ import assert from 'assert';
 import EventEmitter from 'events';
 import _ from 'lodash';
 import { useEffect, useState } from 'react';
+import { nanoid } from 'nanoid';
 import { io } from 'socket.io-client';
 import TypedEmitter from 'typed-emitter';
 import Interactable from '../components/Town/Interactable';
@@ -12,16 +13,28 @@ import useTownController from '../hooks/useTownController';
 import {
   ChatMessage,
   CoveyTownSocket,
+  GameState,
+  Interactable as InteractableAreaModel,
+  InteractableCommand,
+  InteractableCommandBase,
+  InteractableCommandResponse,
+  InteractableID,
+  PlayerID,
   PlayerLocation,
   TownSettingsUpdate,
   ViewingArea as ViewingAreaModel,
 } from '../types/CoveyTownSocket';
+import InteractableAreaController, {
+  BaseInteractableEventMap,
+} from './interactable/InteractableAreaController';
 import { isConversationArea, isViewingArea } from '../types/TypeUtils';
-import ConversationAreaController from './ConversationAreaController';
+import GameAreaController, { GameEventTypes } from './interactable/GameAreaController';
+import ConversationAreaController from './interactable/ConversationAreaController';
 import PlayerController from './PlayerController';
-import ViewingAreaController from './ViewingAreaController';
+import ViewingAreaController from './interactable/ViewingAreaController';
 
 const CALCULATE_NEARBY_PLAYERS_DELAY = 300;
+const SOCKET_COMMAND_TIMEOUT_MS = 5000;
 
 export type ConnectionProperties = {
   userName: string;
@@ -127,6 +140,14 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
   private _playersInternal: PlayerController[] = [];
 
   /**
+   * The current list of interactable areas in the town. Adding or removing interactable areas might replace the array.
+   */
+  private _interactableControllers: InteractableAreaController<
+    BaseInteractableEventMap,
+    InteractableAreaModel
+  >[] = [];
+
+  /**
    * The current list of conversation areas in the twon. Adding or removing conversation areas might
    * replace the array with a new one; clients should take note not to retain stale references.
    */
@@ -229,6 +250,12 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
     this.emit('townSettingsUpdated', { isPubliclyListed: newSetting });
   }
 
+  public getPlayer(id: PlayerID) {
+    const ret = this._playersInternal.find(eachPlayer => eachPlayer.id === id);
+    assert(ret);
+    return ret;
+  }
+
   public get providerVideoToken() {
     const token = this._providerVideoToken;
     assert(token);
@@ -307,6 +334,13 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
   public set viewingAreas(newViewingAreas: ViewingAreaController[]) {
     this._viewingAreas = newViewingAreas;
     this.emit('viewingAreasChanged', newViewingAreas);
+  }
+
+  public get gameAreas() {
+    const ret = this._interactableControllers.filter(
+      eachInteractable => eachInteractable instanceof GameAreaController,
+    );
+    return ret as GameAreaController<GameState, GameEventTypes>[];
   }
 
   /**
@@ -455,6 +489,36 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
    */
   public emitChatMessage(message: ChatMessage) {
     this._socket.emit('chatMessage', message);
+  }
+
+  public async sendInteractableCommand<CommandType extends InteractableCommand>(
+    interactableID: InteractableID,
+    command: CommandType,
+  ): Promise<InteractableCommandResponse<CommandType>['payload']> {
+    const commandMessage: InteractableCommand & InteractableCommandBase = {
+      ...command,
+      commandID: nanoid(),
+      interactableID: interactableID,
+    };
+    return new Promise((resolve, reject) => {
+      const watchdog = setTimeout(() => {
+        reject('Command timed out');
+      }, SOCKET_COMMAND_TIMEOUT_MS);
+
+      const ackListener = (response: InteractableCommandResponse<CommandType>) => {
+        if (response.commandID === commandMessage.commandID) {
+          clearTimeout(watchdog);
+          this._socket.off('commandResponse', ackListener);
+          if (response.error) {
+            reject(response.error);
+          } else {
+            resolve(response.payload);
+          }
+        }
+      };
+      this._socket.on('commandResponse', ackListener);
+      this._socket.emit('interactableCommand', commandMessage);
+    });
   }
 
   /**

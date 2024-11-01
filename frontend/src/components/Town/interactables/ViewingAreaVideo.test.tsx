@@ -6,7 +6,9 @@ import React from 'react';
 import { act } from 'react-dom/test-utils';
 import * as ReactPlayer from 'react-player';
 import TownController from '../../../classes/TownController';
-import ViewingAreaController, { ViewingAreaEvents } from '../../../classes/ViewingAreaController';
+import ViewingAreaController, {
+  ViewingAreaEvents,
+} from '../../../classes/interactable/ViewingAreaController';
 import TownControllerContext from '../../../contexts/TownControllerContext';
 import { ViewingAreaVideo } from './ViewingAreaVideo';
 

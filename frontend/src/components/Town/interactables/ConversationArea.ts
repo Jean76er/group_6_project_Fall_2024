@@ -1,4 +1,4 @@
-import ConversationAreaController from '../../../classes/ConversationAreaController';
+import ConversationAreaController from '../../../classes/interactable/ConversationAreaController';
 import TownController from '../../../classes/TownController';
 import { BoundingBox } from '../../../types/CoveyTownSocket';
 import Interactable, { KnownInteractableTypes } from '../Interactable';

@@ -2,8 +2,8 @@ import EventEmitter from 'events';
 import _ from 'lodash';
 import { useEffect, useState } from 'react';
 import TypedEmitter from 'typed-emitter';
-import { ConversationArea as ConversationAreaModel } from '../types/CoveyTownSocket';
-import PlayerController from './PlayerController';
+import { ConversationArea as ConversationAreaModel } from '../../types/CoveyTownSocket';
+import PlayerController from '../PlayerController';
 
 /**
  * The events that the ConversationAreaController emits to subscribers. These events
