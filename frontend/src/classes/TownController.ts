@@ -13,7 +13,6 @@ import useTownController from '../hooks/useTownController';
 import {
   ChatMessage,
   CoveyTownSocket,
-  GameState,
   Interactable as InteractableAreaModel,
   InteractableCommand,
   InteractableCommandBase,
@@ -28,7 +27,6 @@ import InteractableAreaController, {
   BaseInteractableEventMap,
 } from './interactable/InteractableAreaController';
 import { isConversationArea, isViewingArea } from '../types/TypeUtils';
-import GameAreaController, { GameEventTypes } from './interactable/GameAreaController';
 import ConversationAreaController from './interactable/ConversationAreaController';
 import PlayerController from './PlayerController';
 import ViewingAreaController from './interactable/ViewingAreaController';
@@ -334,13 +332,6 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
   public set viewingAreas(newViewingAreas: ViewingAreaController[]) {
     this._viewingAreas = newViewingAreas;
     this.emit('viewingAreasChanged', newViewingAreas);
-  }
-
-  public get gameAreas() {
-    const ret = this._interactableControllers.filter(
-      eachInteractable => eachInteractable instanceof GameAreaController,
-    );
-    return ret as GameAreaController<GameState, GameEventTypes>[];
   }
 
   /**
