@@ -8,7 +8,7 @@ import ConversationAreaController, {
   NO_TOPIC_STRING,
   useConversationAreaOccupants,
   useConversationAreaTopic,
-} from '../classes/ConversationAreaController';
+} from '../classes/interactable/ConversationAreaController';
 import PlayerController from '../classes/PlayerController';
 import TownController, {
   TownEvents,

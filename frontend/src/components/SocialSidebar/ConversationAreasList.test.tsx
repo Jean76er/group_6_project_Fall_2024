@@ -4,7 +4,7 @@ import { findAllByRole, render, RenderResult, waitFor } from '@testing-library/r
 import { nanoid } from 'nanoid';
 import React from 'react';
 import { act } from 'react-dom/test-utils';
-import ConversationAreaController from '../../classes/ConversationAreaController';
+import ConversationAreaController from '../../classes/interactable/ConversationAreaController';
 import PlayerController from '../../classes/PlayerController';
 import ConversationAreasList from './ConversationAreasList';
 import TownController from '../../classes/TownController';

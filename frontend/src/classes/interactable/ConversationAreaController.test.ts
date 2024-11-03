@@ -1,8 +1,8 @@
 import { mock, mockClear } from 'jest-mock-extended';
 import { nanoid } from 'nanoid';
-import { PlayerLocation } from '../types/CoveyTownSocket';
+import { PlayerLocation } from '../../types/CoveyTownSocket';
 import ConversationAreaController, { ConversationAreaEvents } from './ConversationAreaController';
-import PlayerController from './PlayerController';
+import PlayerController from '../PlayerController';
 
 describe('[T2] ConversationAreaController', () => {
   // A valid ConversationAreaController to be reused within the tests

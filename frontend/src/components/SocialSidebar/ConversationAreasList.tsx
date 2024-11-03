@@ -3,7 +3,7 @@ import React from 'react';
 import ConversationAreaController, {
   useConversationAreaOccupants,
   useConversationAreaTopic,
-} from '../../classes/ConversationAreaController';
+} from '../../classes/interactable/ConversationAreaController';
 import { useActiveConversationAreas } from '../../classes/TownController';
 import PlayerName from './PlayerName';
 

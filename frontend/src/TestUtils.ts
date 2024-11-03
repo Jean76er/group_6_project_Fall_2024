@@ -1,10 +1,10 @@
 import { ReservedOrUserListener } from '@socket.io/component-emitter';
 import { mock, MockProxy } from 'jest-mock-extended';
 import { nanoid } from 'nanoid';
-import ConversationAreaController from './classes/ConversationAreaController';
+import ConversationAreaController from './classes/interactable/ConversationAreaController';
 import PlayerController from './classes/PlayerController';
 import TownController, { TownEvents } from './classes/TownController';
-import ViewingAreaController from './classes/ViewingAreaController';
+import ViewingAreaController from './classes/interactable/ViewingAreaController';
 import { TownsService } from './generated/client';
 import { CoveyTownSocket, ServerToClientEvents, TownJoinResponse } from './types/CoveyTownSocket';
 
