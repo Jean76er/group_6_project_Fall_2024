@@ -14,10 +14,9 @@ export type TownJoinResponse = {
   /** Is this a private town? * */
   isPubliclyListed: boolean;
   /** Current state of interactables in this town */
-  interactables: Interactable[];
+  interactables: TypedInteractable[];
 }
 
-export type Interactable = ViewingArea | ConversationArea | GameArea;
 export type InteractableType = 'ConversationArea' | 'ViewingArea' | 'SillySharkArea';
 export interface Interactable {
   type: InteractableType;
@@ -29,13 +28,6 @@ export type TownSettingsUpdate = {
   friendlyName?: string;
   isPubliclyListed?: boolean;
 }
-
-export interface Interactable {
-  type: InteractableType;
-  id: InteractableID;
-  occupants: PlayerID[];
-}
-
 
 export type Direction = 'front' | 'back' | 'left' | 'right';
 export interface Player {
@@ -138,7 +130,6 @@ export interface GameInstance<GS extends GameState> {
 }
 
 export interface SillySharkGameState extends WinnableGameState {
-  
   player1?: PlayerID;
   player2?: PlayerID;
 } 
@@ -148,9 +139,6 @@ export interface SillySharkGameState extends WinnableGameState {
  * @see GameInstance
  */
 export interface GameArea<T extends GameState> extends Interactable {
-  id: string;
-  occupants: PlayerID[];
-  type: InteractableType;
   game: GameInstance<T> | undefined;
   history: GameResult[];
 }

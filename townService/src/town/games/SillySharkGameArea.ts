@@ -31,11 +31,11 @@ import InvalidParametersError, {
         if (gameID && !this._history.find(eachResult => eachResult.gameID === gameID)) {
           const { player1, player2 } = updatedState.state;
           if (player1 && player2) {
-            const xName = this._occupants.find(eachPlayer => eachPlayer.id === player1)?.userName || player1;
-            const oName = this._occupants.find(eachPlayer => eachPlayer.id === player2)?.userName || player2;
+            const p1Name = this._occupants.find(eachPlayer => eachPlayer.id === player1)?.userName || player1;
+            const p2Name = this._occupants.find(eachPlayer => eachPlayer.id === player2)?.userName || player2;
             this._history.push({
               gameID,
-              winner: player1, /**placeholder**/
+              winner: p1Name, /**placeholder**/
             });
           }
         }

@@ -3,7 +3,7 @@ import {
   GameArea as GameAreaModel,
   GameResult,
   GameState,
-  Interactable,
+  InteractableType,
 } from '../../types/CoveyTownSocket';
 import InteractableArea from '../InteractableArea';
 import Game from './Game';
@@ -12,7 +12,9 @@ import Game from './Game';
  * A GameArea is an InteractableArea on the map that can host a game.
  * At any given point in time, there is at most one game in progress in a GameArea.
  */
-export default abstract class GameArea<GameType extends Game<GameState>> extends InteractableArea {
+export default abstract class GameArea<
+  GameType extends Game<GameState>
+> extends InteractableArea {
   protected _game?: GameType;
 
   protected _history: GameResult[] = [];
@@ -40,7 +42,7 @@ export default abstract class GameArea<GameType extends Game<GameState>> extends
     return true;
   } */
 
-  protected abstract getType(): Interactable;
+  protected abstract getType(): InteractableType;
 
   public remove(player: Player): void {
     if (this._game) {

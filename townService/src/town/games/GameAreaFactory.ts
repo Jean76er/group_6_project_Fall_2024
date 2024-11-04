@@ -1,7 +1,7 @@
 import { ITiledMapObject } from '@jonbell/tiled-map-type-guard';
 import { BoundingBox, TownEmitter } from '../../types/CoveyTownSocket';
 import InteractableArea from '../InteractableArea';
-import SillySharkGameArea from './SillySharkGame';
+import SillySharkGameArea from './SillySharkGameArea';
 
 
 /**
@@ -22,7 +22,7 @@ export default function GameAreaFactory(
   const rect: BoundingBox = { x: mapObject.x, y: mapObject.y, width, height };
   const gameType = mapObject.properties?.find(prop => prop.name === 'type')?.value;
   if (gameType === 'SillyShark') {
-    return new SillySharkGameArea(name, rect, broadcastEmitter);
+    return new SillySharkGameArea(name,rect,broadcastEmitter)
   }
   throw new Error(`Unknown game area type ${mapObject.class}`);
 }
