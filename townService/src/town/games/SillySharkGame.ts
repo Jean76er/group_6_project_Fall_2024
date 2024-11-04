@@ -11,7 +11,7 @@ export default class SillySharkGame extends Game<SillySharkGameState> {
     super({
       /** ...initialState, uncomment if we need it in the future
        * this was causing conflicts with SillySharkGameArea.ts
-      */
+       */
       status: 'WAITING_TO_START',
     });
   }

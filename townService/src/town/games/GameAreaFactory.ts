@@ -3,7 +3,6 @@ import { BoundingBox, TownEmitter } from '../../types/CoveyTownSocket';
 import InteractableArea from '../InteractableArea';
 import SillySharkGameArea from './SillySharkGameArea';
 
-
 /**
  * Creates a new GameArea from a map object
  * @param mapObject the map object to create the game area from
@@ -22,7 +21,7 @@ export default function GameAreaFactory(
   const rect: BoundingBox = { x: mapObject.x, y: mapObject.y, width, height };
   const gameType = mapObject.properties?.find(prop => prop.name === 'type')?.value;
   if (gameType === 'SillyShark') {
-    return new SillySharkGameArea(name,rect,broadcastEmitter)
+    return new SillySharkGameArea(name, rect, broadcastEmitter);
   }
   throw new Error(`Unknown game area type ${mapObject.class}`);
 }

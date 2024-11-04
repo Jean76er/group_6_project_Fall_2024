@@ -7,7 +7,7 @@ import {
   InteractableID,
   PlayerLocation,
   TownEmitter,
-} from '../types/CoveyTownSocket'; 
+} from '../types/CoveyTownSocket';
 
 export const PLAYER_SPRITE_WIDTH = 32;
 export const PLAYER_SPRITE_HEIGHT = 64;
