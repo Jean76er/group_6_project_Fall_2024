@@ -29,16 +29,13 @@ import InvalidParametersError, {
         // If we haven't yet recorded the outcome, do so now.
         const gameID = this._game?.id;
         if (gameID && !this._history.find(eachResult => eachResult.gameID === gameID)) {
-          const { x, o } = updatedState.state;
-          if (x && o) {
-            const xName = this._occupants.find(eachPlayer => eachPlayer.id === x)?.userName || x;
-            const oName = this._occupants.find(eachPlayer => eachPlayer.id === o)?.userName || o;
+          const { player1, player2 } = updatedState.state;
+          if (player1 && player2) {
+            const xName = this._occupants.find(eachPlayer => eachPlayer.id === player1)?.userName || player1;
+            const oName = this._occupants.find(eachPlayer => eachPlayer.id === player2)?.userName || player2;
             this._history.push({
               gameID,
-              scores: {
-                [xName]: updatedState.state.winner === x ? 1 : 0,
-                [oName]: updatedState.state.winner === o ? 1 : 0,
-              },
+              winner: player1, /**placeholder**/
             });
           }
         }
@@ -72,22 +69,7 @@ import InvalidParametersError, {
       command: CommandType,
       player: Player,
     ): InteractableCommandReturnType<CommandType> {
-      if (command.type === 'GameMove') {
-        const game = this._game;
-        if (!game) {
-          throw new InvalidParametersError(GAME_NOT_IN_PROGRESS_MESSAGE);
-        }
-        if (this._game?.id !== command.gameID) {
-          throw new InvalidParametersError(GAME_ID_MISSMATCH_MESSAGE);
-        }
-        game.applyMove({
-          gameID: command.gameID,
-          playerID: player.id,
-          move: command.move,
-        });
-        this._stateUpdated(game.toModel());
-        return undefined as InteractableCommandReturnType<CommandType>;
-      }
+      /** handle the game moves */
       if (command.type === 'JoinGame') {
         let game = this._game;
         if (!game || game.state.status === 'OVER') {

@@ -18,6 +18,12 @@ export type TownJoinResponse = {
 }
 
 export type Interactable = ViewingArea | ConversationArea | GameArea;
+export type InteractableType = 'ConversationArea' | 'ViewingArea' | 'SillySharkArea';
+export interface Interactable {
+  type: InteractableType;
+  id: InteractableID;
+  occupants: PlayerID[];
+}
 
 export type TownSettingsUpdate = {
   friendlyName?: string;
