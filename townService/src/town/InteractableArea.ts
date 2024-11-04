@@ -1,12 +1,20 @@
 import Player from '../lib/Player';
-import { BoundingBox, Interactable, PlayerLocation, TownEmitter } from '../types/CoveyTownSocket';
+import {
+  BoundingBox,
+  Interactable,
+  InteractableCommand,
+  InteractableCommandReturnType,
+  InteractableID,
+  PlayerLocation,
+  TownEmitter,
+} from '../types/CoveyTownSocket'; 
 
 export const PLAYER_SPRITE_WIDTH = 32;
 export const PLAYER_SPRITE_HEIGHT = 64;
 
 export default abstract class InteractableArea {
   /* The unique ID of this area */
-  private readonly _id: string;
+  private readonly _id: InteractableID;
 
   /* The x coordinate of the top left of this area */
   private _x: number;
@@ -160,4 +168,9 @@ export default abstract class InteractableArea {
    * otherwise serialization errors will occur when attempting to transmit it
    */
   public abstract toModel(): Interactable;
+
+  public abstract handleCommand<CommandType extends InteractableCommand>(
+    command: CommandType,
+    player: Player,
+  ): InteractableCommandReturnType<CommandType>;
 }
