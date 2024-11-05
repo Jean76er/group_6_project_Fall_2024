@@ -1,11 +1,5 @@
 import Player from '../lib/Player';
-import {
-  BoundingBox,
-  Interactable,
-  InteractableID,
-  PlayerLocation,
-  TownEmitter,
-} from '../types/CoveyTownSocket';
+import { BoundingBox, Interactable, PlayerLocation, TownEmitter } from '../types/CoveyTownSocket';
 
 export const PLAYER_SPRITE_WIDTH = 32;
 export const PLAYER_SPRITE_HEIGHT = 64;
@@ -166,6 +160,4 @@ export default abstract class InteractableArea {
    * otherwise serialization errors will occur when attempting to transmit it
    */
   public abstract toModel(): Interactable;
-
-
 }
