@@ -83,9 +83,9 @@ export default abstract class GameAreaController<
 
   protected _updateFrom(newModel: GameArea<State>): void {
     const gameEnding =
-      this._model.game?.state.status === 'SINGLE_PLAYER_IN_PROGRESS' || 
-      this._model.game?.state.status === 'MULTI_PLAYER_IN_PROGRESS'
-      && newModel.game?.state.status === 'OVER';
+      this._model.game?.state.status === 'SINGLE_PLAYER_IN_PROGRESS' ||
+      (this._model.game?.state.status === 'MULTI_PLAYER_IN_PROGRESS' &&
+        newModel.game?.state.status === 'OVER');
     const newPlayers =
       newModel.game?.players.map(playerID => this._townController.getPlayer(playerID)) ?? [];
     if (!newPlayers && this._players.length > 0) {
