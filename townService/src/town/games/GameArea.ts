@@ -3,7 +3,7 @@ import {
   GameArea as GameAreaModel,
   GameResult,
   GameState,
-  Interactable,
+  InteractableType,
 } from '../../types/CoveyTownSocket';
 import InteractableArea from '../InteractableArea';
 import Game from './Game';
@@ -40,7 +40,7 @@ export default abstract class GameArea<GameType extends Game<GameState>> extends
     return true;
   } */
 
-  protected abstract getType(): Interactable;
+  protected abstract getType(): InteractableType;
 
   public remove(player: Player): void {
     if (this._game) {
