@@ -1,5 +1,5 @@
-import { chakra, Container } from '@chakra-ui/react';
-import React, { useCallback } from 'react';
+import { chakra, Container} from '@chakra-ui/react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 /*
  * This component will render the background
@@ -21,8 +21,11 @@ const StyledSillySharkBoard = chakra(Container, {
  */
 
 export default function SillySharkBoard(): JSX.Element {
+
+  
+  
   const renderBoard = useCallback(() => {
-    return <StyledSillySharkBoard>{/*test*/}</StyledSillySharkBoard>;
+    <StyledSillySharkBoard>{/*test*/}</StyledSillySharkBoard>;   
   }, []);
 
   return <div>{renderBoard()}</div>;
