@@ -478,10 +478,10 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
         updatedViewingArea?.updateFrom(interactable);
       } else if (isSillySharkArea(interactable)) {
         //SillySharkAreaController is needed for this
-        const updatedSillySharkArea = this._si.find(
+        const updatedSillySharkArea = this._sillySharkAreas.find(
           eachArea => eachArea.id === interactable.id,
         );
-        updatedViewingArea?.updateFrom(interactable);
+        updatedSillySharkArea?.updateFrom(interactable);
       }
     });
   }
