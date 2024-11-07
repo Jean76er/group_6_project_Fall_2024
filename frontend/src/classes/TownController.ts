@@ -7,6 +7,7 @@ import { io } from 'socket.io-client';
 import TypedEmitter from 'typed-emitter';
 import Interactable from '../components/Town/Interactable';
 import ViewingArea from '../components/Town/interactables/ViewingArea';
+import GameArea from '../components/Town/interactables/GameArea';
 import { LoginController } from '../contexts/LoginControllerContext';
 import { TownsService, TownsServiceClient } from '../generated/client';
 import useTownController from '../hooks/useTownController';
@@ -84,6 +85,8 @@ export type TownEvents = {
    * the town controller's record of viewing areas.
    */
   viewingAreasChanged: (newViewingAreas: ViewingAreaController[]) => void;
+
+  gameAreasChanged: (newGameAreas: GameAreaController<GameState,GameEventTypes>[]) => void;
   /**
    * An event that indicates that a new chat message has been received, which is the parameter passed to the listener
    */
@@ -666,6 +669,27 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
       return newController;
     }
   }
+
+
+    /**
+   * Retrives the game area controller corresponding to a game area by ID, or
+   * throws an error if the game area controller does not exist
+   *
+   * @param gameArea
+   * @returns
+   */
+    public getGameAreaController<GameType extends GameState, EventsType extends GameEventTypes>(
+      gameArea: GameArea,
+    ): GameAreaController<GameType, EventsType> {
+      const existingController = this._interactableControllers.find(
+        eachExistingArea => eachExistingArea.id === gameArea.name,
+      );
+      if (existingController instanceof GameAreaController) {
+        return existingController as GameAreaController<GameType, EventsType>;
+      } else {
+        throw new Error('Game area controller not created');
+      }
+    }
 
   /**
    * Emit a viewing area update to the townService
