@@ -8,13 +8,15 @@ import {
 } from '../../types/CoveyTownSocket';
 import PlayerController from '../PlayerController';
 import TownController from '../TownController';
-import InteractableAreaController, { BaseInteractableEventMap } from './InteractableAreaController';
+import TypedEmitter from 'typed-emitter';
+import EventEmitter from 'events';
 
-export type GameEventTypes = BaseInteractableEventMap & {
+export type GameEventTypes = {
   gameStart: () => void;
   gameUpdated: () => void;
   gameEnd: () => void;
   playersChange: (newPlayers: PlayerController[]) => void;
+  occupantsChange: (newOccupants: PlayerController[]) => void;
 };
 
 /**
@@ -24,8 +26,8 @@ export type GameEventTypes = BaseInteractableEventMap & {
  */
 export default abstract class GameAreaController<
   State extends GameState,
-  EventTypes extends GameEventTypes,
-> extends InteractableAreaController<EventTypes, GameArea<State>> {
+> extends (EventEmitter as new () => TypedEmitter<GameEventTypes>) {
+  private _id: string;
   protected _instanceID?: GameInstanceID;
 
   protected _townController: TownController;
@@ -34,14 +36,22 @@ export default abstract class GameAreaController<
 
   protected _players: PlayerController[] = [];
 
-  constructor(id: InteractableID, gameArea: GameArea<State>, townController: TownController) {
-    super(id);
+  private _occupants: PlayerController[] = [];
+  
+
+  constructor(id: string, gameArea: GameArea<State>, townController: TownController) {
+    super();
+    this._id = id;
     this._model = gameArea;
     this._townController = townController;
 
     const game = gameArea.game;
     if (game && game.players)
       this._players = game.players.map(playerID => this._townController.getPlayer(playerID));
+  }
+
+  get id() {
+    return this._id;
   }
 
   get history(): GameResult[] {
@@ -52,10 +62,29 @@ export default abstract class GameAreaController<
     return this._players;
   }
 
+    /**
+   * The list of occupants in this conversation area. Changing the set of occupants
+   * will emit an occupantsChange event.
+   */
+    set occupants(newOccupants: PlayerController[]) {
+      if (
+        newOccupants.length !== this._occupants.length ||
+        _.xor(newOccupants, this._occupants).length > 0
+      ) {
+        this.emit('occupantsChange', newOccupants);
+        this._occupants = newOccupants;
+      }
+    }
+  
+    get occupants() {
+      return this._occupants;
+    }
+
   public get observers(): PlayerController[] {
     return this.occupants.filter(eachOccupant => !this._players.includes(eachOccupant));
   }
 
+  
   /**
    * Sends a request to the server to join the current game in the game area, or create a new one if there is no game in progress.
    *
