@@ -633,6 +633,8 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
             );
           } else if (isViewingArea(eachInteractable)) {
             this._viewingAreas.push(new ViewingAreaController(eachInteractable));
+          } else if (isSillySharkArea(eachInteractable)){
+            
           }
         });
         this._userID = initialData.userID;
@@ -674,7 +676,7 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
     /**
    * Retrives the game area controller corresponding to a game area by ID, or
    * throws an error if the game area controller does not exist
-   *
+   * This code was taken from IP2
    * @param gameArea
    * @returns
    */
@@ -803,6 +805,32 @@ export function useActiveConversationAreas(): ConversationAreaController[] {
     };
   }, [townController, setConversationAreas]);
   return conversationAreas;
+}
+
+/**
+ * A react hook to retrieve the active game areas. This hook will re-render any components
+ * that use it when the set of game areas changes. It does *not* re-render its dependent components
+ * when the state of one of those areas changes - if that is desired, @see useGameAreaTopic and @see useGameAreaOccupants (Unimplemented)
+ *
+ * This hook relies on the TownControllerContext.
+ *
+ * @returns the list of game area controllers that are currently "active"
+ */
+export function useActiveGameAreas(): GameAreaController<GameState,GameEventTypes>[]{
+  const townController = useTownController();
+  const [gameAreas, setGameAreas] = useState<GameAreaController<GameState,GameEventTypes>[]>(
+    townController.gameAreas.filter(eachArea => !eachArea.isEmpty()),
+  );
+  useEffect(() => {
+    const updater = (allAreas: GameAreaController<GameState,GameEventTypes>[]) => {
+      setGameAreas(allAreas.filter(eachArea => !eachArea.isEmpty()));
+    };
+    townController.addListener('gameAreasChanged', updater);
+    return () => {
+      townController.removeListener('gameAreasChanged', updater);
+    };
+  }, [townController, setGameAreas]);
+  return gameAreas;
 }
 
 /**
