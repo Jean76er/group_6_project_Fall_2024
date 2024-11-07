@@ -23,8 +23,6 @@ import {
   PlayerLocation,
   TownSettingsUpdate,
   ViewingArea as ViewingAreaModel,
-  GameArea as SillySharkAreaModel,
-  SillySharkGameState,
   GameState,
 } from '../types/CoveyTownSocket';
 import InteractableAreaController, {
@@ -34,7 +32,7 @@ import { isConversationArea, isViewingArea, isSillySharkArea } from '../types/Ty
 import ConversationAreaController from './interactable/ConversationAreaController';
 import PlayerController from './PlayerController';
 import ViewingAreaController from './interactable/ViewingAreaController';
-import GameAreaController, { GameEventTypes } from './interactable/GameAreaController';
+import GameAreaController from './interactable/GameAreaController';
 import SillySharkAreaController from './interactable/SillySharkAreaController';
 const CALCULATE_NEARBY_PLAYERS_DELAY = 300;
 const SOCKET_COMMAND_TIMEOUT_MS = 5000;
@@ -477,7 +475,6 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
         );
         updatedViewingArea?.updateFrom(interactable);
       } else if (isSillySharkArea(interactable)) {
-        //SillySharkAreaController is needed for this
         const updatedSillySharkArea = this._sillySharkAreas.find(
           eachArea => eachArea.id === interactable.id,
         );
@@ -636,6 +633,9 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
           } else if (isViewingArea(eachInteractable)) {
             this._viewingAreas.push(new ViewingAreaController(eachInteractable));
           } else if (isSillySharkArea(eachInteractable)) {
+            this._sillySharkAreas.push(
+              new SillySharkAreaController(eachInteractable.id, eachInteractable, this),
+            );
           }
         });
         this._userID = initialData.userID;

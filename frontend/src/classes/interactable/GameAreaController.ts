@@ -1,11 +1,5 @@
 import _ from 'lodash';
-import {
-  GameArea,
-  GameInstanceID,
-  GameResult,
-  GameState,
-  InteractableID,
-} from '../../types/CoveyTownSocket';
+import { GameArea, GameInstanceID, GameResult, GameState } from '../../types/CoveyTownSocket';
 import PlayerController from '../PlayerController';
 import TownController from '../TownController';
 import TypedEmitter from 'typed-emitter';
@@ -28,6 +22,7 @@ export default abstract class GameAreaController<
   State extends GameState,
 > extends (EventEmitter as new () => TypedEmitter<GameEventTypes>) {
   private _id: string;
+
   protected _instanceID?: GameInstanceID;
 
   protected _townController: TownController;
@@ -37,7 +32,6 @@ export default abstract class GameAreaController<
   protected _players: PlayerController[] = [];
 
   private _occupants: PlayerController[] = [];
-  
 
   constructor(id: string, gameArea: GameArea<State>, townController: TownController) {
     super();
@@ -63,9 +57,9 @@ export default abstract class GameAreaController<
   }
 
   /**
- * The list of occupants in this conversation area. Changing the set of occupants
- * will emit an occupantsChange event.
- */
+   * The list of occupants in this conversation area. Changing the set of occupants
+   * will emit an occupantsChange event.
+   */
   set occupants(newOccupants: PlayerController[]) {
     if (
       newOccupants.length !== this._occupants.length ||
@@ -84,19 +78,17 @@ export default abstract class GameAreaController<
     return this.occupants.filter(eachOccupant => !this._players.includes(eachOccupant));
   }
 
-    /**
+  /**
    * A conversation area is empty if there are no occupants in it, or the topic is undefined.
    */
-    isEmpty(): boolean {
-      return this._occupants.length === 0;
-    }
-  
+  isEmpty(): boolean {
+    return this._occupants.length === 0;
+  }
 
   /**
    * The following code is taken from IP2, it's subject to future changes.
    */
 
-  
   /**
    * Sends a request to the server to join the current game in the game area, or create a new one if there is no game in progress.
    *
