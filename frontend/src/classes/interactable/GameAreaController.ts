@@ -62,27 +62,39 @@ export default abstract class GameAreaController<
     return this._players;
   }
 
-    /**
-   * The list of occupants in this conversation area. Changing the set of occupants
-   * will emit an occupantsChange event.
-   */
-    set occupants(newOccupants: PlayerController[]) {
-      if (
-        newOccupants.length !== this._occupants.length ||
-        _.xor(newOccupants, this._occupants).length > 0
-      ) {
-        this.emit('occupantsChange', newOccupants);
-        this._occupants = newOccupants;
-      }
+  /**
+ * The list of occupants in this conversation area. Changing the set of occupants
+ * will emit an occupantsChange event.
+ */
+  set occupants(newOccupants: PlayerController[]) {
+    if (
+      newOccupants.length !== this._occupants.length ||
+      _.xor(newOccupants, this._occupants).length > 0
+    ) {
+      this.emit('occupantsChange', newOccupants);
+      this._occupants = newOccupants;
     }
-  
-    get occupants() {
-      return this._occupants;
-    }
+  }
+
+  get occupants() {
+    return this._occupants;
+  }
 
   public get observers(): PlayerController[] {
     return this.occupants.filter(eachOccupant => !this._players.includes(eachOccupant));
   }
+
+    /**
+   * A conversation area is empty if there are no occupants in it, or the topic is undefined.
+   */
+    isEmpty(): boolean {
+      return this._occupants.length === 0;
+    }
+  
+
+  /**
+   * The following code is taken from IP2, it's subject to future changes.
+   */
 
   
   /**

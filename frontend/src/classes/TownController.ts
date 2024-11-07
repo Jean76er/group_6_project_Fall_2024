@@ -86,7 +86,7 @@ export type TownEvents = {
    */
   viewingAreasChanged: (newViewingAreas: ViewingAreaController[]) => void;
 
-  gameAreasChanged: (newGameAreas: GameAreaController<GameState, GameEventTypes>[]) => void;
+  gameAreasChanged: (newGameAreas: GameAreaController<GameState>[]) => void;
   /**
    * An event that indicates that a new chat message has been received, which is the parameter passed to the listener
    */
@@ -162,7 +162,7 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
    * The current list of game areas in the town. Adding or removing game areas might
    * replace the array with a new one; clients should take note not to retain stale references.
    */
-  private _gameAreasInternal: GameAreaController<GameState, GameEventTypes>[] = [];
+  private _gameAreasInternal: GameAreaController<GameState>[] = [];
 
   /**
    * The friendly name of the current town, set only once this TownController is connected to the townsService
@@ -338,7 +338,7 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
     return this._gameAreasInternal;
   }
 
-  private set _gameAreas(newGameAreas: GameAreaController<GameState, GameEventTypes>[]) {
+  private set _gameAreas(newGameAreas: GameAreaController<GameState>[]) {
     this._gameAreasInternal = newGameAreas;
     this.emit('gameAreasChanged', newGameAreas);
   }
@@ -678,14 +678,14 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
    * @param gameArea
    * @returns
    */
-  public getGameAreaController<GameType extends GameState, EventsType extends GameEventTypes>(
+  public getGameAreaController<GameType extends GameState>(
     gameArea: GameArea,
-  ): GameAreaController<GameType, EventsType> {
+  ): GameAreaController<GameType> {
     const existingController = this._interactableControllers.find(
       eachExistingArea => eachExistingArea.id === gameArea.name,
     );
     if (existingController instanceof GameAreaController) {
-      return existingController as GameAreaController<GameType, EventsType>;
+      return existingController as GameAreaController<GameType>;
     } else {
       throw new Error('Game area controller not created');
     }
@@ -814,13 +814,13 @@ export function useActiveConversationAreas(): ConversationAreaController[] {
  *
  * @returns the list of game area controllers that are currently "active"
  */
-export function useActiveGameAreas(): GameAreaController<GameState, GameEventTypes>[] {
+export function useActiveGameAreas(): GameAreaController<GameState>[] {
   const townController = useTownController();
-  const [gameAreas, setGameAreas] = useState<GameAreaController<GameState, GameEventTypes>[]>(
+  const [gameAreas, setGameAreas] = useState<GameAreaController<GameState>[]>(
     townController.gameAreas.filter(eachArea => !eachArea.isEmpty()),
   );
   useEffect(() => {
-    const updater = (allAreas: GameAreaController<GameState, GameEventTypes>[]) => {
+    const updater = (allAreas: GameAreaController<GameState>[]) => {
       setGameAreas(allAreas.filter(eachArea => !eachArea.isEmpty()));
     };
     townController.addListener('gameAreasChanged', updater);
