@@ -19,10 +19,17 @@ SillySharkEvents
 
 
     get isPlayer(): boolean {
-        return false; //TODO
+        return this._players.includes(this._townController.ourPlayer);
     }
 
     get status(): GameStatus {
-        return 'WAITING_TO_START'; 
+        if (this._model.game?.state.status == 'SINGLE_PLAYER_IN_PROGRESS') {
+            return 'SINGLE_PLAYER_IN_PROGRESS';
+          } else if(this._model.game?.state.status == 'MULTI_PLAYER_IN_PROGRESS') {
+            return 'MULTI_PLAYER_IN_PROGRESS'
+          } else if (this._model.game?.state.status == 'OVER') {
+            return 'OVER';
+          }
+          return 'WAITING_TO_START';
     }
 }
