@@ -17,6 +17,31 @@ SillySharkGameState,
 SillySharkEvents
 > {
 
+    get player1(): PlayerController | undefined {
+        if (this._model.game?.state.player1) {
+            return this._players[0];
+        }
+        return undefined;
+    }
+
+    get player2(): PlayerController | undefined {
+        if (this._model.game?.state.player1) {
+            return this._players[1];
+        }
+        return undefined;
+    }
+
+
+    get winner(): PlayerController | undefined {
+        const gameState = this._model.game?.state;
+        if (gameState && gameState.winner === gameState.player1) {
+            return this._players[0];
+        } else if (gameState && gameState.winner === gameState.player2) {
+            return this._players[1];
+        } else {
+            return undefined;
+        }
+    }
 
     get isPlayer(): boolean {
         return this._players.includes(this._townController.ourPlayer);
@@ -30,6 +55,17 @@ SillySharkEvents
           } else if (this._model.game?.state.status == 'OVER') {
             return 'OVER';
           }
-          return 'WAITING_TO_START';
+        return 'WAITING_TO_START';
     }
+
+    public isActive(): boolean {
+        if (this._model.game?.state.status == 'SINGLE_PLAYER_IN_PROGRESS') {
+            return true;
+        } else if(this._model.game?.state.status == 'MULTI_PLAYER_IN_PROGRESS') {
+            return true;
+        }
+        return false;
+    }
+
+
 }
