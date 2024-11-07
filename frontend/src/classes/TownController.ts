@@ -150,11 +150,14 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
   >[] = [];
 
   /**
-   * The current list of conversation areas in the twon. Adding or removing conversation areas might
+   * The current list of conversation areas in the town. Adding or removing conversation areas might
    * replace the array with a new one; clients should take note not to retain stale references.
    */
   private _conversationAreasInternal: ConversationAreaController[] = [];
-
+  /**
+   * The current list of game areas in the town. Adding or removing game areas might
+   * replace the array with a new one; clients should take note not to retain stale references.
+   */
   private _gameAreasInternal : GameAreaController<GameState,GameEventTypes>[] =[];
 
   /**
@@ -325,6 +328,15 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
   private set _conversationAreas(newConversationAreas: ConversationAreaController[]) {
     this._conversationAreasInternal = newConversationAreas;
     this.emit('conversationAreasChanged', newConversationAreas);
+  }
+
+  public get gameAreas() {
+    return this._gameAreasInternal;
+  }
+
+  private set _gameAreas(newGameAreas: GameAreaController<GameState,GameEventTypes>[]) {
+    this._gameAreasInternal = newGameAreas;
+    this.emit('gameAreasChanged', newGameAreas) 
   }
 
   public get interactableEmitter() {
