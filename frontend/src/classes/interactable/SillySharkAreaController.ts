@@ -16,6 +16,13 @@ export default class SillySharkAreaController extends GameAreaController<
 SillySharkGameState,
 SillySharkEvents
 > {
+    /*
+     *This getter is not yet defined. This is because I am unsure how exactly we 
+     *will implement the canvas.
+    */
+    getcanvas() {
+        //To be filled in
+    }
 
     get player1(): PlayerController | undefined {
         if (this._model.game?.state.player1) {
@@ -67,5 +74,20 @@ SillySharkEvents
         return false;
     }
 
+    /*
+     *Below is not filled out because we do not have a model for the canvas yet.
+    */
+    protected _updateFrom(newModel: GameArea<SillySharkGameState>): void {
+        //To be filled in
+    }
+
+    /*
+     *This function would send a request to the server to jump. 
+     *This would make our sprite jump.
+    */
+
+    public async jump() {
+        //To be filled in
+    }
 
 }
