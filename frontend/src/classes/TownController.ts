@@ -35,7 +35,7 @@ import ConversationAreaController from './interactable/ConversationAreaControlle
 import PlayerController from './PlayerController';
 import ViewingAreaController from './interactable/ViewingAreaController';
 import GameAreaController, { GameEventTypes } from './interactable/GameAreaController';
-
+import SillySharkAreaController from './interactable/SillySharkAreaController';
 const CALCULATE_NEARBY_PLAYERS_DELAY = 300;
 const SOCKET_COMMAND_TIMEOUT_MS = 5000;
 
@@ -221,6 +221,8 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
   private _interactableEmitter = new EventEmitter();
 
   private _viewingAreas: ViewingAreaController[] = [];
+
+  private _sillySharkAreas: SillySharkAreaController[] = [];
 
   public constructor({ userName, townID, loginController }: ConnectionProperties) {
     super();
@@ -476,10 +478,10 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
         updatedViewingArea?.updateFrom(interactable);
       } else if (isSillySharkArea(interactable)) {
         //SillySharkAreaController is needed for this
-        // const updatedSillySharkArea = this..find(
-        //   eachArea => eachArea.id === interactable.id,
-        // );
-        // updatedViewingArea?.updateFrom(interactable);
+        const updatedSillySharkArea = this._si.find(
+          eachArea => eachArea.id === interactable.id,
+        );
+        updatedViewingArea?.updateFrom(interactable);
       }
     });
   }
