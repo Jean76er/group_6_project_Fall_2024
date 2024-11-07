@@ -22,11 +22,13 @@ import {
   PlayerLocation,
   TownSettingsUpdate,
   ViewingArea as ViewingAreaModel,
+  GameArea as SillySharkAreaModel,
+  SillySharkGameState,
 } from '../types/CoveyTownSocket';
 import InteractableAreaController, {
   BaseInteractableEventMap,
 } from './interactable/InteractableAreaController';
-import { isConversationArea, isViewingArea } from '../types/TypeUtils';
+import { isConversationArea, isViewingArea, isSillySharkArea } from '../types/TypeUtils';
 import ConversationAreaController from './interactable/ConversationAreaController';
 import PlayerController from './PlayerController';
 import ViewingAreaController from './interactable/ViewingAreaController';
@@ -452,6 +454,12 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
           eachArea => eachArea.id === interactable.id,
         );
         updatedViewingArea?.updateFrom(interactable);
+      } else if (isSillySharkArea(interactable)) {
+        //SillySharkAreaController is needed for this
+        // const updatedSillySharkArea = this..find(
+        //   eachArea => eachArea.id === interactable.id,
+        // );
+        // updatedViewingArea?.updateFrom(interactable);
       }
     });
   }
@@ -562,6 +570,18 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
   async createViewingArea(newArea: ViewingAreaModel) {
     await this._townsService.createViewingArea(this.townID, this.sessionToken, newArea);
   }
+
+  /**
+   * Create a new viewing area, sending the request to the townService. Throws an error if the request
+   * is not successful. Does not immediately update local state about the new viewing area - it will be
+   * updated once the townService creates the area and emits an interactableUpdate
+   *
+   * @param newArea
+   */
+  async createSillySharkArea(newArea: SillySharkAreaModel<SillySharkGameState>) {
+    await this._townsService.
+  }
+
 
   /**
    * Disconnect from the town, notifying the townService that we are leaving and returning
