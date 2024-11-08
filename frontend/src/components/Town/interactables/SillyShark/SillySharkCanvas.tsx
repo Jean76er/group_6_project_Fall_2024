@@ -1,26 +1,12 @@
-import {
-  Button,
-  FormControl,
-  FormLabel,
-  Input,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
-  useToast,
-} from '@chakra-ui/react';
-import React, { useCallback, useEffect, useState } from 'react';
+import { Modal, ModalContent, ModalHeader, ModalOverlay } from '@chakra-ui/react';
+import React, { useCallback, useEffect } from 'react';
 import { useInteractable } from '../../../../classes/TownController';
-import { ConversationArea } from '../../../../generated/client';
+//import { ConversationArea } from '../../../../generated/client';
 import useTownController from '../../../../hooks/useTownController';
 
 export default function NewSillySharkCanvas(): JSX.Element {
   const coveyTownController = useTownController();
   const newConversation = useInteractable('gameArea');
-  const [topic, setTopic] = useState<string>('');
 
   const isOpen = newConversation !== undefined;
 
@@ -38,42 +24,6 @@ export default function NewSillySharkCanvas(): JSX.Element {
     }
   }, [coveyTownController, newConversation]);
 
-  const toast = useToast();
-
-  const createConversation = useCallback(async () => {
-    if (topic && newConversation) {
-      const conversationToCreate: ConversationArea = {
-        topic,
-        id: newConversation.name,
-        occupantsByID: [],
-      };
-      try {
-        await coveyTownController.createConversationArea(conversationToCreate);
-        toast({
-          title: 'Conversation Created!',
-          status: 'success',
-        });
-        setTopic('');
-        coveyTownController.unPause();
-        closeModal();
-      } catch (err) {
-        if (err instanceof Error) {
-          toast({
-            title: 'Unable to create conversation',
-            description: err.toString(),
-            status: 'error',
-          });
-        } else {
-          console.trace(err);
-          toast({
-            title: 'Unexpected Error',
-            status: 'error',
-          });
-        }
-      }
-    }
-  }, [topic, setTopic, coveyTownController, newConversation, closeModal, toast]);
-
   return (
     <Modal
       isOpen={isOpen}
@@ -81,11 +31,10 @@ export default function NewSillySharkCanvas(): JSX.Element {
         closeModal();
         coveyTownController.unPause();
       }}
-      size='xs'
-      >
+      size='xs'>
       <ModalOverlay />
-      <ModalContent maxW="500px" h="720px" bg='skyblue'>
-        <ModalHeader>{ coveyTownController.userName }</ModalHeader>
+      <ModalContent maxW='500px' h='720px' bg='skyblue'>
+        <ModalHeader>{coveyTownController.userName}</ModalHeader>
       </ModalContent>
     </Modal>
   );
