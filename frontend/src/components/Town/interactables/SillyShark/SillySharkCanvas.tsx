@@ -1,29 +1,18 @@
-//import { chakra, Container } from '@chakra-ui/react';
-import React, { useCallback } from 'react';
+import { chakra, Container, useToast } from '@chakra-ui/react';
+import React, {useCallback, useEffect, useState } from 'react';
+
+export {};
 
 /*
- * This component will render the background
+ * This component will render the background 
  */
 
-/*const styledSillySharkBoard = chakra(Container, {
-  baseStyle: {
-    background: 'skyblue',
-    border: '1px solid black',
-    width: '400px',
-    height: '400px',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-}); */
+const StyledSillySharkBoard = chakra(Container, {
+    baseStyle: {
+        background: 'skyblue',
+        width: '400px',
+        height: '400px',
+        alignItems: 'center'
+    },
+});
 
-/*
- * Componet that renders the SillyShark board
- */
-
-export default function SillySharkBoard(): JSX.Element {
-  const renderBoard = useCallback(() => {
-    <div>{/*test*/}</div>;
-  }, []);
-
-  return <div>{renderBoard()}</div>;
-}

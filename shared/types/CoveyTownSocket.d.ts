@@ -16,8 +16,11 @@ export type TownJoinResponse = {
   /** Current state of interactables in this town */
   interactables: Interactable[];
 }
-
 export type Interactable = ViewingArea | ConversationArea | GameArea;
+export type InteractableType = 'ConversationArea' | 'ViewingArea' | 'SillySharkArea';
+// export type Interactable = {
+
+// }
 
 export type TownSettingsUpdate = {
   friendlyName?: string;
@@ -125,7 +128,6 @@ export interface GameInstance<GS extends GameState> {
 }
 
 export interface SillySharkGameState extends WinnableGameState {
-  
   player1?: PlayerID;
   player2?: PlayerID;
 } 
@@ -140,4 +142,73 @@ export interface GameArea<T extends GameState> extends Interactable {
   type: InteractableType;
   game: GameInstance<T> | undefined;
   history: GameResult[];
+}
+
+export type CommandID = string;
+
+/**
+ * Base type for a command that can be sent to an interactable.
+ * This type is used only by the client/server interface, which decorates
+ * an @see InteractableCommand with a commandID and interactableID
+ */
+interface InteractableCommandBase {
+  /**
+   * A unique ID for this command. This ID is used to match a command against a response
+   */
+  commandID: CommandID;
+  /**
+   * The ID of the interactable that this command is being sent to
+   */
+  interactableID: InteractableID;
+  /**
+   * The type of this command
+   */
+  type: string;
+}
+
+
+
+export type InteractableCommand =  ViewingAreaUpdateCommand | JoinGameCommand | LeaveGameCommand;
+export interface ViewingAreaUpdateCommand  {
+  type: 'ViewingAreaUpdate';
+  update: ViewingArea;
+}
+export interface JoinGameCommand {
+  type: 'JoinGame';
+}
+export interface LeaveGameCommand {
+  type: 'LeaveGame';
+  gameID: GameInstanceID;
+}
+
+export type InteractableCommandReturnType<CommandType extends InteractableCommand> = 
+  CommandType extends JoinGameCommand ? { gameID: string}:
+  CommandType extends ViewingAreaUpdateCommand ? undefined :
+  CommandType extends LeaveGameCommand ? undefined :
+  never;
+
+export type InteractableCommandResponse<MessageType> = {
+  commandID: CommandID;
+  interactableID: InteractableID;
+  error?: string;
+  payload?: InteractableCommandResponseMap[MessageType];
+}
+
+export interface ServerToClientEvents {
+  playerMoved: (movedPlayer: Player) => void;
+  playerDisconnect: (disconnectedPlayer: Player) => void;
+  playerJoined: (newPlayer: Player) => void;
+  initialize: (initialData: TownJoinResponse) => void;
+  townSettingsUpdated: (update: TownSettingsUpdate) => void;
+  townClosing: () => void;
+  chatMessage: (message: ChatMessage) => void;
+  interactableUpdate: (interactable: Interactable) => void;
+  commandResponse: (response: InteractableCommandResponse) => void;
+}
+
+export interface ClientToServerEvents {
+  chatMessage: (message: ChatMessage) => void;
+  playerMovement: (movementData: PlayerLocation) => void;
+  interactableUpdate: (update: Interactable) => void;
+  interactableCommand: (command: InteractableCommand & InteractableCommandBase) => void;
 }

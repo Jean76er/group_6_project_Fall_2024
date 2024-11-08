@@ -6,9 +6,12 @@ import { SillySharkGameState } from '../../types/CoveyTownSocket';
 
 export default class SillySharkGame extends Game<SillySharkGameState> {
   /* This constructor may need to be revised later with further development. */
-  public constructor(initialState: SillySharkGameState) {
+  public constructor() {
+    /** initialState: SillySharkGameState */
     super({
-      ...initialState,
+      /** ...initialState, uncomment if we need it in the future
+       * this was causing conflicts with SillySharkGameArea.ts
+       */
       status: 'WAITING_TO_START',
     });
   }

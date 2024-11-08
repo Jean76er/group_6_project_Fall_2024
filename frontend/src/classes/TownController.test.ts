@@ -20,7 +20,7 @@ import {
 import { isConversationArea, isViewingArea } from '../types/TypeUtils';
 import PlayerController from './PlayerController';
 import TownController, { TownEvents } from './TownController';
-import ViewingAreaController from './ViewingAreaController';
+import ViewingAreaController from './interactable/ViewingAreaController';
 
 /**
  * Mocks the socket-io client constructor such that it will always return the same

@@ -1,6 +1,6 @@
 import { EventEmitter } from 'events';
 import TypedEventEmitter from 'typed-emitter';
-import { ViewingArea as ViewingAreaModel } from '../types/CoveyTownSocket';
+import { ViewingArea as ViewingAreaModel } from '../../types/CoveyTownSocket';
 
 /**
  * The events that a ViewingAreaController can emit

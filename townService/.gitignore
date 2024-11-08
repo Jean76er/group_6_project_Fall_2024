@@ -3,6 +3,7 @@ createHandout.sh
 .env.prod
 
 generated
+build
 
 # stryker temp files
 .stryker-tmp
