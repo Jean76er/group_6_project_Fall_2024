@@ -1,36 +1,92 @@
-import { chakra, Container } from '@chakra-ui/react';
-import React, { useCallback } from 'react';
-import SillySharkAreaController from '../../../../classes/interactable/SillySharkAreaController';
+import {
+  Button,
+  FormControl,
+  FormLabel,
+  Input,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  useToast,
+} from '@chakra-ui/react';
+import React, { useCallback, useEffect, useState } from 'react';
+import { useInteractable } from '../../../../classes/TownController';
+import { ConversationArea } from '../../../../generated/client';
+import useTownController from '../../../../hooks/useTownController';
 
-export type SillySharkProps = {
-  gameAreaController: SillySharkAreaController;
-};
+export default function NewSillySharkCanvas(): JSX.Element {
+  const coveyTownController = useTownController();
+  const newConversation = useInteractable('gameArea');
+  const [topic, setTopic] = useState<string>('');
 
-/*
- * This component will render the background
- */
+  const isOpen = newConversation !== undefined;
 
-const StyledSillySharkBoard = chakra(Container, {
-  baseStyle: {
-    background: 'skyblue',
-    width: '400px',
-    height: '400px',
-    flexWrap: 'wrap',
-  },
-});
+  useEffect(() => {
+    if (newConversation) {
+      coveyTownController.pause();
+    } else {
+      coveyTownController.unPause();
+    }
+  }, [coveyTownController, newConversation]);
 
-export default function SillySharkCanvas(): JSX.Element {
-  //const playerInGame = gameAreaController.isPlayer;
+  const closeModal = useCallback(() => {
+    if (newConversation) {
+      coveyTownController.interactEnd(newConversation);
+    }
+  }, [coveyTownController, newConversation]);
 
-  //const toast = useToast();
+  const toast = useToast();
 
-  const renderCanvas = useCallback(() => {
-    return (
-      <StyledSillySharkBoard aria label='Silly Shark Canvas'>
-        <p>This is a test</p>
-      </StyledSillySharkBoard>
-    );
-  }, []);
+  const createConversation = useCallback(async () => {
+    if (topic && newConversation) {
+      const conversationToCreate: ConversationArea = {
+        topic,
+        id: newConversation.name,
+        occupantsByID: [],
+      };
+      try {
+        await coveyTownController.createConversationArea(conversationToCreate);
+        toast({
+          title: 'Conversation Created!',
+          status: 'success',
+        });
+        setTopic('');
+        coveyTownController.unPause();
+        closeModal();
+      } catch (err) {
+        if (err instanceof Error) {
+          toast({
+            title: 'Unable to create conversation',
+            description: err.toString(),
+            status: 'error',
+          });
+        } else {
+          console.trace(err);
+          toast({
+            title: 'Unexpected Error',
+            status: 'error',
+          });
+        }
+      }
+    }
+  }, [topic, setTopic, coveyTownController, newConversation, closeModal, toast]);
 
-  return <>{renderCanvas()}</>;
+  return (
+    <Modal
+      isOpen={isOpen}
+      onClose={() => {
+        closeModal();
+        coveyTownController.unPause();
+      }}
+      size='xs'
+      >
+      <ModalOverlay />
+      <ModalContent maxW="500px" h="720px" bg='skyblue'>
+        <ModalHeader>{ coveyTownController.userName }</ModalHeader>
+      </ModalContent>
+    </Modal>
+  );
 }
