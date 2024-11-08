@@ -1,4 +1,4 @@
-import { GameStatus, SillySharkGameState } from '../../types/CoveyTownSocket';
+import { GameArea, GameStatus, SillySharkGameState } from '../../types/CoveyTownSocket';
 import PlayerController from '../PlayerController';
 import GameAreaController, { GameEventTypes } from './GameAreaController';
 
@@ -8,10 +8,7 @@ export const NO_GAME_IN_PROGRESS_ERROR = 'No game in progress';
 
 export type SillySharkEvents = GameEventTypes;
 
-export default class SillySharkAreaController extends GameAreaController<
-  SillySharkGameState,
-  SillySharkEvents
-> {
+export default class SillySharkAreaController extends GameAreaController<SillySharkGameState> {
   /*
    *This getter is not yet defined. This is because I am unsure how exactly we
    *will implement the canvas.
@@ -72,8 +69,9 @@ export default class SillySharkAreaController extends GameAreaController<
   /*
    *Below is not filled out because we do not have a model for the canvas yet.
    */
-  protected _updateFrom(): void {
-    //To be filled in
+  public updateFrom(newModel: GameArea<SillySharkGameState>): void {
+    //To modified
+    super._updateFrom(newModel);
   }
 
   /*
