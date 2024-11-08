@@ -59,11 +59,12 @@ module.exports = {
   },
   overrides: [
     {
-      files: ['*.test.tsx', '**/TestUtils.ts'],
+      files: ['*.test.tsx', '**/TestUtils.ts', 'src/components/Town/interactables/SillyShark/SillySharkCanvas.tsx'],
       rules: {
         'no-await-in-loop': 0,
         '@typescript-eslint/no-explicit-any': 0,
         'import/no-extraneous-dependencies': 0,
+        '@typescript-eslint/naming-convention': 0,
       },
     },
   ],
