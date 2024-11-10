@@ -6,23 +6,23 @@ import useTownController from '../../../../hooks/useTownController';
 
 export default function NewSillySharkCanvas(): JSX.Element {
   const coveyTownController = useTownController();
-  const newConversation = useInteractable('gameArea');
+  const newSillySharkGame = useInteractable('gameArea');
 
-  const isOpen = newConversation !== undefined;
+  const isOpen = newSillySharkGame !== undefined;
 
   useEffect(() => {
-    if (newConversation) {
+    if (newSillySharkGame) {
       coveyTownController.pause();
     } else {
       coveyTownController.unPause();
     }
-  }, [coveyTownController, newConversation]);
+  }, [coveyTownController, newSillySharkGame]);
 
   const closeModal = useCallback(() => {
-    if (newConversation) {
-      coveyTownController.interactEnd(newConversation);
+    if (newSillySharkGame) {
+      coveyTownController.interactEnd(newSillySharkGame);
     }
-  }, [coveyTownController, newConversation]);
+  }, [coveyTownController, newSillySharkGame]);
 
   return (
     <Modal
