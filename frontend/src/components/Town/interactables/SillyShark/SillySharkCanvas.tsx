@@ -76,10 +76,9 @@ export default function NewSillySharkCanvas(): JSX.Element {
     };
   });
 
-    /** The updateGame function will update the obstacles' position continuously. The sprites'
+  /** The updateGame function will update the obstacles' position continuously. The sprites'
    *  movement/physics should also be added here.
    */
-
 
   useEffect(() => {
     console.log('Obstacles:', obstacles);
