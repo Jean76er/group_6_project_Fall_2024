@@ -51,8 +51,8 @@ export default function NewSillySharkCanvas(): JSX.Element {
     return { topHeight, bottomHeight };
   };
   useEffect(() => {
-    topObstacleImage.current.src = '/top_obstacle.png';
-    bottomObstacleImage.current.src = '/bottom_obstacle.png';
+    topObstacleImage.current.src = '/SillySharkImages/top_obstacle.png';
+    bottomObstacleImage.current.src = '/SillySharkImages/bottom_obstacle.png';
 
     topObstacleImage.current.onload = () => {
       console.log('Top obstacle image loaded:', topObstacleImage.current.src);
@@ -75,6 +75,12 @@ export default function NewSillySharkCanvas(): JSX.Element {
       console.error('Failed to load bottom obstacle image:', bottomObstacleImage.current.src);
     };
   });
+
+    /** The updateGame function will update the obstacles' position continuously. The sprites'
+   *  movement/physics should also be added here.
+   */
+
+
   useEffect(() => {
     console.log('Obstacles:', obstacles);
     const draw = () => {
