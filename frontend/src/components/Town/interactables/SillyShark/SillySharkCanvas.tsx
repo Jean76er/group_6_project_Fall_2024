@@ -1,7 +1,6 @@
 import { Modal, ModalContent, ModalHeader, ModalOverlay } from '@chakra-ui/react';
 import React, { useCallback, useEffect } from 'react';
 import { useInteractable } from '../../../../classes/TownController';
-//import { ConversationArea } from '../../../../generated/client';
 import useTownController from '../../../../hooks/useTownController';
 
 export default function NewSillySharkCanvas(): JSX.Element {
@@ -34,7 +33,7 @@ export default function NewSillySharkCanvas(): JSX.Element {
       size='xs'>
       <ModalOverlay />
       <ModalContent maxW='500px' h='720px' bg='skyblue'>
-        <ModalHeader>{coveyTownController.userName}</ModalHeader>
+        <ModalHeader>{'Silly Shark'}</ModalHeader>
       </ModalContent>
     </Modal>
   );
