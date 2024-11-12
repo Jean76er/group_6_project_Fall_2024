@@ -37,13 +37,19 @@ export default function NewSillySharkCanvas(): JSX.Element {
    * gapHeight: Represents the gap between the top and bottom heights. The heights of the top and bottom pipes will
    * change, however, the space between them should not become smaller or bigger.
    */
-  //const canvasHeight = 600;
+  const canvasHeight = 600;
   const gapHeight = 150;
   const obstacleWidth = 50;
   const topObstacleImage = useRef(new Image());
   const bottomObstacleImage = useRef(new Image());
   const canvas = useRef<HTMLCanvasElement>(null);
 
+  /** This function generates random heights for the top and bottom obstacles*/
+  const randomObstacleHeights = () => {
+    const topHeight = Math.floor(Math.random() * (canvasHeight - gapHeight - 100)) + 50;
+    const bottomHeight = Math.floor(Math.random() * (canvasHeight - gapHeight - 100)) + 50;
+    return { topHeight, bottomHeight };
+  };
   useEffect(() => {
     topObstacleImage.current.src = '/top_obstacle.png';
     bottomObstacleImage.current.src = '/bottom_obstacle.png';
@@ -52,9 +58,7 @@ export default function NewSillySharkCanvas(): JSX.Element {
       console.log('Top obstacle image loaded:', topObstacleImage.current.src);
       bottomObstacleImage.current.onload = () => {
         console.log('Bottom obstacle image loaded:', bottomObstacleImage.current.src);
-        //const { topHeight, bottomHeight } = genereate random heights with some function later;
-        const topHeight = 200;
-        const bottomHeight = 200;
+        const { topHeight, bottomHeight } = randomObstacleHeights();
         const firstTopObstacle = new Obstacle(topHeight, obstacleWidth, topObstacleImage.current);
         const firstBottomObstacle = new Obstacle(
           bottomHeight,
