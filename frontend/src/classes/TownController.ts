@@ -895,6 +895,28 @@ export function useInteractable<T extends Interactable>(
   }, [interactableType, townController, setInteractable]);
   return interactable;
 }
+
+/**
+ * A react hook to retrieve an interactable area controller
+ *
+ * This function will throw an error if the interactable area controller does not exist.
+ *
+ * This hook relies on the TownControllerContext.
+ *
+ * @param interactableAreaID The ID of the interactable area to retrieve the controller for
+ * @throws Error if there is no interactable area controller matching the specified ID
+ */
+export function useInteractableAreaController<T>(interactableAreaID: string): T {
+  const townController = useTownController();
+  const interactableAreaController = townController.gameAreas.find(
+    eachArea => eachArea.id == interactableAreaID,
+  );
+  if (!interactableAreaController) {
+    throw new Error(`Requested interactable area ${interactableAreaID} does not exist`);
+  }
+  return interactableAreaController as unknown as T;
+}
+
 /**
  * A react hook to retrieve the players that should be included in the video call
  *
