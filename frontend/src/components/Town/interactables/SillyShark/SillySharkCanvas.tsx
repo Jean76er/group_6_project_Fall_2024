@@ -3,7 +3,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Obstacle from './Obstacle';
 import { useInteractable } from '../../../../classes/TownController';
 import useTownController from '../../../../hooks/useTownController';
-
+import SkinSelectionScreen from './SkinSelection';
 export default function NewSillySharkCanvas(): JSX.Element {
   const coveyTownController = useTownController();
   const newSillySharkGame = useInteractable('gameArea');
@@ -131,6 +131,7 @@ export default function NewSillySharkCanvas(): JSX.Element {
       <ModalOverlay />
       <ModalContent maxW='500px' h='720px' bg='skyblue'>
         <ModalHeader>{'Silly Shark'}</ModalHeader>
+        <SkinSelectionScreen />
         <canvas ref={canvas} width='500' height='600' />
       </ModalContent>
     </Modal>
