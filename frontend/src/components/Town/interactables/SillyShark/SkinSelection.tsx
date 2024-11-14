@@ -54,7 +54,7 @@ export default function SkinSelectionScreen(): JSX.Element {
           <StyledSelectionContainer>
             <StyledSelectionSquare>
               <Image
-                src='/SillySharkImages/sillyshark.jpg'
+                src='/SillySharkResources/skins/sillyshark.jpg'
                 alt='Button Image'
                 objectFit='cover'
                 boxSize='100%'
@@ -62,7 +62,7 @@ export default function SkinSelectionScreen(): JSX.Element {
             </StyledSelectionSquare>
             <StyledSelectionSquare>
               <Image
-                src='/SillySharkImages/sillyshark.jpg'
+                src='/SillySharkResources/skins/sillyshark.jpg'
                 alt='Button Image'
                 objectFit='cover'
                 boxSize='100%'
@@ -70,7 +70,7 @@ export default function SkinSelectionScreen(): JSX.Element {
             </StyledSelectionSquare>
             <StyledSelectionSquare>
               <Image
-                src='/SillySharkImages/sillyshark.jpg'
+                src='/SillySharkResources/skins/sillyshark.jpg'
                 alt='Button Image'
                 objectFit='cover'
                 boxSize='100%'
@@ -78,7 +78,7 @@ export default function SkinSelectionScreen(): JSX.Element {
             </StyledSelectionSquare>
             <StyledSelectionSquare>
               <Image
-                src='/SillySharkImages/sillyshark.jpg'
+                src='/SillySharkResources/skins/sillyshark.jpg'
                 alt='Button Image'
                 objectFit='cover'
                 boxSize='100%'
