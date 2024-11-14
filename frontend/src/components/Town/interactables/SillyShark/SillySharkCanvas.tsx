@@ -72,7 +72,10 @@ export default function NewSillySharkCanvas(): JSX.Element {
     }
   }, [isOpen]);
 
-  /** The updateGame function will update the obstacles' position continuously. */
+  /** Draw is responsible for rendering the current game state on the canvas.
+   *  It also clears the canvas on each frame and redraws the obstacles at their updated positions,
+   *  redrawing at 60 fps for smooth animation
+    */
   useEffect(() => {
     const draw = () => {
       const canvasCurr = canvas.current;
@@ -105,7 +108,9 @@ export default function NewSillySharkCanvas(): JSX.Element {
       });
     };
 
-    /** Update obstacle positions and handle new obstacle creation */
+    /** The update obstacles function updates the position of each obstacle, moving them
+     * to the left and removing obstacles that have moved off-screen to free memory
+     */
     const updateObstacles = () => {
       setObstacles(prevObstacles => {
         /** Move all obstacles to the left */
