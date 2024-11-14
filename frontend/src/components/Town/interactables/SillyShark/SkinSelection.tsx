@@ -1,5 +1,5 @@
 import { Button, chakra, ModalContent, Image, ModalHeader, Container, Center } from '@chakra-ui/react';
-import React from 'react';
+import React, { useCallback } from 'react';
 import SillySharkAreaController from '../../../../classes/interactable/SillySharkAreaController';
 
 
@@ -39,58 +39,66 @@ const StyledSelectionContainer = chakra(Container, {
 });
 
 export default function SkinSelectionScreen(): JSX.Element {
-  return (
-    <>
-      <ModalContent maxW='500px' h='720px' bg='skyblue'>
-        <ModalHeader>
-          <Center>
-            Select you skin!
+
+
+
+  const renderSkins = useCallback(() => {
+    return (
+      <>
+        <ModalContent maxW='500px' h='720px' bg='skyblue'>
+          <ModalHeader>
+            <Center>
+              Select you skin!
+            </Center>
+          </ModalHeader>
+  
+          <StyledSelectionContainer>
+            <StyledSelectionSquare>
+              <Image
+                src='/SillySharkImages/sillyshark.jpg'
+                alt='Button Image'
+                objectFit='cover'
+                boxSize='100%'
+              />
+            </StyledSelectionSquare>
+            <StyledSelectionSquare>
+              <Image
+                src='/SillySharkImages/sillyshark.jpg'
+                alt='Button Image'
+                objectFit='cover'
+                boxSize='100%'
+              />
+            </StyledSelectionSquare>
+            <StyledSelectionSquare>
+              <Image
+                src='/SillySharkImages/sillyshark.jpg'
+                alt='Button Image'
+                objectFit='cover'
+                boxSize='100%'
+              />
+            </StyledSelectionSquare>
+            <StyledSelectionSquare>
+              <Image
+                src='/SillySharkImages/sillyshark.jpg'
+                alt='Button Image'
+                objectFit='cover'
+                boxSize='100%'
+              />
+            </StyledSelectionSquare>
+          </StyledSelectionContainer>
+  
+          <Center paddingTop='10px'>
+            <Button size='sm'  width='fit-content'>
+              Continue
+            </Button>
           </Center>
-        </ModalHeader>
+          
+        </ModalContent>
+        <></>
+      </>
+    );
+  }, [])
 
-        <StyledSelectionContainer>
-          <StyledSelectionSquare>
-            <Image
-              src='/SillySharkImages/sillyshark.jpg'
-              alt='Button Image'
-              objectFit='cover'
-              boxSize='100%'
-            />
-          </StyledSelectionSquare>
-          <StyledSelectionSquare>
-            <Image
-              src='/SillySharkImages/sillyshark.jpg'
-              alt='Button Image'
-              objectFit='cover'
-              boxSize='100%'
-            />
-          </StyledSelectionSquare>
-          <StyledSelectionSquare>
-            <Image
-              src='/SillySharkImages/sillyshark.jpg'
-              alt='Button Image'
-              objectFit='cover'
-              boxSize='100%'
-            />
-          </StyledSelectionSquare>
-          <StyledSelectionSquare>
-            <Image
-              src='/SillySharkImages/sillyshark.jpg'
-              alt='Button Image'
-              objectFit='cover'
-              boxSize='100%'
-            />
-          </StyledSelectionSquare>
-        </StyledSelectionContainer>
-
-        <Center paddingTop='10px'>
-          <Button size='sm'  width='fit-content'>
-            Continue
-          </Button>
-        </Center>
-        
-      </ModalContent>
-      <></>
-    </>
-  );
+  return <>{renderSkins()}</>
+  
 }
