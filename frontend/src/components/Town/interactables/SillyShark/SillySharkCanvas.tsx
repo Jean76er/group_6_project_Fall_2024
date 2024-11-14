@@ -51,8 +51,8 @@ export default function NewSillySharkCanvas(): JSX.Element {
     return { topHeight, bottomHeight };
   };
   useEffect(() => {
-    topObstacleImage.current.src = '/SillySharkImages/top_obstacle.png';
-    bottomObstacleImage.current.src = '/SillySharkImages/bottom_obstacle.png';
+    topObstacleImage.current.src = '/SillySharkResources/obstacles/top_obstacle.png';
+    bottomObstacleImage.current.src = '/SillySharkResources/obstacles/bottom_obstacle.png';
 
     topObstacleImage.current.onload = () => {
       console.log('Top obstacle image loaded:', topObstacleImage.current.src);
