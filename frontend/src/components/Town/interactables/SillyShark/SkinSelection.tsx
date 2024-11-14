@@ -1,4 +1,4 @@
-import { Button, chakra } from '@chakra-ui/react';
+import { Button, chakra, ModalContent, ModalHeader } from '@chakra-ui/react';
 import React from 'react';
 
 /**
@@ -11,6 +11,7 @@ const StyledSelectionSquare = chakra(Button, {
     flexBasis: '33%',
     border: '1px solid black',
     height: '33%',
+    width: '33%',
     fontSize: '50px',
     _disabled: {
       opacity: '100%',
@@ -21,7 +22,12 @@ const StyledSelectionSquare = chakra(Button, {
 export default function SkinSelectionScreen(): JSX.Element {
   return (
     <>
-      <StyledSelectionSquare />
+      <ModalContent maxW='500px' h='720px' bg='skyblue'>
+        <ModalHeader>{'Silly Shark'}</ModalHeader>
+        <StyledSelectionSquare />
+      </ModalContent>
+
+      <></>
     </>
   );
 }
