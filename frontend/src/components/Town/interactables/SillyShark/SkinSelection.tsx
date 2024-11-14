@@ -41,7 +41,6 @@ const StyledSelectionContainer = chakra(Container, {
 export default function SkinSelectionScreen(): JSX.Element {
 
 
-
   const renderSkins = useCallback(() => {
     return (
       <>
