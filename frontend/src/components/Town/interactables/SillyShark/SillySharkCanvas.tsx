@@ -34,7 +34,7 @@ export default function NewSillySharkCanvas(): JSX.Element {
   const [obstacles, setObstacles] = useState<ObstaclePair[]>([]);
   /**canvasHeight: The vertical height of the canvas
    * obstacleWidth: Width of the obstacles; while the heights of the pipes will vary, the widths should remain constant
-   * gapHeight: Represents the gap between the top and bottom heights. The heights of the top and bottom pipes will
+   * gapHeight: Represents the gap between the top and bottom obstacles. The heights of the top and bottom pipes will
    * change, however, the space between them should not become smaller or bigger.
    */
   const canvasHeight = 600;
@@ -51,6 +51,7 @@ export default function NewSillySharkCanvas(): JSX.Element {
     return { topHeight, bottomHeight };
   };
   useEffect(() => {
+    if(isOpen){
     topObstacleImage.current.src = '/SillySharkImages/top_obstacle.png';
     bottomObstacleImage.current.src = '/SillySharkImages/bottom_obstacle.png';
 
@@ -74,7 +75,8 @@ export default function NewSillySharkCanvas(): JSX.Element {
     bottomObstacleImage.current.onerror = () => {
       console.error('Failed to load bottom obstacle image:', bottomObstacleImage.current.src);
     };
-  });
+    }
+  }, [isOpen]);
 
   /** The updateGame function will update the obstacles' position continuously. The sprites'
    *  movement/physics should also be added here.
@@ -107,7 +109,7 @@ export default function NewSillySharkCanvas(): JSX.Element {
           obstacle.bottom.obstacleImage,
           obstacle.x,
           obstacle.top.obstacleHeight +
-            gapHeight /** Bottom starts after the top obstacle end + gap height */,
+            gapHeight, /** Bottom starts after the top obstacle end + gap height */
           obstacleWidth,
           canvasCurr.height - obstacle.top.obstacleHeight - gapHeight,
         );
