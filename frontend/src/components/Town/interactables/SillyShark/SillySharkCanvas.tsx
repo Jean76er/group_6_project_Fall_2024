@@ -31,12 +31,19 @@ export default function NewSillySharkCanvas(): JSX.Element {
   }
 
   const [obstacles, setObstacles] = useState<ObstaclePair[]>([]);
+  /**canvasHeight: The vertical height of the canvas
+   * obstacleWidth: Width of the obstacles; while the heights of the pipes will vary, the widths should remain constant
+   * gapHeight: Represents the gap between the top and bottom obstacles. The heights of the top and bottom pipes will
+   * change, however, the space between them should not become smaller or bigger.
+   * obstacleSpacing: The space between each obstacle pair. This will determine how far apart each obstacle pair is
+   */
   const canvasHeight = 600;
   const gapHeight = 150;
   const obstacleWidth = 50;
   const topObstacleImage = useRef(new Image());
   const bottomObstacleImage = useRef(new Image());
   const canvas = useRef<HTMLCanvasElement>(null);
+  const obstacleSpacing = 200;
 
   const randomObstacleHeights = () => {
     const topHeight = Math.floor(Math.random() * (canvasHeight - gapHeight - 100)) + 50;
@@ -60,7 +67,9 @@ export default function NewSillySharkCanvas(): JSX.Element {
             obstacleWidth,
             bottomObstacleImage.current,
           );
-          setObstacles([{ top: firstTopObstacle, bottom: firstBottomObstacle, x: canvas.current?.width || 500 }]);
+          setObstacles([
+            { top: firstTopObstacle, bottom: firstBottomObstacle, x: canvas.current?.width || 500 },
+          ]);
         };
       };
       topObstacleImage.current.onerror = () => {
@@ -74,8 +83,8 @@ export default function NewSillySharkCanvas(): JSX.Element {
 
   /** Draw is responsible for rendering the current game state on the canvas.
    *  It also clears the canvas on each frame and redraws the obstacles at their updated positions,
-   *  redrawing at 60 fps for smooth animation
-    */
+   *  redrawing at 60 fps resulting in smooth animation
+   */
   useEffect(() => {
     const draw = () => {
       const canvasCurr = canvas.current;
@@ -101,7 +110,8 @@ export default function NewSillySharkCanvas(): JSX.Element {
         context.drawImage(
           obstacle.bottom.obstacleImage,
           obstacle.x,
-          obstacle.top.obstacleHeight + gapHeight, /** Bottom starts after the top obstacle end + gap height */
+          obstacle.top.obstacleHeight +
+            gapHeight /** Bottom starts after the top obstacle end + gap height */,
           obstacleWidth,
           canvasCurr.height - obstacle.top.obstacleHeight - gapHeight,
         );
@@ -116,11 +126,31 @@ export default function NewSillySharkCanvas(): JSX.Element {
         /** Move all obstacles to the left */
         const newObstacles = prevObstacles.map(obstacle => ({
           ...obstacle,
-          x: obstacle.x - 2, 
+          x: obstacle.x - 2,
         }));
 
         /** Remove obstacles that have moved off screen */
         const filteredObstacles = newObstacles.filter(obstacle => obstacle.x + obstacleWidth > 0);
+
+        /** Add new a new obstacle if the obstacle furthest to the left has moved off the screen */
+        const lastObstacle = filteredObstacles[filteredObstacles.length - 1];
+        if (!lastObstacle || lastObstacle.x <= canvasHeight) {
+          const { topHeight, bottomHeight } = randomObstacleHeights();
+          const newTopObstacle = new Obstacle(topHeight, obstacleWidth, topObstacleImage.current);
+          const newBottomObstacle = new Obstacle(
+            bottomHeight,
+            obstacleWidth,
+            bottomObstacleImage.current,
+          );
+
+          /**  Space the new obstacle from the previous one */
+          const newObstacleX = lastObstacle ? lastObstacle.x + obstacleSpacing : canvasHeight;
+          filteredObstacles.push({
+            top: newTopObstacle,
+            bottom: newBottomObstacle,
+            x: newObstacleX,
+          });
+        }
 
         return filteredObstacles;
       });
@@ -130,7 +160,7 @@ export default function NewSillySharkCanvas(): JSX.Element {
     const interval = setInterval(() => {
       draw();
       updateObstacles();
-    }, 1000 / 60); 
+    }, 1000 / 60);
 
     return () => clearInterval(interval);
   }, [obstacles]);
@@ -142,12 +172,11 @@ export default function NewSillySharkCanvas(): JSX.Element {
         closeModal();
         coveyTownController.unPause();
       }}
-      size="xs"
-    >
+      size='xs'>
       <ModalOverlay />
-      <ModalContent maxW="500px" h="720px" bg="skyblue">
-        <ModalHeader>{"Silly Shark"}</ModalHeader>
-        <canvas ref={canvas} width="500" height="600" />
+      <ModalContent maxW='500px' h='720px' bg='skyblue'>
+        <ModalHeader>{'Silly Shark'}</ModalHeader>
+        <canvas ref={canvas} width='500' height='600' />
       </ModalContent>
     </Modal>
   );
