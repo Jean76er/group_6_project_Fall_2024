@@ -43,7 +43,7 @@ export default function NewSillySharkCanvas(): JSX.Element {
   const topObstacleImage = useRef(new Image());
   const bottomObstacleImage = useRef(new Image());
   const canvas = useRef<HTMLCanvasElement>(null);
-  const obstacleSpacing = 200;
+  const obstacleSpacing = 300;
 
   const randomObstacleHeights = () => {
     const topHeight = Math.floor(Math.random() * (canvasHeight - gapHeight - 100)) + 50;
