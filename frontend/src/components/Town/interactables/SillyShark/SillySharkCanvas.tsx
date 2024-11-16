@@ -169,7 +169,7 @@ export default function NewSillySharkCanvas(): JSX.Element {
       size='xs'>
       <ModalOverlay />
       <ModalContent maxW='500px' h='720px' bg='skyblue'>
-        <canvas ref={canvas} width='500' height='600' />
+        <canvas ref={canvas} width='500' height='720' />
       </ModalContent>
     </Modal>
   );
