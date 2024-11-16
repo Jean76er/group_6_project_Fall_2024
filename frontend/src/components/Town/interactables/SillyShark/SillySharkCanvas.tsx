@@ -40,8 +40,7 @@ export default function NewSillySharkCanvas(): JSX.Element {
   const canvasHeight = 600;
   const gapHeight = 150;
   const obstacleWidth = 50;
-  const topObstacleImage = useRef(new Image());
-  const bottomObstacleImage = useRef(new Image());
+  const obstacleImage = useRef(new Image())
   const canvas = useRef<HTMLCanvasElement>(null);
   const obstacleSpacing = 300;
 
@@ -53,30 +52,24 @@ export default function NewSillySharkCanvas(): JSX.Element {
 
   useEffect(() => {
     if (isOpen) {
-      topObstacleImage.current.src = '/SillySharkResources/obstacles/top_obstacle.png';
-      bottomObstacleImage.current.src = '/SillySharkResources/obstacles/bottom_obstacle.png';
+      obstacleImage.current.src = '/SillySharkResources/obstacles/obstacle.png';
 
-      topObstacleImage.current.onload = () => {
-        console.log('Top obstacle image loaded:', topObstacleImage.current.src);
-        bottomObstacleImage.current.onload = () => {
-          console.log('Bottom obstacle image loaded:', bottomObstacleImage.current.src);
+        obstacleImage.current.onload = () => {
+          console.log('Obstacle image loaded:', obstacleImage.current.src);
           const { topHeight, bottomHeight } = randomObstacleHeights();
-          const firstTopObstacle = new Obstacle(topHeight, obstacleWidth, topObstacleImage.current);
+          const firstTopObstacle = new Obstacle(topHeight, obstacleWidth, obstacleImage.current);
           const firstBottomObstacle = new Obstacle(
             bottomHeight,
             obstacleWidth,
-            bottomObstacleImage.current,
+            obstacleImage.current,
           );
           setObstacles([
             { top: firstTopObstacle, bottom: firstBottomObstacle, x: canvas.current?.width || 500 },
           ]);
         };
-      };
-      topObstacleImage.current.onerror = () => {
-        console.error('Failed to load top obstacle image:', topObstacleImage.current.src);
-      };
-      bottomObstacleImage.current.onerror = () => {
-        console.error('Failed to load bottom obstacle image:', bottomObstacleImage.current.src);
+
+      obstacleImage.current.onerror = () => {
+        console.error('Failed to load bottom obstacle image:', obstacleImage.current.src);
       };
     }
   }, [isOpen]);
@@ -136,11 +129,11 @@ export default function NewSillySharkCanvas(): JSX.Element {
         const lastObstacle = filteredObstacles[filteredObstacles.length - 1];
         if (!lastObstacle || lastObstacle.x <= canvasHeight) {
           const { topHeight, bottomHeight } = randomObstacleHeights();
-          const newTopObstacle = new Obstacle(topHeight, obstacleWidth, topObstacleImage.current);
+          const newTopObstacle = new Obstacle(topHeight, obstacleWidth, obstacleImage.current);
           const newBottomObstacle = new Obstacle(
             bottomHeight,
             obstacleWidth,
-            bottomObstacleImage.current,
+            obstacleImage.current,
           );
 
           /**  Space the new obstacle from the previous one */
