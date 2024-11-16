@@ -1,4 +1,4 @@
-import { Modal, ModalContent, ModalHeader, ModalOverlay } from '@chakra-ui/react';
+import { Modal, ModalContent, ModalOverlay } from '@chakra-ui/react';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Obstacle from './Obstacle';
 import { useInteractable } from '../../../../classes/TownController';
@@ -40,10 +40,11 @@ export default function NewSillySharkCanvas(): JSX.Element {
   const canvasHeight = 600;
   const gapHeight = 150;
   const obstacleWidth = 50;
-  const obstacleImage = useRef(new Image())
+  const obstacleImage = useRef(new Image());
   const canvas = useRef<HTMLCanvasElement>(null);
   const obstacleSpacing = 300;
 
+  /** Generate random heights for obstacles */
   const randomObstacleHeights = () => {
     const topHeight = Math.floor(Math.random() * (canvasHeight - gapHeight - 100)) + 50;
     const bottomHeight = Math.floor(Math.random() * (canvasHeight - gapHeight - 100)) + 50;
@@ -54,19 +55,19 @@ export default function NewSillySharkCanvas(): JSX.Element {
     if (isOpen) {
       obstacleImage.current.src = '/SillySharkResources/obstacles/obstacle.png';
 
-        obstacleImage.current.onload = () => {
-          console.log('Obstacle image loaded:', obstacleImage.current.src);
-          const { topHeight, bottomHeight } = randomObstacleHeights();
-          const firstTopObstacle = new Obstacle(topHeight, obstacleWidth, obstacleImage.current);
-          const firstBottomObstacle = new Obstacle(
-            bottomHeight,
-            obstacleWidth,
-            obstacleImage.current,
-          );
-          setObstacles([
-            { top: firstTopObstacle, bottom: firstBottomObstacle, x: canvas.current?.width || 500 },
-          ]);
-        };
+      obstacleImage.current.onload = () => {
+        console.log('Obstacle image loaded:', obstacleImage.current.src);
+        const { topHeight, bottomHeight } = randomObstacleHeights();
+        const firstTopObstacle = new Obstacle(topHeight, obstacleWidth, obstacleImage.current);
+        const firstBottomObstacle = new Obstacle(
+          bottomHeight,
+          obstacleWidth,
+          obstacleImage.current,
+        );
+        setObstacles([
+          { top: firstTopObstacle, bottom: firstBottomObstacle, x: canvas.current?.width || 500 },
+        ]);
+      };
 
       obstacleImage.current.onerror = () => {
         console.error('Failed to load bottom obstacle image:', obstacleImage.current.src);
@@ -168,7 +169,6 @@ export default function NewSillySharkCanvas(): JSX.Element {
       size='xs'>
       <ModalOverlay />
       <ModalContent maxW='500px' h='720px' bg='skyblue'>
-        <ModalHeader>{'Silly Shark'}</ModalHeader>
         <canvas ref={canvas} width='500' height='600' />
       </ModalContent>
     </Modal>
