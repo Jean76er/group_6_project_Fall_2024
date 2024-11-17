@@ -6,7 +6,9 @@ export type KnownInteractableTypes =
   | 'conversationArea'
   | 'viewingArea'
   | 'transporter'
-  | 'gameArea';
+  | 'gameArea'
+  | 'SillySharkArea';
+
 
 /**
  * A base abstract class for representing an "interactable" in the Phaser game world.
