@@ -32,7 +32,7 @@ import { isConversationArea, isViewingArea, isSillySharkArea } from '../types/Ty
 import ConversationAreaController from './interactable/ConversationAreaController';
 import PlayerController from './PlayerController';
 import ViewingAreaController from './interactable/ViewingAreaController';
-import GameAreaController from './interactable/GameAreaController';
+import GameAreaController, { GameEventTypes } from './interactable/GameAreaController';
 import SillySharkAreaController from './interactable/SillySharkAreaController';
 const CALCULATE_NEARBY_PLAYERS_DELAY = 300;
 const SOCKET_COMMAND_TIMEOUT_MS = 5000;
@@ -84,7 +84,7 @@ export type TownEvents = {
    */
   viewingAreasChanged: (newViewingAreas: ViewingAreaController[]) => void;
 
-  gameAreasChanged: (newGameAreas: GameAreaController<GameState>[]) => void;
+  gameAreasChanged: (newGameAreas: GameAreaController<GameState, GameEventTypes>[]) => void;
   /**
    * An event that indicates that a new chat message has been received, which is the parameter passed to the listener
    */
@@ -160,7 +160,7 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
    * The current list of game areas in the town. Adding or removing game areas might
    * replace the array with a new one; clients should take note not to retain stale references.
    */
-  private _gameAreasInternal: GameAreaController<GameState>[] = [];
+  private _gameAreasInternal: GameAreaController<GameState, GameEventTypes>[] = [];
 
   /**
    * The friendly name of the current town, set only once this TownController is connected to the townsService
@@ -338,7 +338,7 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
     return this._gameAreasInternal;
   }
 
-  private set _gameAreas(newGameAreas: GameAreaController<GameState>[]) {
+  private set _gameAreas(newGameAreas: GameAreaController<GameState, GameEventTypes>[]) {
     this._gameAreasInternal = newGameAreas;
     this.emit('gameAreasChanged', newGameAreas);
   }
@@ -680,14 +680,14 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
    * @param gameArea
    * @returns
    */
-  public getGameAreaController<GameType extends GameState>(
+  public getGameAreaController<GameType extends GameState, EventsType extends GameEventTypes>(
     gameArea: GameArea,
-  ): GameAreaController<GameType> {
+  ): GameAreaController<GameType, EventsType> {
     const existingController = this._interactableControllers.find(
       eachExistingArea => eachExistingArea.id === gameArea.name,
     );
     if (existingController instanceof GameAreaController) {
-      return existingController as GameAreaController<GameType>;
+      return existingController as GameAreaController<GameType, EventsType>;
     } else {
       throw new Error('Game area controller not created');
     }
@@ -816,13 +816,13 @@ export function useActiveConversationAreas(): ConversationAreaController[] {
  *
  * @returns the list of game area controllers that are currently "active"
  */
-export function useActiveGameAreas(): GameAreaController<GameState>[] {
+export function useActiveGameAreas(): GameAreaController<GameState, GameEventTypes>[] {
   const townController = useTownController();
-  const [gameAreas, setGameAreas] = useState<GameAreaController<GameState>[]>(
+  const [gameAreas, setGameAreas] = useState<GameAreaController<GameState, GameEventTypes>[]>(
     townController.gameAreas.filter(eachArea => !eachArea.isEmpty()),
   );
   useEffect(() => {
-    const updater = (allAreas: GameAreaController<GameState>[]) => {
+    const updater = (allAreas: GameAreaController<GameState, GameEventTypes>[]) => {
       setGameAreas(allAreas.filter(eachArea => !eachArea.isEmpty()));
     };
     townController.addListener('gameAreasChanged', updater);
