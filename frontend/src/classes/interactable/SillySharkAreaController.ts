@@ -8,7 +8,10 @@ export const NO_GAME_IN_PROGRESS_ERROR = 'No game in progress';
 
 export type SillySharkEvents = GameEventTypes;
 
-export default class SillySharkAreaController extends GameAreaController<SillySharkGameState> {
+export default class SillySharkAreaController extends GameAreaController<
+  SillySharkGameState,
+  SillySharkEvents
+> {
   /*
    *This getter is not yet defined. This is because I am unsure how exactly we
    *will implement the canvas.

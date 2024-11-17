@@ -136,7 +136,7 @@ export interface SillySharkGameState extends WinnableGameState {
  * Base type for an area that can host a game
  * @see GameInstance
  */
-export interface GameArea<T extends GameState> extends Interactable {
+export interface GameArea<T extends GameState> extends Interactable{
   id: string;
   occupants: PlayerID[];
   type: InteractableType;

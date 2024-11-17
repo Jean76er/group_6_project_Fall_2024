@@ -32,8 +32,8 @@ import { isConversationArea, isViewingArea, isSillySharkArea } from '../types/Ty
 import ConversationAreaController from './interactable/ConversationAreaController';
 import PlayerController from './PlayerController';
 import ViewingAreaController from './interactable/ViewingAreaController';
-import GameAreaController from './interactable/GameAreaController';
-import SillySharkAreaController from './interactable/SillySharkAreaController';
+import GameAreaController, { GameEventTypes } from './interactable/GameAreaController';
+import SIllySharkAreaController from './interactable/SillySharkAreaController';
 const CALCULATE_NEARBY_PLAYERS_DELAY = 300;
 const SOCKET_COMMAND_TIMEOUT_MS = 5000;
 
@@ -84,7 +84,7 @@ export type TownEvents = {
    */
   viewingAreasChanged: (newViewingAreas: ViewingAreaController[]) => void;
 
-  gameAreasChanged: (newGameAreas: GameAreaController<GameState>[]) => void;
+  gameAreasChanged: (newGameAreas: GameAreaController<GameState, GameEventTypes>[]) => void;
   /**
    * An event that indicates that a new chat message has been received, which is the parameter passed to the listener
    */
@@ -157,12 +157,6 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
   private _conversationAreasInternal: ConversationAreaController[] = [];
 
   /**
-   * The current list of game areas in the town. Adding or removing game areas might
-   * replace the array with a new one; clients should take note not to retain stale references.
-   */
-  private _gameAreasInternal: GameAreaController<GameState>[] = [];
-
-  /**
    * The friendly name of the current town, set only once this TownController is connected to the townsService
    */
   private _friendlyNameInternal?: string;
@@ -220,7 +214,7 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
 
   private _viewingAreas: ViewingAreaController[] = [];
 
-  private _sillySharkAreas: SillySharkAreaController[] = [];
+  private _sillySharkAreas: SIllySharkAreaController[] = [];
 
   public constructor({ userName, townID, loginController }: ConnectionProperties) {
     super();
@@ -335,12 +329,10 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
   }
 
   public get gameAreas() {
-    return this._gameAreasInternal;
-  }
-
-  private set _gameAreas(newGameAreas: GameAreaController<GameState>[]) {
-    this._gameAreasInternal = newGameAreas;
-    this.emit('gameAreasChanged', newGameAreas);
+    const ret = this._interactableControllers.filter(
+      eachInteractable => eachInteractable instanceof GameAreaController,
+    );
+    return ret as GameAreaController<GameState, GameEventTypes>[];
   }
 
   public get interactableEmitter() {
@@ -622,6 +614,7 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
 
         this._conversationAreas = [];
         this._viewingAreas = [];
+        this._sillySharkAreas = [];
         initialData.interactables.forEach(eachInteractable => {
           if (isConversationArea(eachInteractable)) {
             this._conversationAreasInternal.push(
@@ -634,7 +627,15 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
             this._viewingAreas.push(new ViewingAreaController(eachInteractable));
           } else if (isSillySharkArea(eachInteractable)) {
             this._sillySharkAreas.push(
-              new SillySharkAreaController(eachInteractable.id, eachInteractable, this),
+              new SIllySharkAreaController(eachInteractable.id, eachInteractable, this),
+            );
+          }
+        });
+        this._interactableControllers = [];
+        initialData.interactables.forEach(eachInteractable => {
+          if (isSillySharkArea(eachInteractable)) {
+            this._interactableControllers.push(
+              new SIllySharkAreaController(eachInteractable.id, eachInteractable, this),
             );
           }
         });
@@ -680,14 +681,14 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
    * @param gameArea
    * @returns
    */
-  public getGameAreaController<GameType extends GameState>(
+  public getGameAreaController<GameType extends GameState, EventsType extends GameEventTypes>(
     gameArea: GameArea,
-  ): GameAreaController<GameType> {
+  ): GameAreaController<GameType, EventsType> {
     const existingController = this._interactableControllers.find(
       eachExistingArea => eachExistingArea.id === gameArea.name,
     );
     if (existingController instanceof GameAreaController) {
-      return existingController as GameAreaController<GameType>;
+      return existingController as GameAreaController<GameType, EventsType>;
     } else {
       throw new Error('Game area controller not created');
     }
@@ -805,32 +806,6 @@ export function useActiveConversationAreas(): ConversationAreaController[] {
     };
   }, [townController, setConversationAreas]);
   return conversationAreas;
-}
-
-/**
- * A react hook to retrieve the active game areas. This hook will re-render any components
- * that use it when the set of game areas changes. It does *not* re-render its dependent components
- * when the state of one of those areas changes - if that is desired, @see useGameAreaTopic and @see useGameAreaOccupants (Unimplemented)
- *
- * This hook relies on the TownControllerContext.
- *
- * @returns the list of game area controllers that are currently "active"
- */
-export function useActiveGameAreas(): GameAreaController<GameState>[] {
-  const townController = useTownController();
-  const [gameAreas, setGameAreas] = useState<GameAreaController<GameState>[]>(
-    townController.gameAreas.filter(eachArea => !eachArea.isEmpty()),
-  );
-  useEffect(() => {
-    const updater = (allAreas: GameAreaController<GameState>[]) => {
-      setGameAreas(allAreas.filter(eachArea => !eachArea.isEmpty()));
-    };
-    townController.addListener('gameAreasChanged', updater);
-    return () => {
-      townController.removeListener('gameAreasChanged', updater);
-    };
-  }, [townController, setGameAreas]);
-  return gameAreas;
 }
 
 /**

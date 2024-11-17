@@ -1,16 +1,21 @@
+//Some code taken from IP2
 import _ from 'lodash';
-import { GameArea, GameInstanceID, GameResult, GameState } from '../../types/CoveyTownSocket';
+import {
+  GameArea,
+  GameInstanceID,
+  GameResult,
+  GameState,
+  InteractableID,
+} from '../../types/CoveyTownSocket';
 import PlayerController from '../PlayerController';
 import TownController from '../TownController';
-import TypedEmitter from 'typed-emitter';
-import EventEmitter from 'events';
+import InteractableAreaController, { BaseInteractableEventMap } from './InteractableAreaController';
 
-export type GameEventTypes = {
+export type GameEventTypes = BaseInteractableEventMap & {
   gameStart: () => void;
   gameUpdated: () => void;
   gameEnd: () => void;
   playersChange: (newPlayers: PlayerController[]) => void;
-  occupantsChange: (newOccupants: PlayerController[]) => void;
 };
 
 /**
@@ -20,9 +25,8 @@ export type GameEventTypes = {
  */
 export default abstract class GameAreaController<
   State extends GameState,
-> extends (EventEmitter as new () => TypedEmitter<GameEventTypes>) {
-  private _id: string;
-
+  EventTypes extends GameEventTypes,
+> extends InteractableAreaController<EventTypes, GameArea<State>> {
   protected _instanceID?: GameInstanceID;
 
   protected _townController: TownController;
@@ -31,21 +35,14 @@ export default abstract class GameAreaController<
 
   protected _players: PlayerController[] = [];
 
-  private _occupants: PlayerController[] = [];
-
-  constructor(id: string, gameArea: GameArea<State>, townController: TownController) {
-    super();
-    this._id = id;
+  constructor(id: InteractableID, gameArea: GameArea<State>, townController: TownController) {
+    super(id);
     this._model = gameArea;
     this._townController = townController;
 
     const game = gameArea.game;
     if (game && game.players)
       this._players = game.players.map(playerID => this._townController.getPlayer(playerID));
-  }
-
-  get id() {
-    return this._id;
   }
 
   get history(): GameResult[] {
@@ -56,38 +53,9 @@ export default abstract class GameAreaController<
     return this._players;
   }
 
-  /**
-   * The list of occupants in this conversation area. Changing the set of occupants
-   * will emit an occupantsChange event.
-   */
-  set occupants(newOccupants: PlayerController[]) {
-    if (
-      newOccupants.length !== this._occupants.length ||
-      _.xor(newOccupants, this._occupants).length > 0
-    ) {
-      this.emit('occupantsChange', newOccupants);
-      this._occupants = newOccupants;
-    }
-  }
-
-  get occupants() {
-    return this._occupants;
-  }
-
   public get observers(): PlayerController[] {
     return this.occupants.filter(eachOccupant => !this._players.includes(eachOccupant));
   }
-
-  /**
-   * A conversation area is empty if there are no occupants in it, or the topic is undefined.
-   */
-  isEmpty(): boolean {
-    return this._occupants.length === 0;
-  }
-
-  /**
-   * The following code is taken from IP2, it's subject to future changes.
-   */
 
   /**
    * Sends a request to the server to join the current game in the game area, or create a new one if there is no game in progress.
