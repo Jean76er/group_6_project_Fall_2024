@@ -9,7 +9,6 @@ export type KnownInteractableTypes =
   | 'gameArea'
   | 'SillySharkArea';
 
-
 /**
  * A base abstract class for representing an "interactable" in the Phaser game world.
  *

@@ -156,7 +156,6 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
    */
   private _conversationAreasInternal: ConversationAreaController[] = [];
 
-
   /**
    * The friendly name of the current town, set only once this TownController is connected to the townsService
    */
@@ -335,7 +334,6 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
     );
     return ret as GameAreaController<GameState, GameEventTypes>[];
   }
-
 
   public get interactableEmitter() {
     return this._interactableEmitter;
@@ -809,7 +807,6 @@ export function useActiveConversationAreas(): ConversationAreaController[] {
   }, [townController, setConversationAreas]);
   return conversationAreas;
 }
-
 
 /**
  * A react hook to return the PlayerController's corresponding to each player in the town.
