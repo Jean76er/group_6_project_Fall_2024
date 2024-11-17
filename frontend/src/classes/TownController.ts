@@ -156,11 +156,6 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
    */
   private _conversationAreasInternal: ConversationAreaController[] = [];
 
-  /**
-   * The current list of game areas in the town. Adding or removing game areas might
-   * replace the array with a new one; clients should take note not to retain stale references.
-   */
-  private _gameAreasInternal: GameAreaController<GameState, GameEventTypes>[] = [];
 
   /**
    * The friendly name of the current town, set only once this TownController is connected to the townsService
@@ -335,13 +330,12 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
   }
 
   public get gameAreas() {
-    return this._gameAreasInternal;
+    const ret = this._interactableControllers.filter(
+      eachInteractable => eachInteractable instanceof GameAreaController,
+    );
+    return ret as GameAreaController<GameState, GameEventTypes>[];
   }
 
-  private set _gameAreas(newGameAreas: GameAreaController<GameState, GameEventTypes>[]) {
-    this._gameAreasInternal = newGameAreas;
-    this.emit('gameAreasChanged', newGameAreas);
-  }
 
   public get interactableEmitter() {
     return this._interactableEmitter;
@@ -807,31 +801,6 @@ export function useActiveConversationAreas(): ConversationAreaController[] {
   return conversationAreas;
 }
 
-/**
- * A react hook to retrieve the active game areas. This hook will re-render any components
- * that use it when the set of game areas changes. It does *not* re-render its dependent components
- * when the state of one of those areas changes - if that is desired, @see useGameAreaTopic and @see useGameAreaOccupants (Unimplemented)
- *
- * This hook relies on the TownControllerContext.
- *
- * @returns the list of game area controllers that are currently "active"
- */
-export function useActiveGameAreas(): GameAreaController<GameState, GameEventTypes>[] {
-  const townController = useTownController();
-  const [gameAreas, setGameAreas] = useState<GameAreaController<GameState, GameEventTypes>[]>(
-    townController.gameAreas.filter(eachArea => !eachArea.isEmpty()),
-  );
-  useEffect(() => {
-    const updater = (allAreas: GameAreaController<GameState, GameEventTypes>[]) => {
-      setGameAreas(allAreas.filter(eachArea => !eachArea.isEmpty()));
-    };
-    townController.addListener('gameAreasChanged', updater);
-    return () => {
-      townController.removeListener('gameAreasChanged', updater);
-    };
-  }, [townController, setGameAreas]);
-  return gameAreas;
-}
 
 /**
  * A react hook to return the PlayerController's corresponding to each player in the town.
