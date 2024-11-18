@@ -16,6 +16,7 @@ import useTownController from '../../../../hooks/useTownController';
 import { InteractableID } from '../../../../types/CoveyTownSocket';
 import GameAreaInteractable from '../GameArea';
 import SillySharkAreaController from '../../../../classes/interactable/SillySharkAreaController';
+import SkinSelectionScreen from './SkinSelection';
 
 function SillySharkArea({ interactableID }: { interactableID: InteractableID }): JSX.Element {
   const gameAreaController =
@@ -86,6 +87,8 @@ function SillySharkArea({ interactableID }: { interactableID: InteractableID }):
       gameAreaController.removeListener('gameEnd', handleGameEnd);
     };
   }, [ourPlayer, gameAreaController, handleJoinButtonVisibility, toast]);
+
+  const renderSkinSelection = useCallback(() => <SkinSelectionScreen gameAreaController={gameAreaController}/>, [gameAreaController])
 
   return (
     <>
