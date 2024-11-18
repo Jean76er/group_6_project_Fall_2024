@@ -16,6 +16,7 @@ export type GameEventTypes = BaseInteractableEventMap & {
   gameUpdated: () => void;
   gameEnd: () => void;
   playersChange: (newPlayers: PlayerController[]) => void;
+  jump: () => void;
 };
 
 /**
