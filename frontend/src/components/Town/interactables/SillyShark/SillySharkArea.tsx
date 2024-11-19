@@ -17,6 +17,7 @@ import { InteractableID } from '../../../../types/CoveyTownSocket';
 import GameAreaInteractable from '../GameArea';
 import SillySharkAreaController from '../../../../classes/interactable/SillySharkAreaController';
 import SkinSelectionScreen from './SkinSelection';
+//import { render } from '@testing-library/react';
 
 function SillySharkArea({ interactableID }: { interactableID: InteractableID }): JSX.Element {
   const gameAreaController =
@@ -31,9 +32,15 @@ function SillySharkArea({ interactableID }: { interactableID: InteractableID }):
   const [observers, setObservers] = useState(gameAreaController?.observers);
   const toast = useToast();
 
+  const renderSkinSelection = useCallback(
+    () => <SkinSelectionScreen gameAreaController={gameAreaController} />,
+    [gameAreaController],
+  );
+
   const handleJoinGame = useCallback(async () => {
     setJoin(true);
     try {
+      renderSkinSelection();
       await gameAreaController.joinGame();
     } catch (error) {
       toast({
@@ -43,7 +50,7 @@ function SillySharkArea({ interactableID }: { interactableID: InteractableID }):
     } finally {
       setJoin(false);
     }
-  }, [gameAreaController, toast]);
+  }, [gameAreaController, toast, renderSkinSelection]);
 
   const handleJoinButtonVisibility = useCallback(() => {
     const { status, isPlayer } = gameAreaController;
@@ -87,8 +94,6 @@ function SillySharkArea({ interactableID }: { interactableID: InteractableID }):
       gameAreaController.removeListener('gameEnd', handleGameEnd);
     };
   }, [ourPlayer, gameAreaController, handleJoinButtonVisibility, toast]);
-
-  const renderSkinSelection = useCallback(() => <SkinSelectionScreen gameAreaController={gameAreaController}/>, [gameAreaController])
 
   return (
     <>
