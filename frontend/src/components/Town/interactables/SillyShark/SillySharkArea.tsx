@@ -40,7 +40,7 @@ function SillySharkArea({ interactableID }: { interactableID: InteractableID }):
   const handleJoinGame = useCallback(async () => {
     setJoin(true);
     try {
-      renderSkinSelection();
+      renderSkinSelection()
       await gameAreaController.joinGame();
     } catch (error) {
       toast({
@@ -50,7 +50,7 @@ function SillySharkArea({ interactableID }: { interactableID: InteractableID }):
     } finally {
       setJoin(false);
     }
-  }, [gameAreaController, toast, renderSkinSelection]);
+  }, [gameAreaController, toast, renderSkinSelection()]);
 
   const handleJoinButtonVisibility = useCallback(() => {
     const { status, isPlayer } = gameAreaController;
