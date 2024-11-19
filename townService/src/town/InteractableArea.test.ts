@@ -2,14 +2,27 @@ import { mock, mockClear } from 'jest-mock-extended';
 import { nanoid } from 'nanoid';
 import Player from '../lib/Player';
 import { defaultLocation, getLastEmittedEvent } from '../TestUtils';
-import { BoundingBox, Interactable, InteractableCommand, InteractableCommandReturnType, TownEmitter, XY } from '../types/CoveyTownSocket';
+import {
+  BoundingBox,
+  Interactable,
+  InteractableCommand,
+  InteractableCommandReturnType,
+  TownEmitter,
+  XY,
+} from '../types/CoveyTownSocket';
 import ConversationArea from './ConversationArea';
 import InteractableArea, { PLAYER_SPRITE_HEIGHT, PLAYER_SPRITE_WIDTH } from './InteractableArea';
 
 class TestInteractableArea extends InteractableArea {
-  public handleCommand<CommandType extends InteractableCommand>(_command: CommandType, _player: Player): InteractableCommandReturnType<CommandType> {
+  public handleCommand<CommandType extends InteractableCommand>(
+    _command: CommandType,
+    _player: Player,
+  ): InteractableCommandReturnType<CommandType> {
+    // eslint-disable-next-line no-console -- this is used to prevent unused warnings
+    console.log('Command received:', _command, 'Player received:', _player);
     throw new Error('Method not implemented.');
   }
+
   public toModel(): Interactable {
     return { id: this.id, occupantsByID: [] };
   }
