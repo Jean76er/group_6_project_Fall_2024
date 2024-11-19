@@ -168,7 +168,7 @@ export default abstract class InteractableArea {
    */
   public abstract toModel(): Interactable;
 
-  //Added to fix linting issue
+  // Added to fix linting issue
   public abstract handleCommand<CommandType extends InteractableCommand>(
     command: CommandType,
     player: Player,
