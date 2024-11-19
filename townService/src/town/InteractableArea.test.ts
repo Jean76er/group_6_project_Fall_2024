@@ -7,7 +7,7 @@ import ConversationArea from './ConversationArea';
 import InteractableArea, { PLAYER_SPRITE_HEIGHT, PLAYER_SPRITE_WIDTH } from './InteractableArea';
 
 class TestInteractableArea extends InteractableArea {
-  public handleCommand<CommandType extends InteractableCommand>(command: CommandType, player: Player): InteractableCommandReturnType<CommandType> {
+  public handleCommand<CommandType extends InteractableCommand>(_command: CommandType, _player: Player): InteractableCommandReturnType<CommandType> {
     throw new Error('Method not implemented.');
   }
   public toModel(): Interactable {
