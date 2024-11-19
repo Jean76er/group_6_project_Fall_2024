@@ -2,10 +2,13 @@ import { ITiledMapObject } from '@jonbell/tiled-map-type-guard';
 import Player from '../lib/Player';
 import {
   BoundingBox,
+  InteractableCommand,
+  InteractableCommandReturnType,
   TownEmitter,
   ViewingArea as ViewingAreaModel,
 } from '../types/CoveyTownSocket';
 import InteractableArea from './InteractableArea';
+import InvalidParametersError from '../lib/InvalidParametersError';
 
 export default class ViewingArea extends InteractableArea {
   private _video?: string;
@@ -97,5 +100,11 @@ export default class ViewingArea extends InteractableArea {
     }
     const rect: BoundingBox = { x: mapObject.x, y: mapObject.y, width, height };
     return new ViewingArea({ isPlaying: false, id: name, elapsedTimeSec: 0 }, rect, townEmitter);
+  }
+
+  public handleCommand<
+    CommandType extends InteractableCommand,
+  >(): InteractableCommandReturnType<CommandType> {
+    throw new InvalidParametersError('Unknown command type');
   }
 }
