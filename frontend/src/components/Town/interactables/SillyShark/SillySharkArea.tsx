@@ -9,6 +9,7 @@ import {
   ModalOverlay,
   useToast,
   Text,
+  Center,
 } from '@chakra-ui/react';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useInteractable, useInteractableAreaController } from '../../../../classes/TownController';
@@ -94,44 +95,28 @@ function SillySharkArea({ interactableID }: { interactableID: InteractableID }):
 
   return (
     <>
-      {gameAreaController.status}
       {canJoin && (
-        <Button onClick={handleJoinGame} isDisabled={joining}>
-          {joining ? 'Loading...' : 'Join New Game'}
-        </Button>
+        <Center paddingTop='400'>
+          <Button onClick={handleJoinGame} isDisabled={joining} size='lg' bg='blue' color='white'>
+            {joining ? 'Loading...' : 'Start'}
+          </Button>
+        </Center>
+        
       )}
       {showSkinSelection && <SkinSelectionScreen gameAreaController={gameAreaController} />}
+      <Center paddingTop='10px'>
+      <Button size='lg' bg='blue' color='white'>
+        Join
+      </Button>
+      </Center>
+      <Center paddingTop='10px'>
+        {gameAreaController.status}
+      </Center>
       <List aria-label='observers:'>
         {observers.map(observer => (
           <ListItem key={observer.id}>{observer.userName}</ListItem>
         ))}
       </List>
-      <List aria-label='list of players in the game'>
-        <ListItem>Player 1: {player1?.userName || '(No player yet!)'}</ListItem>
-        <ListItem>Player 2: {player2?.userName || '(No player yet!)'}</ListItem>
-      </List>
-      <div>
-        <Text fontWeight='bold' mt='4'>
-          Game History:
-        </Text>
-        {history.length > 0 ? (
-          <List aria-label='game history'>
-            {history.map((event, index) => (
-              <ListItem key={index}>{event}</ListItem>
-            ))}
-          </List>
-        ) : (
-          <Text>No history available yet.</Text>
-        )}
-      </div>
-      <div>
-        {gameAreaController.status === 'WAITING_TO_START' && <div>Game not yet started</div>}
-        {gameAreaController.status === 'SINGLE_PLAYER_IN_PROGRESS' ||
-          (gameAreaController.status === 'MULTI_PLAYER_IN_PROGRESS' && (
-            <div>Game is in progress</div>
-          ))}
-        {gameAreaController.status === 'OVER' && <div>Game over</div>}
-      </div>
     </>
   );
 }
@@ -151,8 +136,8 @@ export default function SillySharkAreaWrapper(): JSX.Element {
     return (
       <Modal isOpen={true} onClose={closeModal} closeOnOverlayClick={false}>
         <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>{gameArea.name}</ModalHeader>
+        <ModalContent maxW='500px' h='720px' bg='skyblue'>
+          <ModalHeader><img src="https://see.fontimg.com/api/rf5/Exl8/NjhmNTJiODNkNDBjNDgwNWE0ZmM5N2JmM2IxMWNlNDcudHRm/U2lsbHkgU2hhcms/botsmatic3d.png?r=fs&h=68&w=1040&fg=000000&bg=FFFFFF&tb=1&s=65" alt="Minecraft fonts" /></ModalHeader>
           <ModalCloseButton />
           <SillySharkArea interactableID={gameArea.name} />
         </ModalContent>
