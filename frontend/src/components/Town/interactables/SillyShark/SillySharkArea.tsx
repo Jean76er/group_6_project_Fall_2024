@@ -30,17 +30,14 @@ function SillySharkArea({ interactableID }: { interactableID: InteractableID }):
   const [joining, setJoin] = useState(false);
   const [canJoin, setCanJoin] = useState(false);
   const [observers, setObservers] = useState(gameAreaController?.observers);
-  const toast = useToast();
+  const [showSkinSelection, setShowSkinSelection] = useState(false); //Used to determine if the next screen should be called
 
-  const renderSkinSelection = useCallback(
-    () => <SkinSelectionScreen gameAreaController={gameAreaController} />,
-    [gameAreaController],
-  );
+  const toast = useToast();
 
   const handleJoinGame = useCallback(async () => {
     setJoin(true);
+    setShowSkinSelection(true);
     try {
-      renderSkinSelection()
       await gameAreaController.joinGame();
     } catch (error) {
       toast({
@@ -50,7 +47,7 @@ function SillySharkArea({ interactableID }: { interactableID: InteractableID }):
     } finally {
       setJoin(false);
     }
-  }, [gameAreaController, toast, renderSkinSelection()]);
+  }, [gameAreaController, toast]);
 
   const handleJoinButtonVisibility = useCallback(() => {
     const { status, isPlayer } = gameAreaController;
@@ -103,6 +100,7 @@ function SillySharkArea({ interactableID }: { interactableID: InteractableID }):
           {joining ? 'Loading...' : 'Join New Game'}
         </Button>
       )}
+      {showSkinSelection && <SkinSelectionScreen gameAreaController={gameAreaController} />}
       <List aria-label='observers:'>
         {observers.map(observer => (
           <ListItem key={observer.id}>{observer.userName}</ListItem>
