@@ -45,8 +45,10 @@ const StyledSelectionContainer = chakra(Container, {
   },
 });
 
-export default function SkinSelectionScreen({ gameAreaController }: SillySharkGameProps): JSX.Element {
-  gameAreaController.id; //This is to prevent the error of it not being used. Remove this once you pass it through to the next screen
+export default function SkinSelectionScreen({
+  gameAreaController,
+}: SillySharkGameProps): JSX.Element {
+  gameAreaController.getcanvas(); //This is to prevent the error of it not being used. Remove this once you pass it through to the next screen
   const renderSkins = useCallback(() => {
     return (
       <>
