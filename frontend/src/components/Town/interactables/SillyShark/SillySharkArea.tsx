@@ -16,6 +16,7 @@ import useTownController from '../../../../hooks/useTownController';
 import { InteractableID } from '../../../../types/CoveyTownSocket';
 import GameAreaInteractable from '../GameArea';
 import SillySharkAreaController from '../../../../classes/interactable/SillySharkAreaController';
+import NewSillySharkCanvas from './SillySharkCanvas';
 
 function SillySharkArea({ interactableID }: { interactableID: InteractableID }): JSX.Element {
   const gameAreaController =
@@ -29,6 +30,10 @@ function SillySharkArea({ interactableID }: { interactableID: InteractableID }):
   const [canJoin, setCanJoin] = useState(false);
   const [observers, setObservers] = useState(gameAreaController?.observers);
   const toast = useToast();
+
+  const renderGame = useCallback (() => {
+    return <NewSillySharkCanvas gameAreaController={gameAreaController}/>;
+  }, [gameAreaController])
 
   const handleJoinGame = useCallback(async () => {
     setJoin(true);
@@ -89,6 +94,7 @@ function SillySharkArea({ interactableID }: { interactableID: InteractableID }):
 
   return (
     <>
+      {renderGame()}
       {gameAreaController.status}
       {canJoin && (
         <Button onClick={handleJoinGame} isDisabled={joining}>
@@ -148,6 +154,7 @@ export default function SillySharkAreaWrapper(): JSX.Element {
         <ModalContent>
           <ModalHeader>{gameArea.name}</ModalHeader>
           <ModalCloseButton />
+
           <SillySharkArea interactableID={gameArea.name} />
         </ModalContent>
       </Modal>
