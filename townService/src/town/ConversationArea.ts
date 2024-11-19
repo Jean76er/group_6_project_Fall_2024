@@ -3,9 +3,12 @@ import Player from '../lib/Player';
 import {
   BoundingBox,
   ConversationArea as ConversationAreaModel,
+  InteractableCommand,
+  InteractableCommandReturnType,
   TownEmitter,
 } from '../types/CoveyTownSocket';
 import InteractableArea from './InteractableArea';
+import InvalidParametersError from '../lib/InvalidParametersError';
 
 export default class ConversationArea extends InteractableArea {
   /* The topic of the conversation area, or undefined if it is not set */
@@ -76,5 +79,11 @@ export default class ConversationArea extends InteractableArea {
     }
     const rect: BoundingBox = { x: mapObject.x, y: mapObject.y, width, height };
     return new ConversationArea({ id: name, occupantsByID: [] }, rect, broadcastEmitter);
+  }
+
+  public handleCommand<
+    CommandType extends InteractableCommand,
+  >(): InteractableCommandReturnType<CommandType> {
+    throw new InvalidParametersError('Unknown command type');
   }
 }
