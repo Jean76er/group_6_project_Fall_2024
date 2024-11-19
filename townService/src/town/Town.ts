@@ -162,7 +162,6 @@ export default class Town {
       }
     });
 
-
     socket.on('interactableCommand', (command: InteractableCommand & InteractableCommandBase) => {
       const interactable = this._interactables.find(
         eachInteractable => eachInteractable.id === command.interactableID,

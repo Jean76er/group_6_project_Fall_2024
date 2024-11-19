@@ -1,5 +1,12 @@
 import Player from '../lib/Player';
-import { BoundingBox, Interactable, InteractableCommand, InteractableCommandReturnType, PlayerLocation, TownEmitter } from '../types/CoveyTownSocket';
+import {
+  BoundingBox,
+  Interactable,
+  InteractableCommand,
+  InteractableCommandReturnType,
+  PlayerLocation,
+  TownEmitter,
+} from '../types/CoveyTownSocket';
 
 export const PLAYER_SPRITE_WIDTH = 32;
 export const PLAYER_SPRITE_HEIGHT = 64;
@@ -161,6 +168,7 @@ export default abstract class InteractableArea {
    */
   public abstract toModel(): Interactable;
 
+  //Added to fix linting issue
   public abstract handleCommand<CommandType extends InteractableCommand>(
     command: CommandType,
     player: Player,
