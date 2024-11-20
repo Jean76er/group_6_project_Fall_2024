@@ -102,7 +102,7 @@ function SillySharkArea({ interactableID, gameArea }: { interactableID: Interact
           </Button>
         </Center>
       )}
-      {showSkinSelection && <SkinSelectionScreen gameAreaController={gameAreaController} />}
+      {showSkinSelection && <SkinSelectionScreen gameAreaController={gameAreaController} gameArea={gameArea} />}
       <Center paddingTop='10px'>
         <Button size='lg' bg='blue' color='white'>
           Join
