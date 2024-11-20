@@ -20,7 +20,7 @@ import SillySharkAreaController from '../../../../classes/interactable/SillyShar
 import SkinSelectionScreen from './SkinSelection';
 //import { render } from '@testing-library/react';
 
-function SillySharkArea({ interactableID }: { interactableID: InteractableID }): JSX.Element {
+function SillySharkArea({ interactableID, gameArea }: { interactableID: InteractableID; gameArea: GameAreaInteractable }): JSX.Element {
   const gameAreaController =
     useInteractableAreaController<SillySharkAreaController>(interactableID);
   const townController = useTownController();
@@ -141,7 +141,7 @@ export default function SillySharkAreaWrapper(): JSX.Element {
             />
           </ModalHeader>
           <ModalCloseButton />
-          <SillySharkArea interactableID={gameArea.name} />
+          <SillySharkArea interactableID={gameArea.name} gameArea={gameArea} />
         </ModalContent>
       </Modal>
     );
