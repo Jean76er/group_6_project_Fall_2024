@@ -10,6 +10,8 @@ import {
   ConversationArea as ConversationAreaModel,
   CoveyTownSocket,
   Interactable,
+  InteractableCommand,
+  InteractableCommandBase,
   PlayerLocation,
   ServerToClientEvents,
   SocketData,
@@ -19,6 +21,8 @@ import ConversationArea from './ConversationArea';
 import InteractableArea from './InteractableArea';
 import ViewingArea from './ViewingArea';
 import GameAreaFactory from './games/GameAreaFactory';
+import InvalidParametersError from '../lib/InvalidParametersError';
+import { logError } from '../Utils';
 
 /**
  * The Town class implements the logic for each town: managing the various events that
@@ -155,6 +159,47 @@ export default class Town {
         if (viewingArea) {
           (viewingArea as ViewingArea).updateModel(update);
         }
+      }
+    });
+
+    socket.on('interactableCommand', (command: InteractableCommand & InteractableCommandBase) => {
+      const interactable = this._interactables.find(
+        eachInteractable => eachInteractable.id === command.interactableID,
+      );
+      if (interactable) {
+        try {
+          const payload = interactable.handleCommand(command, newPlayer);
+          socket.emit('commandResponse', {
+            commandID: command.commandID,
+            interactableID: command.interactableID,
+            isOK: true,
+            payload,
+          });
+        } catch (err) {
+          if (err instanceof InvalidParametersError) {
+            socket.emit('commandResponse', {
+              commandID: command.commandID,
+              interactableID: command.interactableID,
+              isOK: false,
+              error: err.message,
+            });
+          } else {
+            logError(err);
+            socket.emit('commandResponse', {
+              commandID: command.commandID,
+              interactableID: command.interactableID,
+              isOK: false,
+              error: 'Unknown error',
+            });
+          }
+        }
+      } else {
+        socket.emit('commandResponse', {
+          commandID: command.commandID,
+          interactableID: command.interactableID,
+          isOK: false,
+          error: `No such interactable ${command.interactableID}`,
+        });
       }
     });
     return newPlayer;

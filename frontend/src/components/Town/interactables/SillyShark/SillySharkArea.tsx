@@ -8,7 +8,8 @@ import {
   ModalHeader,
   ModalOverlay,
   useToast,
-  Text,
+  Center,
+  Image,
 } from '@chakra-ui/react';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useInteractable, useInteractableAreaController } from '../../../../classes/TownController';
@@ -16,22 +17,27 @@ import useTownController from '../../../../hooks/useTownController';
 import { InteractableID } from '../../../../types/CoveyTownSocket';
 import GameAreaInteractable from '../GameArea';
 import SillySharkAreaController from '../../../../classes/interactable/SillySharkAreaController';
+import SkinSelectionScreen from './SkinSelection';
+//import { render } from '@testing-library/react';
 
 function SillySharkArea({ interactableID }: { interactableID: InteractableID }): JSX.Element {
   const gameAreaController =
     useInteractableAreaController<SillySharkAreaController>(interactableID);
   const townController = useTownController();
-  const [player1, setPlayer1] = useState(gameAreaController?.player1);
-  const [player2, setPlayer2] = useState(gameAreaController?.player2);
+  //const [player1, setPlayer1] = useState(gameAreaController?.player1);
+  //const [player2, setPlayer2] = useState(gameAreaController?.player2);
   const ourPlayer = townController.ourPlayer;
-  const [history, setHistory] = useState(gameAreaController?.history || []);
+  //const [history, setHistory] = useState(gameAreaController?.history || []);
   const [joining, setJoin] = useState(false);
   const [canJoin, setCanJoin] = useState(false);
   const [observers, setObservers] = useState(gameAreaController?.observers);
+  const [showSkinSelection, setShowSkinSelection] = useState(false); //Used to determine if the next screen should be called
+
   const toast = useToast();
 
   const handleJoinGame = useCallback(async () => {
     setJoin(true);
+    setShowSkinSelection(true);
     try {
       await gameAreaController.joinGame();
     } catch (error) {
@@ -63,10 +69,10 @@ function SillySharkArea({ interactableID }: { interactableID: InteractableID }):
     handleJoinButtonVisibility();
 
     const handleGameUpdate = () => {
-      setHistory(gameAreaController.history || []);
+      //setHistory(gameAreaController.history || []);
       setObservers(gameAreaController.observers);
-      setPlayer1(gameAreaController.player1);
-      setPlayer2(gameAreaController.player2);
+      //setPlayer1(gameAreaController.player1);
+      //setPlayer2(gameAreaController.player2);
 
       handleJoinButtonVisibility();
     };
@@ -89,43 +95,25 @@ function SillySharkArea({ interactableID }: { interactableID: InteractableID }):
 
   return (
     <>
-      {gameAreaController.status}
       {canJoin && (
-        <Button onClick={handleJoinGame} isDisabled={joining}>
-          {joining ? 'Loading...' : 'Join New Game'}
-        </Button>
+        <Center paddingTop='400'>
+          <Button onClick={handleJoinGame} isDisabled={joining} size='lg' bg='blue' color='white'>
+            {joining ? 'Loading...' : 'Start'}
+          </Button>
+        </Center>
       )}
+      {showSkinSelection && <SkinSelectionScreen gameAreaController={gameAreaController} />}
+      <Center paddingTop='10px'>
+        <Button size='lg' bg='blue' color='white'>
+          Join
+        </Button>
+      </Center>
+      <Center paddingTop='10px'>{gameAreaController.status}</Center>
       <List aria-label='observers:'>
         {observers.map(observer => (
           <ListItem key={observer.id}>{observer.userName}</ListItem>
         ))}
       </List>
-      <List aria-label='list of players in the game'>
-        <ListItem>Player 1: {player1?.userName || '(No player yet!)'}</ListItem>
-        <ListItem>Player 2: {player2?.userName || '(No player yet!)'}</ListItem>
-      </List>
-      <div>
-        <Text fontWeight='bold' mt='4'>
-          Game History:
-        </Text>
-        {history.length > 0 ? (
-          <List aria-label='game history'>
-            {history.map((event, index) => (
-              <ListItem key={index}>{event}</ListItem>
-            ))}
-          </List>
-        ) : (
-          <Text>No history available yet.</Text>
-        )}
-      </div>
-      <div>
-        {gameAreaController.status === 'WAITING_TO_START' && <div>Game not yet started</div>}
-        {gameAreaController.status === 'SINGLE_PLAYER_IN_PROGRESS' ||
-          (gameAreaController.status === 'MULTI_PLAYER_IN_PROGRESS' && (
-            <div>Game is in progress</div>
-          ))}
-        {gameAreaController.status === 'OVER' && <div>Game over</div>}
-      </div>
     </>
   );
 }
@@ -145,8 +133,13 @@ export default function SillySharkAreaWrapper(): JSX.Element {
     return (
       <Modal isOpen={true} onClose={closeModal} closeOnOverlayClick={false}>
         <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>{gameArea.name}</ModalHeader>
+        <ModalContent maxW='500px' h='720px' bg='skyblue'>
+          <ModalHeader>
+            <Image
+              src='https://see.fontimg.com/api/rf5/Exl8/NjhmNTJiODNkNDBjNDgwNWE0ZmM5N2JmM2IxMWNlNDcudHRm/U2lsbHkgU2hhcms/botsmatic3d.png?r=fs&h=68&w=1040&fg=000000&bg=FFFFFF&tb=1&s=65'
+              alt='Minecraft fonts'
+            />
+          </ModalHeader>
           <ModalCloseButton />
           <SillySharkArea interactableID={gameArea.name} />
         </ModalContent>
