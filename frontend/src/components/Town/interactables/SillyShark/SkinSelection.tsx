@@ -12,9 +12,6 @@ import SillySharkAreaController from '../../../../classes/interactable/SillyShar
 import NewSillySharkCanvas from './SillySharkCanvas';
 import GameAreaInteractable from '../GameArea';
 
-/*export type SillySharkGameProps = {
-  gameAreaController: SillySharkAreaController;
-};*/
 
 /**
  * This component renders a square that contains an image of the skin to be chosen
@@ -64,7 +61,6 @@ export default function SkinSelectionScreen({
   const handleCanvas = useCallback(() => {
     if (skinSelected) {
       setShowCanvas(true);
-      alert('Navigating to SillySharkCanvas!!!');
     } else {
       alert('Please select a skin before continuing!!!!');
     }
