@@ -12,7 +12,6 @@ import SillySharkAreaController from '../../../../classes/interactable/SillyShar
 import NewSillySharkCanvas from './SillySharkCanvas';
 import GameAreaInteractable from '../GameArea';
 
-
 /**
  * This component renders a square that contains an image of the skin to be chosen
  */
