@@ -1,6 +1,5 @@
 import { Modal, ModalContent, ModalOverlay } from '@chakra-ui/react';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { useInteractable } from '../../../../classes/TownController';
 import useTownController from '../../../../hooks/useTownController';
 import Obstacle from './Obstacle';
 import SillySharkAreaController from '../../../../classes/interactable/SillySharkAreaController';
@@ -10,7 +9,13 @@ export type SillySharkProps = {
   gameAreaController: SillySharkAreaController;
 };
 
-export default function NewSillySharkCanvas({ gameAreaController, newSillySharkGame }: {gameAreaController: SillySharkAreaController; newSillySharkGame: GameAreaInteractable}): JSX.Element {
+export default function NewSillySharkCanvas({
+  gameAreaController,
+  newSillySharkGame,
+}: {
+  gameAreaController: SillySharkAreaController;
+  newSillySharkGame: GameAreaInteractable;
+}): JSX.Element {
   const coveyTownController = useTownController();
   //const newSillySharkGame = useInteractable('gameArea');
   const isOpen = newSillySharkGame !== undefined;

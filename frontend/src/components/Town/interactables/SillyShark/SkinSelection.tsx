@@ -12,9 +12,9 @@ import SillySharkAreaController from '../../../../classes/interactable/SillyShar
 import NewSillySharkCanvas from './SillySharkCanvas';
 import GameAreaInteractable from '../GameArea';
 
-export type SillySharkGameProps = {
+/*export type SillySharkGameProps = {
   gameAreaController: SillySharkAreaController;
-};
+};*/
 
 /**
  * This component renders a square that contains an image of the skin to be chosen
@@ -48,8 +48,12 @@ const StyledSelectionContainer = chakra(Container, {
 });
 
 export default function SkinSelectionScreen({
-  gameAreaController, gameArea
-}: {gameAreaController: SillySharkGameProps; gameArea: GameAreaInteractable}): JSX.Element {
+  gameAreaController,
+  gameArea,
+}: {
+  gameAreaController: SillySharkAreaController;
+  gameArea: GameAreaInteractable;
+}): JSX.Element {
   const [showCanvas, setShowCanvas] = useState(false);
   const [skinSelected, setSkinSelected] = useState(false);
 
@@ -58,18 +62,17 @@ export default function SkinSelectionScreen({
   }, []);
 
   const handleCanvas = useCallback(() => {
-    if(skinSelected) {
+    if (skinSelected) {
       setShowCanvas(true);
       alert('Navigating to SillySharkCanvas!!!');
     } else {
-      alert('Please select a skin before continuing!!!!')
+      alert('Please select a skin before continuing!!!!');
     }
   }, [skinSelected]);
 
   const renderSkins = useCallback(() => {
     return (
       <>
-        //This make it so it only shows the canvas when the handleCanvas
         <ModalContent maxW='500px' h='720px' bg='skyblue'>
           <ModalHeader>
             <Center>Select you skin!</Center>
@@ -116,11 +119,16 @@ export default function SkinSelectionScreen({
             </Button>
           </Center>
         </ModalContent>
-        {showCanvas && <NewSillySharkCanvas gameAreaController={gameAreaController} gameArea={gameArea}/>}
+        {showCanvas && (
+          <NewSillySharkCanvas
+            gameAreaController={gameAreaController}
+            newSillySharkGame={gameArea}
+          />
+        )}
         <></>
       </>
     );
-  }, [gameAreaController, handleCanvas, handleSkinSelection, showCanvas, skinSelected]);
+  }, [gameAreaController, handleCanvas, handleSkinSelection, showCanvas, gameArea]);
 
   return <>{renderSkins()}</>;
 }

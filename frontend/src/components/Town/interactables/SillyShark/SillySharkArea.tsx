@@ -20,7 +20,17 @@ import SillySharkAreaController from '../../../../classes/interactable/SillyShar
 import SkinSelectionScreen from './SkinSelection';
 //import { render } from '@testing-library/react';
 
-function SillySharkArea({ interactableID, gameArea }: { interactableID: InteractableID; gameArea: GameAreaInteractable }): JSX.Element {
+export type SillySharkGameProps = {
+  gameAreaController: SillySharkAreaController;
+};
+
+function SillySharkArea({
+  interactableID,
+  gameArea,
+}: {
+  interactableID: InteractableID;
+  gameArea: GameAreaInteractable;
+}): JSX.Element {
   const gameAreaController =
     useInteractableAreaController<SillySharkAreaController>(interactableID);
   const townController = useTownController();
@@ -102,7 +112,9 @@ function SillySharkArea({ interactableID, gameArea }: { interactableID: Interact
           </Button>
         </Center>
       )}
-      {showSkinSelection && <SkinSelectionScreen gameAreaController={gameAreaController} gameArea={gameArea} />}
+      {showSkinSelection && (
+        <SkinSelectionScreen gameAreaController={gameAreaController} gameArea={gameArea} />
+      )}
       <Center paddingTop='10px'>
         <Button size='lg' bg='blue' color='white'>
           Join
