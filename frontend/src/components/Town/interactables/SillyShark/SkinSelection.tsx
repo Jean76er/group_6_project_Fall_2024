@@ -10,6 +10,7 @@ import {
 import React, { useCallback, useState } from 'react';
 import SillySharkAreaController from '../../../../classes/interactable/SillySharkAreaController';
 import NewSillySharkCanvas from './SillySharkCanvas';
+import GameAreaInteractable from '../GameArea';
 
 export type SillySharkGameProps = {
   gameAreaController: SillySharkAreaController;
@@ -47,11 +48,10 @@ const StyledSelectionContainer = chakra(Container, {
 });
 
 export default function SkinSelectionScreen({
-  gameAreaController,
-}: SillySharkGameProps): JSX.Element {
+  gameAreaController, gameArea
+}: {gameAreaController: SillySharkGameProps; gameArea: GameAreaInteractable}): JSX.Element {
   const [showCanvas, setShowCanvas] = useState(false);
   const [skinSelected, setSkinSelected] = useState(false);
-  gameAreaController.getcanvas(); //This is to prevent the error of it not being used. Remove this once you pass it through to the next screen
 
   const handleSkinSelection = useCallback(() => {
     setSkinSelected(true);
@@ -59,8 +59,8 @@ export default function SkinSelectionScreen({
 
   const handleCanvas = useCallback(() => {
     if(skinSelected) {
-      alert('Navigating to SillySharkCanvas!!!');
       setShowCanvas(true);
+      alert('Navigating to SillySharkCanvas!!!');
     } else {
       alert('Please select a skin before continuing!!!!')
     }
@@ -116,7 +116,7 @@ export default function SkinSelectionScreen({
             </Button>
           </Center>
         </ModalContent>
-        {showCanvas && <NewSillySharkCanvas gameAreaController={gameAreaController} />}
+        {showCanvas && <NewSillySharkCanvas gameAreaController={gameAreaController} gameArea={gameArea}/>}
         <></>
       </>
     );
