@@ -7,8 +7,9 @@ import {
   Container,
   Center,
 } from '@chakra-ui/react';
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import SillySharkAreaController from '../../../../classes/interactable/SillySharkAreaController';
+import NewSillySharkCanvas from './SillySharkCanvas';
 
 export type SillySharkGameProps = {
   gameAreaController: SillySharkAreaController;
@@ -48,17 +49,31 @@ const StyledSelectionContainer = chakra(Container, {
 export default function SkinSelectionScreen({
   gameAreaController,
 }: SillySharkGameProps): JSX.Element {
+  const [showCanvas, setShowCanvas] = useState(false);
+  const [skinSelected, setSkinSelected] = useState(false);
   gameAreaController.getcanvas(); //This is to prevent the error of it not being used. Remove this once you pass it through to the next screen
+
+  const handleSkinSelection = useCallback(() => {
+    setSkinSelected(true);
+  }, []);
+
+  const handleCanvas = useCallback(() => {
+    setShowCanvas(true);
+  }, []);
+
   const renderSkins = useCallback(() => {
     return (
       <>
+        {showCanvas && skinSelected && (
+          <NewSillySharkCanvas gameAreaController={gameAreaController} />
+        )}
         <ModalContent maxW='500px' h='720px' bg='skyblue'>
           <ModalHeader>
             <Center>Select you skin!</Center>
           </ModalHeader>
 
           <StyledSelectionContainer>
-            <StyledSelectionSquare>
+            <StyledSelectionSquare onClick={() => handleSkinSelection}>
               <Image
                 src='/SillySharkResources/skins/sillyshark.jpg'
                 alt='Button Image'
@@ -66,7 +81,7 @@ export default function SkinSelectionScreen({
                 boxSize='100%'
               />
             </StyledSelectionSquare>
-            <StyledSelectionSquare>
+            <StyledSelectionSquare onClick={() => handleSkinSelection}>
               <Image
                 src='/SillySharkResources/skins/sillyshark.jpg'
                 alt='Button Image'
@@ -74,7 +89,7 @@ export default function SkinSelectionScreen({
                 boxSize='100%'
               />
             </StyledSelectionSquare>
-            <StyledSelectionSquare>
+            <StyledSelectionSquare onClick={() => handleSkinSelection}>
               <Image
                 src='/SillySharkResources/skins/sillyshark.jpg'
                 alt='Button Image'
@@ -82,7 +97,7 @@ export default function SkinSelectionScreen({
                 boxSize='100%'
               />
             </StyledSelectionSquare>
-            <StyledSelectionSquare>
+            <StyledSelectionSquare onClick={() => handleSkinSelection}>
               <Image
                 src='/SillySharkResources/skins/sillyshark.jpg'
                 alt='Button Image'
@@ -93,7 +108,7 @@ export default function SkinSelectionScreen({
           </StyledSelectionContainer>
 
           <Center paddingTop='10px'>
-            <Button size='sm' width='fit-content'>
+            <Button size='sm' width='fit-content' onClick={handleCanvas}>
               Continue
             </Button>
           </Center>
@@ -101,7 +116,7 @@ export default function SkinSelectionScreen({
         <></>
       </>
     );
-  }, []);
+  }, [gameAreaController, handleCanvas, handleSkinSelection, showCanvas, skinSelected]);
 
   return <>{renderSkins()}</>;
 }
