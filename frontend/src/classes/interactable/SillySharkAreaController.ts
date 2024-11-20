@@ -82,7 +82,7 @@ export default class SillySharkAreaController extends GameAreaController<
    *This would make our sprite jump.
    */
 
-  public async jump() {
-    //To be filled in
+  public async jump(): Promise<void> {
+    this.emit('jump');
   }
 }

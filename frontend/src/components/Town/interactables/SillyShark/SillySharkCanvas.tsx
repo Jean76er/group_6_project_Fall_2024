@@ -1,10 +1,15 @@
 import { Modal, ModalContent, ModalOverlay } from '@chakra-ui/react';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import Obstacle from './Obstacle';
 import { useInteractable } from '../../../../classes/TownController';
 import useTownController from '../../../../hooks/useTownController';
+import Obstacle from './Obstacle';
+import SillySharkAreaController from '../../../../classes/interactable/SillySharkAreaController';
 
-export default function NewSillySharkCanvas(): JSX.Element {
+export type SillySharkProps = {
+  gameAreaController: SillySharkAreaController;
+};
+
+export default function NewSillySharkCanvas({ gameAreaController }: SillySharkProps): JSX.Element {
   const coveyTownController = useTownController();
   const newSillySharkGame = useInteractable('gameArea');
   const isOpen = newSillySharkGame !== undefined;
@@ -43,6 +48,16 @@ export default function NewSillySharkCanvas(): JSX.Element {
   const obstacleImage = useRef(new Image());
   const canvas = useRef<HTMLCanvasElement>(null);
   const obstacleSpacing = 300;
+  /** Sprite properties and state */
+  const [spriteY, setSpriteY] = useState(canvasHeight / 2);
+  const spriteWidth = 50;
+  const spriteHeight = 50;
+  const spriteImage = useRef(new Image());
+
+  /**Load the sprite image when the component mounts */
+  useEffect(() => {
+    spriteImage.current.src = '/SillySharkResources/skins/sillyshark.jpg';
+  }, []);
 
   /** Generate random heights for obstacles */
   const randomObstacleHeights = () => {
@@ -91,6 +106,16 @@ export default function NewSillySharkCanvas(): JSX.Element {
       }
 
       context.clearRect(0, 0, canvasCurr.width, canvasCurr.height);
+
+      if (spriteImage.current.complete) {
+        context.drawImage(
+          spriteImage.current,
+          canvasCurr.width / 4,
+          spriteY,
+          spriteWidth,
+          spriteHeight,
+        );
+      }
 
       /** Drawing obstacles on the canvas */
       obstacles.forEach(obstacle => {
@@ -152,12 +177,45 @@ export default function NewSillySharkCanvas(): JSX.Element {
 
     /** Redraw and update obstacles every frame */
     const interval = setInterval(() => {
+      setSpriteY(prevY => Math.min(prevY + 2, canvasHeight - spriteHeight));
       draw();
       updateObstacles();
     }, 1000 / 60);
 
     return () => clearInterval(interval);
-  }, [obstacles]);
+  }, [obstacles, spriteY]);
+
+  useEffect(() => {
+    const handleJumpEvent = () => {
+      setSpriteY(prevY => Math.max(prevY - 50, 0)); /** Jump up, but cap at the top of the canvas */
+    };
+
+    gameAreaController.addListener('JUMP', handleJumpEvent);
+
+    return () => {
+      gameAreaController.removeListener('JUMP', handleJumpEvent);
+    };
+  }, [gameAreaController]);
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.code === 'Space') {
+        gameAreaController.emit('JUMP');
+      }
+    };
+
+    const handleMouseClick = () => {
+      gameAreaController.emit('JUMP');
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('click', handleMouseClick);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('click', handleMouseClick);
+    };
+  }, [gameAreaController]);
 
   return (
     <Modal
