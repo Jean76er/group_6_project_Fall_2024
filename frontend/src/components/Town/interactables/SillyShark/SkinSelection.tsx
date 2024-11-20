@@ -58,22 +58,25 @@ export default function SkinSelectionScreen({
   }, []);
 
   const handleCanvas = useCallback(() => {
-    setShowCanvas(true);
-  }, []);
+    if(skinSelected) {
+      alert('Navigating to SillySharkCanvas!!!');
+      setShowCanvas(true);
+    } else {
+      alert('Please select a skin before continuing!!!!')
+    }
+  }, [skinSelected]);
 
   const renderSkins = useCallback(() => {
     return (
       <>
-        {showCanvas && skinSelected && (
-          <NewSillySharkCanvas gameAreaController={gameAreaController} />
-        )}
+        //This make it so it only shows the canvas when the handleCanvas
         <ModalContent maxW='500px' h='720px' bg='skyblue'>
           <ModalHeader>
             <Center>Select you skin!</Center>
           </ModalHeader>
 
           <StyledSelectionContainer>
-            <StyledSelectionSquare onClick={() => handleSkinSelection}>
+            <StyledSelectionSquare onClick={handleSkinSelection}>
               <Image
                 src='/SillySharkResources/skins/sillyshark.jpg'
                 alt='Button Image'
@@ -81,7 +84,7 @@ export default function SkinSelectionScreen({
                 boxSize='100%'
               />
             </StyledSelectionSquare>
-            <StyledSelectionSquare onClick={() => handleSkinSelection}>
+            <StyledSelectionSquare onClick={handleSkinSelection}>
               <Image
                 src='/SillySharkResources/skins/sillyshark.jpg'
                 alt='Button Image'
@@ -89,7 +92,7 @@ export default function SkinSelectionScreen({
                 boxSize='100%'
               />
             </StyledSelectionSquare>
-            <StyledSelectionSquare onClick={() => handleSkinSelection}>
+            <StyledSelectionSquare onClick={handleSkinSelection}>
               <Image
                 src='/SillySharkResources/skins/sillyshark.jpg'
                 alt='Button Image'
@@ -97,7 +100,7 @@ export default function SkinSelectionScreen({
                 boxSize='100%'
               />
             </StyledSelectionSquare>
-            <StyledSelectionSquare onClick={() => handleSkinSelection}>
+            <StyledSelectionSquare onClick={handleSkinSelection}>
               <Image
                 src='/SillySharkResources/skins/sillyshark.jpg'
                 alt='Button Image'
@@ -113,6 +116,7 @@ export default function SkinSelectionScreen({
             </Button>
           </Center>
         </ModalContent>
+        {showCanvas && <NewSillySharkCanvas gameAreaController={gameAreaController} />}
         <></>
       </>
     );
