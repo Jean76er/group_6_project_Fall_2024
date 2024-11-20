@@ -4,14 +4,15 @@ import { useInteractable } from '../../../../classes/TownController';
 import useTownController from '../../../../hooks/useTownController';
 import Obstacle from './Obstacle';
 import SillySharkAreaController from '../../../../classes/interactable/SillySharkAreaController';
+import GameAreaInteractable from '../GameArea';
 
 export type SillySharkProps = {
   gameAreaController: SillySharkAreaController;
 };
 
-export default function NewSillySharkCanvas({ gameAreaController }: SillySharkProps): JSX.Element {
+export default function NewSillySharkCanvas({ gameAreaController, newSillySharkGame }: {gameAreaController: SillySharkAreaController; newSillySharkGame: GameAreaInteractable}): JSX.Element {
   const coveyTownController = useTownController();
-  const newSillySharkGame = useInteractable('gameArea');
+  //const newSillySharkGame = useInteractable('gameArea');
   const isOpen = newSillySharkGame !== undefined;
 
   useEffect(() => {
