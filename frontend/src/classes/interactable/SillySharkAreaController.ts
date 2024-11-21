@@ -1,4 +1,4 @@
-import { GameArea, GameStatus, SillySharkGameState } from '../../types/CoveyTownSocket';
+import { GameArea, GameStatus, SillySharkGameState, Skin } from '../../types/CoveyTownSocket';
 import PlayerController from '../PlayerController';
 import GameAreaController, { GameEventTypes } from './GameAreaController';
 
@@ -32,6 +32,28 @@ export default class SillySharkAreaController extends GameAreaController<
       return this._players[1];
     }
     return undefined;
+  }
+
+  get skin1(): Skin | undefined{
+    if (this._model.game?.state.skin1){
+      return this.skin1;
+    }
+    return undefined;
+  }
+
+  set skin1(skin : Skin){
+    this.skin1 = skin;
+  }
+
+  get skin2(): Skin | undefined{
+    if (this._model.game?.state.skin2){
+      return this.skin2;
+    }
+    return undefined;
+  }
+
+  set skin2(skin : Skin){
+    this.skin2 = skin;
   }
 
   get winner(): PlayerController | undefined {
