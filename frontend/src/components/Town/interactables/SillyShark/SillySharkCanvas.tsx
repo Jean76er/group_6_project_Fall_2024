@@ -106,6 +106,22 @@ export default function NewSillySharkCanvas({
       const spriteTop = spriteY;
       const spriteBottom = spriteY + spriteHeight;
     
+    /** Define top obstacle boundaries */
+    const topObstacleLeft = obstacle.x;
+    const topObstacleRight = obstacle.x + obstacleWidth;
+    const topObstacleTop = 0;
+    const topObstacleBottom = obstacle.top.obstacleHeight;
+
+    /** Define bottom obstacle boundaries */
+
+    const bottomObstacleLeft = obstacle.x;
+    const bottomObstacleRight = obstacle.x + obstacleWidth;
+    const bottomObstacleTop = obstacle.top.obstacleHeight + gapHeight;
+    const bottomObstacleBottom = canvasHeight;
+
+    /** Check collision with top obstacle*/
+
+
 
   });
   /** Draw is responsible for rendering the current game state on the canvas.
