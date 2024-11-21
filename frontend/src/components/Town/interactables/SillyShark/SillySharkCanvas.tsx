@@ -17,7 +17,6 @@ export default function NewSillySharkCanvas({
   newSillySharkGame: GameAreaInteractable;
 }): JSX.Element {
   const coveyTownController = useTownController();
-  //const newSillySharkGame = useInteractable('gameArea');
   const isOpen = newSillySharkGame !== undefined;
 
   useEffect(() => {
@@ -96,6 +95,19 @@ export default function NewSillySharkCanvas({
     }
   }, [isOpen]);
 
+  /** checkCollision function calculates the position of the sprite and checks for collision between the 
+   *  sprite and obstacle
+   */
+
+  const checkCollision = () => {
+    obstacles.forEach((obstacle) => {
+      const spriteLeft = canvas.current!.width/4; /** Position the sprite at 1/4 the width of the canvas */
+      const spriteRight = spriteLeft + spriteWidth;
+      const spriteTop = spriteY;
+      const spriteBottom = spriteY + spriteHeight;
+    
+
+  });
   /** Draw is responsible for rendering the current game state on the canvas.
    *  It also clears the canvas on each frame and redraws the obstacles at their updated positions,
    *  redrawing at 60 fps resulting in smooth animation
