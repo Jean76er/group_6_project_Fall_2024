@@ -36,12 +36,12 @@ export default class SillySharkAreaController extends GameAreaController<
 
   get skin1(): Skin | undefined{
     if (this._model.game?.state.skin1){
-      return this.skin1;
+      return this._model.game?.state.skin1;
     }
     return undefined;
   }
 
-  set skin1(skin : Skin){
+  set skin1(skin : Skin | undefined){
     this.skin1 = skin;
   }
 
@@ -52,7 +52,7 @@ export default class SillySharkAreaController extends GameAreaController<
     return undefined;
   }
 
-  set skin2(skin : Skin){
+  set skin2(skin : Skin | undefined){
     this.skin2 = skin;
   }
 
