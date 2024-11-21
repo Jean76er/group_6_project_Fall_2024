@@ -12,9 +12,6 @@ export default class SillySharkAreaController extends GameAreaController<
   SillySharkGameState,
   SillySharkEvents
 > {
-
-  protected _skin1? : Skin;
-  protected _skin2? : Skin;
   /*
    *This getter is not yet defined. This is because I am unsure how exactly we
    *will implement the canvas.
@@ -37,26 +34,26 @@ export default class SillySharkAreaController extends GameAreaController<
     return undefined;
   }
 
-  get skin1(): Skin | undefined {
-    if (this._model.game?.state.skin1) {
-      return this._skin1;
+  get skin1(): Skin | undefined{
+    if (this._model.game?.state.skin1){
+      return this._model.game?.state.skin1;
     }
     return undefined;
   }
 
-  set skin1(skin: Skin | undefined) {
-    this._skin1 = skin;
+  set skin1(skin : Skin | undefined){
+    this.skin1 = skin;
   }
 
-  get skin2(): Skin | undefined {
-    if (this._model.game?.state.skin2) {
-      return this._skin2;
+  get skin2(): Skin | undefined{
+    if (this._model.game?.state.skin2){
+      return this.skin2;
     }
     return undefined;
   }
 
-  set skin2(skin: Skin | undefined) {
-    this._skin2 = skin;
+  set skin2(skin : Skin | undefined){
+    this.skin2 = skin;
   }
 
   get winner(): PlayerController | undefined {
@@ -100,12 +97,6 @@ export default class SillySharkAreaController extends GameAreaController<
   public updateFrom(newModel: GameArea<SillySharkGameState>): void {
     //To modified
     super._updateFrom(newModel);
-    if (newModel.game?.state.skin1) {
-      this._skin1 = newModel.game.state.skin1;
-    }
-    if (newModel.game?.state.skin2) {
-      this._skin2 = newModel.game.state.skin2;
-    }
   }
 
   /*

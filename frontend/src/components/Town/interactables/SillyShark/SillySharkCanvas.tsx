@@ -41,8 +41,6 @@ export default function NewSillySharkCanvas({
     x: number;
   }
 
-  const playerSkin1 = gameAreaController.skin1;
-
   const [obstacles, setObstacles] = useState<ObstaclePair[]>([]);
   /**canvasHeight: The vertical height of the canvas
    * obstacleWidth: Width of the obstacles; while the heights of the pipes will vary, the widths should remain constant
@@ -63,19 +61,9 @@ export default function NewSillySharkCanvas({
   const spriteImage = useRef(new Image());
 
   /**Load the sprite image when the component mounts */
-
-  
   useEffect(() => {
-    console.log('playerSkin1 URL:', playerSkin1);
-    spriteImage.current.src = playerSkin1 as string;
-    spriteImage.current.onload = () => {
-      console.log('Sprite image loaded:', spriteImage.current.src);
-    };
-    spriteImage.current.onerror = () => {
-      console.error('Failed to load sprite image:', spriteImage.current.src);
-    };
-  }, [playerSkin1]);
-  
+    spriteImage.current.src = '/SillySharkResources/skins/sillyshark.jpg';
+  }, []);
 
   /** Generate random heights for obstacles */
   const randomObstacleHeights = () => {
@@ -133,9 +121,6 @@ export default function NewSillySharkCanvas({
           spriteWidth,
           spriteHeight,
         );
-      }
-      else {
-        console.warn('Sprite image not loaded yet');
       }
 
       /** Drawing obstacles on the canvas */

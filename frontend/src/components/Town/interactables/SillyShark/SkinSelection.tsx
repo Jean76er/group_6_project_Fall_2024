@@ -7,17 +7,10 @@ import {
   Container,
   Center,
 } from '@chakra-ui/react';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import SillySharkAreaController from '../../../../classes/interactable/SillySharkAreaController';
 import NewSillySharkCanvas from './SillySharkCanvas';
 import GameAreaInteractable from '../GameArea';
-import { Skin } from '../../../../types/CoveyTownSocket';
-
-export enum Skins {
-  SillyShark = '/SillySharkResources/skins/sillyshark.jpg',
-  Walrus = '/SillySharkResources/skins/walrus.jpg',
-
-}
 
 /**
  * This component renders a square that contains an image of the skin to be chosen
@@ -38,7 +31,7 @@ const StyledSelectionSquare = chakra(Button, {
 });
 
 /**
- * A component that will render the Skin selection grid, styled
+ * A component that will render the TicTacToe board, styled
  */
 const StyledSelectionContainer = chakra(Container, {
   baseStyle: {
@@ -50,8 +43,6 @@ const StyledSelectionContainer = chakra(Container, {
   },
 });
 
-
-
 export default function SkinSelectionScreen({
   gameAreaController,
   gameArea,
@@ -59,16 +50,12 @@ export default function SkinSelectionScreen({
   gameAreaController: SillySharkAreaController;
   gameArea: GameAreaInteractable;
 }): JSX.Element {
-
   const [showCanvas, setShowCanvas] = useState(false);
   const [skinSelected, setSkinSelected] = useState(false);
 
-
-  const handleSkinSelection = useCallback((skin : Skin) => {
+  const handleSkinSelection = useCallback(() => {
     setSkinSelected(true);
-    gameAreaController.skin1 = skin;
   }, []);
-
 
   const handleCanvas = useCallback(() => {
     if (skinSelected) {
@@ -77,23 +64,66 @@ export default function SkinSelectionScreen({
       alert('Please select a skin before continuing!!!!');
     }
   }, [skinSelected]);
-  const SKINS = [
-    Skins.SillyShark,
-    Skins.Walrus,
-    // Add more skins
-  ];
-    
-  function renderSkins() {
+
+  const renderSkins = useCallback(() => {
     return (
-      <StyledSelectionContainer>
-        {SKINS.map(skin => (
-          <StyledSelectionSquare key={skin} onClick={() => handleSkinSelection(skin)}>
-            <Image src={skin} alt="Skin Image" objectFit="cover" boxSize="100%" />
-          </StyledSelectionSquare>
-        ))}
-      </StyledSelectionContainer>
+      <>
+        <ModalContent maxW='500px' h='720px' bg='skyblue'>
+          <ModalHeader>
+            <Center>Select you skin!</Center>
+          </ModalHeader>
+
+          <StyledSelectionContainer>
+            <StyledSelectionSquare onClick={handleSkinSelection}>
+              <Image
+                src='/SillySharkResources/skins/sillyshark.jpg'
+                alt='Button Image'
+                objectFit='cover'
+                boxSize='100%'
+              />
+            </StyledSelectionSquare>
+            <StyledSelectionSquare onClick={handleSkinSelection}>
+              <Image
+                src='/SillySharkResources/skins/walrus.jpg'
+                alt='Button Image'
+                objectFit='cover'
+                boxSize='100%'
+              />
+            </StyledSelectionSquare>
+            <StyledSelectionSquare onClick={handleSkinSelection}>
+              <Image
+                src='/SillySharkResources/skins/sillyshark.jpg'
+                alt='Button Image'
+                objectFit='cover'
+                boxSize='100%'
+              />
+            </StyledSelectionSquare>
+            <StyledSelectionSquare onClick={handleSkinSelection}>
+              <Image
+                src='/SillySharkResources/skins/sillyshark.jpg'
+                alt='Button Image'
+                objectFit='cover'
+                boxSize='100%'
+              />
+            </StyledSelectionSquare>
+          </StyledSelectionContainer>
+
+          <Center paddingTop='10px'>
+            <Button size='sm' width='fit-content' onClick={handleCanvas}>
+              Continue
+            </Button>
+          </Center>
+        </ModalContent>
+        {showCanvas && (
+          <NewSillySharkCanvas
+            gameAreaController={gameAreaController}
+            newSillySharkGame={gameArea}
+          />
+        )}
+        <></>
+      </>
     );
-  }
+  }, [gameAreaController, handleCanvas, handleSkinSelection, showCanvas, gameArea]);
 
   return <>{renderSkins()}</>;
 }
