@@ -12,6 +12,7 @@ export default class SillySharkAreaController extends GameAreaController<
   SillySharkEvents
 > {
   protected _skin1?: Skin;
+
   protected _skin2?: Skin;
 
   get player1(): PlayerController | undefined {
@@ -73,7 +74,10 @@ export default class SillySharkAreaController extends GameAreaController<
 
   public isActive(): boolean {
     const gameState = this._model.game?.state;
-    return gameState?.status === 'SINGLE_PLAYER_IN_PROGRESS' || gameState?.status === 'MULTI_PLAYER_IN_PROGRESS';
+    return (
+      gameState?.status === 'SINGLE_PLAYER_IN_PROGRESS' ||
+      gameState?.status === 'MULTI_PLAYER_IN_PROGRESS'
+    );
   }
 
   public updateFrom(newModel: GameArea<SillySharkGameState>): void {

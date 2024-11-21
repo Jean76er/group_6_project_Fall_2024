@@ -17,7 +17,7 @@ export enum Skins {
   SillyShark = '/SillySharkResources/skins/sillyshark.jpg',
   Walrus = '/SillySharkResources/skins/walrus.jpg',
   Penguin = '/SillySharkResources/skins/penguin.jpg',
-  PolarBear = '/SillySharkResources/skins/polarbear.jpg'
+  PolarBear = '/SillySharkResources/skins/polarbear.jpg',
 }
 
 /**
@@ -51,12 +51,7 @@ const StyledSelectionContainer = chakra(Container, {
   },
 });
 
-const SKINS = [
-  Skins.SillyShark,
-  Skins.Walrus,
-  Skins.Penguin,
-  Skins.PolarBear,
-];
+const SKINS = [Skins.SillyShark, Skins.Walrus, Skins.Penguin, Skins.PolarBear];
 
 export default function SkinSelectionScreen({
   gameAreaController,
@@ -66,12 +61,15 @@ export default function SkinSelectionScreen({
   gameArea: GameAreaInteractable;
 }): JSX.Element {
   const [showCanvas, setShowCanvas] = useState(false);
-  const [skinSelected, setSkinSelected] = useState(false);
+  const [skinSelected, setSkinSelected] = useState<Skin | undefined>(undefined);
 
-  const handleSkinSelection = useCallback((skin: Skin) => {
-    setSkinSelected(true);
-    gameAreaController.skin1 = skin;
-  }, []);
+  const handleSkinSelection = useCallback(
+    (skin: Skin) => {
+      setSkinSelected(skin);
+      gameAreaController.skin1 = skin;
+    },
+    [gameAreaController],
+  );
 
   const handleCanvas = useCallback(() => {
     if (skinSelected) {
@@ -91,8 +89,11 @@ export default function SkinSelectionScreen({
 
           <StyledSelectionContainer>
             {SKINS.map(skin => (
-              <StyledSelectionSquare key={skin} onClick={() => handleSkinSelection(skin)}>
-                <Image src={skin} alt="Skin Image" objectFit="cover" boxSize="100%" />
+              <StyledSelectionSquare
+                key={skin}
+                onClick={() => handleSkinSelection(skin)}
+                border={skinSelected === skin ? '8px solid blue' : 'none'}>
+                <Image src={skin} alt='Skin Image' objectFit='cover' boxSize='100%' />
               </StyledSelectionSquare>
             ))}
           </StyledSelectionContainer>
@@ -112,7 +113,7 @@ export default function SkinSelectionScreen({
         <></>
       </>
     );
-  }, [gameAreaController, handleCanvas, handleSkinSelection, showCanvas, gameArea]);
+  }, [gameAreaController, handleCanvas, handleSkinSelection, showCanvas, gameArea, skinSelected]);
 
   return <>{renderSkins()}</>;
 }
