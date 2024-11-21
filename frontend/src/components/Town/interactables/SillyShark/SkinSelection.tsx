@@ -84,7 +84,7 @@ export default function SkinSelectionScreen({
             </StyledSelectionSquare>
             <StyledSelectionSquare onClick={handleSkinSelection}>
               <Image
-                src='/SillySharkResources/skins/sillyshark.jpg'
+                src='/SillySharkResources/skins/walrus.jpg'
                 alt='Button Image'
                 objectFit='cover'
                 boxSize='100%'
