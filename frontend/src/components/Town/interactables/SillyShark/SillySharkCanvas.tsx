@@ -299,18 +299,11 @@ export default function NewSillySharkCanvas({
         gameAreaController.emit('JUMP');
       }
     };
-    
-    const handleMouseClick = () => {
-      console.log('Jump');
-      gameAreaController.emit('JUMP');
-    };
 
     window.addEventListener('keydown', handleKeyDown);
-    //window.addEventListener('click', handleMouseClick);
 
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
-      //window.removeEventListener('click', handleMouseClick);
     };
   }, [gameAreaController]);
 
