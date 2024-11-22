@@ -9,10 +9,12 @@ export default function NewGameOverScreen({
   gameArea,
   coveyTownController,
   gameAreaController,
+  finalScore,
 }: {
   gameArea: GameArea;
   coveyTownController: TownController;
   gameAreaController: SillySharkAreaController;
+  finalScore: number;
 }) {
   const [replayGame, setReplayGame] = useState(false);
   const closeModal = useCallback(() => {
@@ -37,6 +39,7 @@ export default function NewGameOverScreen({
             alt='Minecraft fonts'
           />
         </ModalHeader>
+        <Center>{finalScore}</Center>
         <Center paddingTop='400'>
           <Button size='lg' bg='blue' color='white' onClick={handleReplay}>
             Replay
