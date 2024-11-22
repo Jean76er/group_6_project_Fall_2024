@@ -19,7 +19,7 @@ export default function NewSillySharkCanvas({
   const coveyTownController = useTownController();
   const isOpen = newSillySharkGame !== undefined;
   const [gameOver, setGameOver] = useState(false);
-  const gravity = 3; //Makes spirte fall faster or slower
+  const gravity = 1; //Makes spirte fall faster or slower
   const [velocity, setVelocity] = useState(0);
 
   useEffect(() => {
@@ -215,7 +215,7 @@ export default function NewSillySharkCanvas({
         return Math.max(0, newY); // Prevent sprite from going above canvas
       });
 
-      setVelocity(prevVelocity => Math.min(prevVelocity + gravity, 7)); // Cap the downward velocity
+      setVelocity(prevVelocity => Math.min(prevVelocity + gravity, 6)); // Cap the downward velocity
     };
 
     /** The update obstacles function updates the position of each obstacle, moving them
