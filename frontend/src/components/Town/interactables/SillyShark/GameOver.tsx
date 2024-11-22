@@ -23,7 +23,7 @@ export default function NewGameOverScreen({
 
   const handleReplay = useCallback(() => {
     setReplayGame(true);
-  }, [])
+  }, []);
 
   return (
     <>
@@ -35,7 +35,7 @@ export default function NewGameOverScreen({
           />
         </ModalHeader>
         <Center paddingTop='400'>
-          <Button size='lg' bg='blue' color='white'>
+          <Button size='lg' bg='blue' color='white' onClick={handleReplay}>
             Replay
           </Button>
         </Center>
@@ -44,7 +44,14 @@ export default function NewGameOverScreen({
             Exit
           </Button>
         </Center>
-        {replayGame && <NewSillySharkCanvas gameAreaController={gameAreaController} newSillySharkGame={gameArea} coveyTownController={coveyTownController} gameArea={gameArea}/>}
+        {replayGame && (
+          <NewSillySharkCanvas
+            gameAreaController={gameAreaController}
+            newSillySharkGame={gameArea}
+            coveyTownController={coveyTownController}
+            gameArea={gameArea}
+          />
+        )}
       </ModalContent>
     </>
   );
