@@ -308,19 +308,24 @@ export default function NewSillySharkCanvas({
   }, [gameAreaController]);
 
   return (
-    <Modal isOpen={isOpen} onClose={() => { closeModal(); coveyTownController.unPause(); }} size='xs'>
+    <Modal
+      isOpen={isOpen}
+      onClose={() => {
+        closeModal();
+        coveyTownController.unPause();
+      }}
+      size='xs'>
       <ModalOverlay style={{ pointerEvents: 'none' }} />
       <ModalContent
-        maxW="500px"
-        h="720px"
-        bg="skyblue"
+        maxW='500px'
+        h='720px'
+        bg='skyblue'
         style={{ pointerEvents: 'auto' }}
-        onClick={(e) => {
+        onClick={() => {
           console.log('Click event triggered');
           gameAreaController.emit('JUMP');
-        }}
-      >
-        <canvas ref={canvas} width="500" height="720" />
+        }}>
+        <canvas ref={canvas} width='500' height='720' />
       </ModalContent>
     </Modal>
   );
