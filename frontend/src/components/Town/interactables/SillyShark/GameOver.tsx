@@ -1,16 +1,22 @@
 import { Button, ModalContent, ModalHeader, Center, Image } from '@chakra-ui/react';
-import React from 'react';
+import React, { useCallback } from 'react';
+import GameArea from '../GameArea';
+import TownController from '../../../../classes/TownController';
 
-export default function NewGameOverScreen() {
-  /*
-  To be implemented
+export default function NewGameOverScreen({
+  gameArea,
+  coveyTownController,
+}: {
+  gameArea: GameArea;
+  coveyTownController: TownController;
+}) {
   const closeModal = useCallback(() => {
     if (gameArea) {
-      townController.interactEnd(gameArea);
-      const controller = townController.getGameAreaController(gameArea);
+      coveyTownController.interactEnd(gameArea);
+      const controller = coveyTownController.getGameAreaController(gameArea);
       controller.leaveGame();
     }
-  }, [townController, gameArea]);*/
+  }, [coveyTownController, gameArea]);
 
   return (
     <>
@@ -27,7 +33,7 @@ export default function NewGameOverScreen() {
           </Button>
         </Center>
         <Center paddingTop='10px'>
-          <Button size='lg' bg='blue' color='white'>
+          <Button size='lg' bg='blue' color='white' onClick={closeModal}>
             Exit
           </Button>
         </Center>
