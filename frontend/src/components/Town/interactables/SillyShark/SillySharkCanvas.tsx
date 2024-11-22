@@ -1,9 +1,9 @@
 import { Modal, ModalContent, ModalOverlay } from '@chakra-ui/react';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import useTownController from '../../../../hooks/useTownController';
-import Obstacle from './Obstacle';
 import SillySharkAreaController from '../../../../classes/interactable/SillySharkAreaController';
+import useTownController from '../../../../hooks/useTownController';
 import GameAreaInteractable from '../GameArea';
+import Obstacle from './Obstacle';
 
 export type SillySharkProps = {
   gameAreaController: SillySharkAreaController;
@@ -59,6 +59,8 @@ export default function NewSillySharkCanvas({
   const spriteWidth = 50;
   const spriteHeight = 50;
   const spriteImage = useRef(new Image());
+  /** adding state for the score*/
+  const [score, setScore] = useState(0);
 
   /**Load the sprite image when the component mounts */
   useEffect(() => {
@@ -187,11 +189,15 @@ export default function NewSillySharkCanvas({
           obstacleWidth,
           canvasCurr.height - obstacle.top.obstacleHeight - gapHeight,
         );
+        context.fillStyle = 'white';
+        context.font = '30px Arial';
+        context.fillText(`Score: ${score}`, 20, 50);
       });
 
       /** Check for collision */
       if (checkCollision()) {
         setGameOver(true);
+        setScore(0);
         /** Implement additional logic to set the game state to game over and switch to game
          * over screen
          */
@@ -202,12 +208,22 @@ export default function NewSillySharkCanvas({
      * to the left and removing obstacles that have moved off-screen to free memory
      */
     const updateObstacles = () => {
+      const spriteX = (canvas.current?.width ?? 500) / 4;
+
       setObstacles(prevObstacles => {
         /** Move all obstacles to the left */
-        const newObstacles = prevObstacles.map(obstacle => ({
-          ...obstacle,
-          x: obstacle.x - 2,
-        }));
+        const newObstacles = prevObstacles.map(obstacle => {
+          const updatedX = obstacle.x - 2;
+
+          if (updatedX + obstacleWidth < spriteX && obstacle.x + obstacleWidth >= spriteX) {
+            setScore(prevScore => prevScore + 1);
+          }
+
+          return {
+            ...obstacle,
+            x: updatedX,
+          };
+        });
 
         /** Remove obstacles that have moved off screen */
         const filteredObstacles = newObstacles.filter(obstacle => obstacle.x + obstacleWidth > 0);
@@ -244,7 +260,7 @@ export default function NewSillySharkCanvas({
     }, 1000 / 60);
 
     return () => clearInterval(interval);
-  }, [obstacles, spriteY, gameOver]);
+  }, [obstacles, spriteY, gameOver, score]);
 
   useEffect(() => {
     const handleJumpEvent = () => {
