@@ -96,59 +96,54 @@ export default function NewSillySharkCanvas({
     }
   }, [isOpen]);
 
-  /** checkCollision function calculates the position of the sprite and checks for collision between the
-   *  sprite and obstacle
-   */
-
-  const checkCollision = () => {
-    for (const obstacle of obstacles) {
-      const spriteLeft =
-        (canvas.current?.width ?? 500) /
-        4; /** Position the sprite at 1/4 the width of the canvas */
-      const spriteRight = spriteLeft + spriteWidth;
-      const spriteTop = spriteY;
-      const spriteBottom = spriteY + spriteHeight;
-
-      /** Define top obstacle boundaries */
-      const topObstacleLeft = obstacle.x;
-      const topObstacleRight = obstacle.x + obstacleWidth;
-      const topObstacleTop = 0;
-      const topObstacleBottom = obstacle.top.obstacleHeight;
-
-      /** Define bottom obstacle boundaries */
-
-      const bottomObstacleLeft = obstacle.x;
-      const bottomObstacleRight = obstacle.x + obstacleWidth;
-      const bottomObstacleTop = obstacle.top.obstacleHeight + gapHeight;
-      const bottomObstacleBottom = canvasHeight;
-
-      /** Check collision with top obstacle*/
-      if (
-        spriteRight > topObstacleLeft &&
-        spriteLeft < topObstacleRight &&
-        spriteBottom > topObstacleTop &&
-        spriteTop < topObstacleBottom
-      ) {
-        return true;
-      }
-
-      /** Check collision with bottom obstacle */
-      if (
-        spriteRight > bottomObstacleLeft &&
-        spriteLeft < bottomObstacleRight &&
-        spriteBottom > bottomObstacleTop &&
-        spriteTop < bottomObstacleBottom
-      ) {
-        return true;
-      }
-      return false;
-    }
-  };
-  /** Draw is responsible for rendering the current game state on the canvas.
-   *  It also clears the canvas on each frame and redraws the obstacles at their updated positions,
-   *  redrawing at 60 fps resulting in smooth animation
-   */
   useEffect(() => {
+    /** checkCollision function calculates the position of the sprite and checks for collision between the
+     *  sprite and obstacle
+     */
+    const checkCollision = () => {
+      for (const obstacle of obstacles) {
+        const spriteLeft =
+          (canvas.current?.width ?? 500) /
+          4; /** Position the sprite at 1/4 the width of the canvas */
+        const spriteRight = spriteLeft + spriteWidth;
+        const spriteTop = spriteY;
+        const spriteBottom = spriteY + spriteHeight;
+
+        /** Define top obstacle boundaries */
+        const topObstacleLeft = obstacle.x;
+        const topObstacleRight = obstacle.x + obstacleWidth;
+        const topObstacleTop = 0;
+        const topObstacleBottom = obstacle.top.obstacleHeight;
+
+        /** Define bottom obstacle boundaries */
+
+        const bottomObstacleLeft = obstacle.x;
+        const bottomObstacleRight = obstacle.x + obstacleWidth;
+        const bottomObstacleTop = obstacle.top.obstacleHeight + gapHeight;
+        const bottomObstacleBottom = canvasHeight;
+
+        /** Check collision with top obstacle*/
+        if (
+          spriteRight > topObstacleLeft &&
+          spriteLeft < topObstacleRight &&
+          spriteBottom > topObstacleTop &&
+          spriteTop < topObstacleBottom
+        ) {
+          return true;
+        }
+
+        /** Check collision with bottom obstacle */
+        if (
+          spriteRight > bottomObstacleLeft &&
+          spriteLeft < bottomObstacleRight &&
+          spriteBottom > bottomObstacleTop &&
+          spriteTop < bottomObstacleBottom
+        ) {
+          return true;
+        }
+        return false;
+      }
+    };
     const draw = () => {
       /** If collision was detected, stop drawing and updating the game */
       if (gameOver) {
@@ -249,7 +244,7 @@ export default function NewSillySharkCanvas({
     }, 1000 / 60);
 
     return () => clearInterval(interval);
-  }, [obstacles, spriteY]);
+  }, [obstacles, spriteY, gameOver]);
 
   useEffect(() => {
     const handleJumpEvent = () => {
