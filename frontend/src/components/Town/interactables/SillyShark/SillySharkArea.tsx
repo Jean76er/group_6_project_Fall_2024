@@ -12,13 +12,15 @@ import {
   Image,
 } from '@chakra-ui/react';
 import React, { useCallback, useEffect, useState } from 'react';
-import { useInteractable, useInteractableAreaController } from '../../../../classes/TownController';
+import TownController, {
+  useInteractable,
+  useInteractableAreaController,
+} from '../../../../classes/TownController';
 import useTownController from '../../../../hooks/useTownController';
 import { InteractableID } from '../../../../types/CoveyTownSocket';
 import GameAreaInteractable from '../GameArea';
 import SillySharkAreaController from '../../../../classes/interactable/SillySharkAreaController';
 import SkinSelectionScreen from './SkinSelection';
-//import { render } from '@testing-library/react';
 
 export type SillySharkGameProps = {
   gameAreaController: SillySharkAreaController;
@@ -27,16 +29,17 @@ export type SillySharkGameProps = {
 function SillySharkArea({
   interactableID,
   gameArea,
+  coveyTownController,
 }: {
   interactableID: InteractableID;
   gameArea: GameAreaInteractable;
+  coveyTownController: TownController;
 }): JSX.Element {
   const gameAreaController =
     useInteractableAreaController<SillySharkAreaController>(interactableID);
-  const townController = useTownController();
   //const [player1, setPlayer1] = useState(gameAreaController?.player1);
   //const [player2, setPlayer2] = useState(gameAreaController?.player2);
-  const ourPlayer = townController.ourPlayer;
+  const ourPlayer = coveyTownController.ourPlayer;
   //const [history, setHistory] = useState(gameAreaController?.history || []);
   const [joining, setJoin] = useState(false);
   const [canJoin, setCanJoin] = useState(false);
@@ -113,7 +116,11 @@ function SillySharkArea({
         </Center>
       )}
       {showSkinSelection && (
-        <SkinSelectionScreen gameAreaController={gameAreaController} gameArea={gameArea} />
+        <SkinSelectionScreen
+          gameAreaController={gameAreaController}
+          gameArea={gameArea}
+          coveyTownController={coveyTownController}
+        />
       )}
       <Center paddingTop='10px'>
         <Button size='lg' bg='blue' color='white'>
@@ -132,14 +139,14 @@ function SillySharkArea({
 
 export default function SillySharkAreaWrapper(): JSX.Element {
   const gameArea = useInteractable<GameAreaInteractable>('gameArea');
-  const townController = useTownController();
+  const coveyTownController = useTownController();
   const closeModal = useCallback(() => {
     if (gameArea) {
-      townController.interactEnd(gameArea);
-      const controller = townController.getGameAreaController(gameArea);
+      coveyTownController.interactEnd(gameArea);
+      const controller = coveyTownController.getGameAreaController(gameArea);
       controller.leaveGame();
     }
-  }, [townController, gameArea]);
+  }, [coveyTownController, gameArea]);
 
   if (gameArea && gameArea.getData('type') === 'SillyShark') {
     return (
@@ -153,7 +160,11 @@ export default function SillySharkAreaWrapper(): JSX.Element {
             />
           </ModalHeader>
           <ModalCloseButton />
-          <SillySharkArea interactableID={gameArea.name} gameArea={gameArea} />
+          <SillySharkArea
+            interactableID={gameArea.name}
+            gameArea={gameArea}
+            coveyTownController={coveyTownController}
+          />
         </ModalContent>
       </Modal>
     );

@@ -12,6 +12,7 @@ import SillySharkAreaController from '../../../../classes/interactable/SillyShar
 import NewSillySharkCanvas from './SillySharkCanvas';
 import GameAreaInteractable from '../GameArea';
 import { Skin } from '../../../../types/CoveyTownSocket';
+import TownController from '../../../../classes/TownController';
 
 export enum Skins {
   SillyShark = '/SillySharkResources/skins/sillyshark.jpg',
@@ -56,9 +57,11 @@ const SKINS = [Skins.SillyShark, Skins.Walrus, Skins.Penguin, Skins.PolarBear];
 export default function SkinSelectionScreen({
   gameAreaController,
   gameArea,
+  coveyTownController,
 }: {
   gameAreaController: SillySharkAreaController;
   gameArea: GameAreaInteractable;
+  coveyTownController: TownController;
 }): JSX.Element {
   const [showCanvas, setShowCanvas] = useState(false);
   const [skinSelected, setSkinSelected] = useState<Skin | undefined>(undefined);
@@ -108,12 +111,22 @@ export default function SkinSelectionScreen({
           <NewSillySharkCanvas
             gameAreaController={gameAreaController}
             newSillySharkGame={gameArea}
+            coveyTownController={coveyTownController}
+            gameArea={gameArea}
           />
         )}
         <></>
       </>
     );
-  }, [gameAreaController, handleCanvas, handleSkinSelection, showCanvas, gameArea, skinSelected]);
+  }, [
+    gameAreaController,
+    handleCanvas,
+    handleSkinSelection,
+    showCanvas,
+    gameArea,
+    skinSelected,
+    coveyTownController,
+  ]);
 
   return <>{renderSkins()}</>;
 }

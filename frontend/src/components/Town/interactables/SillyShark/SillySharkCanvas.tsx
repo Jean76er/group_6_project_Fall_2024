@@ -1,9 +1,11 @@
 import { Modal, ModalContent, ModalOverlay } from '@chakra-ui/react';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import SillySharkAreaController from '../../../../classes/interactable/SillySharkAreaController';
-import useTownController from '../../../../hooks/useTownController';
+import GameArea from '../GameArea';
 import GameAreaInteractable from '../GameArea';
 import Obstacle from './Obstacle';
+import TownController from '../../../../classes/TownController';
+import NewGameOverScreen from './GameOver';
 
 export type SillySharkProps = {
   gameAreaController: SillySharkAreaController;
@@ -12,11 +14,14 @@ export type SillySharkProps = {
 export default function NewSillySharkCanvas({
   gameAreaController,
   newSillySharkGame,
+  gameArea,
+  coveyTownController,
 }: {
   gameAreaController: SillySharkAreaController;
   newSillySharkGame: GameAreaInteractable;
+  gameArea: GameArea;
+  coveyTownController: TownController;
 }): JSX.Element {
-  const coveyTownController = useTownController();
   const isOpen = newSillySharkGame !== undefined;
   const [gameOver, setGameOver] = useState(false);
   const gravity = 1; /**Makes spirte fall faster or slower*/
@@ -337,6 +342,9 @@ export default function NewSillySharkCanvas({
         }}>
         <canvas ref={canvas} width='500' height='720' />
       </ModalContent>
+      {gameOver && (
+        <NewGameOverScreen gameArea={gameArea} coveyTownController={coveyTownController} />
+      )}
     </Modal>
   );
 }
