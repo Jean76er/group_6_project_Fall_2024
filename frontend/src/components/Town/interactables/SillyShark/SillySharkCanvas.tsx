@@ -62,8 +62,8 @@ export default function NewSillySharkCanvas({
 
   /**Load the sprite image when the component mounts */
   useEffect(() => {
-    spriteImage.current.src = '/SillySharkResources/skins/sillyshark.jpg';
-  }, []);
+    spriteImage.current.src = gameAreaController.skin1 as string;
+  }, [gameAreaController.skin1]);
 
   /** Generate random heights for obstacles */
   const randomObstacleHeights = () => {

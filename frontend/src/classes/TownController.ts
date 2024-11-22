@@ -33,7 +33,7 @@ import ConversationAreaController from './interactable/ConversationAreaControlle
 import PlayerController from './PlayerController';
 import ViewingAreaController from './interactable/ViewingAreaController';
 import GameAreaController, { GameEventTypes } from './interactable/GameAreaController';
-import SIllySharkAreaController from './interactable/SillySharkAreaController';
+import SillySharkAreaController from './interactable/SillySharkAreaController';
 const CALCULATE_NEARBY_PLAYERS_DELAY = 300;
 const SOCKET_COMMAND_TIMEOUT_MS = 5000;
 
@@ -213,8 +213,6 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
   private _interactableEmitter = new EventEmitter();
 
   private _viewingAreas: ViewingAreaController[] = [];
-
-  private _sillySharkAreas: SIllySharkAreaController[] = [];
 
   public constructor({ userName, townID, loginController }: ConnectionProperties) {
     super();
@@ -467,10 +465,10 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
         );
         updatedViewingArea?.updateFrom(interactable);
       } else if (isSillySharkArea(interactable)) {
-        const updatedSillySharkArea = this._sillySharkAreas.find(
+        const updatedSillySharkArea = this._interactableControllers.find(
           eachArea => eachArea.id === interactable.id,
         );
-        updatedSillySharkArea?.updateFrom(interactable);
+        updatedSillySharkArea?.updateFrom(interactable, this.players);
       }
     });
   }
@@ -614,7 +612,7 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
 
         this._conversationAreas = [];
         this._viewingAreas = [];
-        this._sillySharkAreas = [];
+        this._interactableControllers = [];
         initialData.interactables.forEach(eachInteractable => {
           if (isConversationArea(eachInteractable)) {
             this._conversationAreasInternal.push(
@@ -626,16 +624,8 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
           } else if (isViewingArea(eachInteractable)) {
             this._viewingAreas.push(new ViewingAreaController(eachInteractable));
           } else if (isSillySharkArea(eachInteractable)) {
-            this._sillySharkAreas.push(
-              new SIllySharkAreaController(eachInteractable.id, eachInteractable, this),
-            );
-          }
-        });
-        this._interactableControllers = [];
-        initialData.interactables.forEach(eachInteractable => {
-          if (isSillySharkArea(eachInteractable)) {
             this._interactableControllers.push(
-              new SIllySharkAreaController(eachInteractable.id, eachInteractable, this),
+              new SillySharkAreaController(eachInteractable.id, eachInteractable, this),
             );
           }
         });

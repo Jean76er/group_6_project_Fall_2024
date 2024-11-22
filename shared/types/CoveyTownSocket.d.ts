@@ -92,6 +92,7 @@ export interface ClientToServerEvents {
 export type GameInstanceID = string;
 export type InteractableID = string;
 export type PlayerID = string;
+export type Skin = string;
 
 /** 
  * SINGLE_PLAYER_IN_PROGRESS: One player in game
@@ -130,6 +131,8 @@ export interface GameInstance<GS extends GameState> {
 export interface SillySharkGameState extends WinnableGameState {
   player1?: PlayerID;
   player2?: PlayerID;
+  skin1?: Skin;
+  skin2?: Skin;
 } 
 
 /**
