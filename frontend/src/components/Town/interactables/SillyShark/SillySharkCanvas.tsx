@@ -260,7 +260,7 @@ export default function NewSillySharkCanvas({
     }, 1000 / 60);
 
     return () => clearInterval(interval);
-  }, [obstacles, spriteY, gameOver]);
+  }, [obstacles, spriteY, gameOver, score]);
 
   useEffect(() => {
     const handleJumpEvent = () => {
