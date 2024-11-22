@@ -19,7 +19,7 @@ export default function NewSillySharkCanvas({
   const coveyTownController = useTownController();
   const isOpen = newSillySharkGame !== undefined;
   const [gameOver, setGameOver] = useState(false);
-  const gravity = 3 //Makes spirte fall faster or slower
+  const gravity = 3; //Makes spirte fall faster or slower
   const [velocity, setVelocity] = useState(0);
 
   useEffect(() => {
@@ -205,7 +205,6 @@ export default function NewSillySharkCanvas({
       }
     };
 
-
     const updateSpritePosition = () => {
       setSpriteY(prevY => {
         const newY = prevY + velocity;
@@ -215,7 +214,7 @@ export default function NewSillySharkCanvas({
         }
         return Math.max(0, newY); // Prevent sprite from going above canvas
       });
-  
+
       setVelocity(prevVelocity => Math.min(prevVelocity + gravity, 7)); // Cap the downward velocity
     };
 
@@ -259,17 +258,17 @@ export default function NewSillySharkCanvas({
 
     /** Redraw and update obstacles every frame */
     const interval = setInterval(() => {
-      updateSpritePosition()
+      updateSpritePosition();
       draw();
       updateObstacles();
     }, 1000 / 60);
 
     return () => clearInterval(interval);
-  }, [obstacles, spriteY, gameOver,gravity, velocity]);
+  }, [obstacles, spriteY, gameOver, gravity, velocity]);
 
   useEffect(() => {
     const handleJumpEvent = () => {
-      setVelocity(-10); 
+      setVelocity(-10);
     };
 
     gameAreaController.addListener('JUMP', handleJumpEvent);
