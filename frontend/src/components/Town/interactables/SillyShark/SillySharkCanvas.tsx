@@ -331,7 +331,8 @@ export default function NewSillySharkCanvas({
         <canvas ref={canvas} width='500' height='720' />
       </ModalContent>
       {gameOver && (
-        <NewGameOverScreen gameArea={gameArea} coveyTownController={coveyTownController} />)}
+        <NewGameOverScreen gameArea={gameArea} coveyTownController={coveyTownController} />
+      )}
     </Modal>
   );
 }
