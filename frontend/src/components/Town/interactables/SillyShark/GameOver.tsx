@@ -12,6 +12,7 @@ export default function NewGameOverScreen({
 }) {
   const closeModal = useCallback(() => {
     if (gameArea) {
+      coveyTownController.unPause();
       coveyTownController.interactEnd(gameArea);
       const controller = coveyTownController.getGameAreaController(gameArea);
       controller.leaveGame();
