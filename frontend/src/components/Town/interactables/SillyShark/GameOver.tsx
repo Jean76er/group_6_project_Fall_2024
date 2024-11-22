@@ -1,7 +1,8 @@
 import { Button, ModalContent, ModalHeader, Center, Image } from '@chakra-ui/react';
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import GameArea from '../GameArea';
 import TownController from '../../../../classes/TownController';
+import NewSillySharkCanvas from './SillySharkCanvas';
 
 export default function NewGameOverScreen({
   gameArea,
@@ -10,6 +11,7 @@ export default function NewGameOverScreen({
   gameArea: GameArea;
   coveyTownController: TownController;
 }) {
+  const [replayGame, setReplayGame] = useState(false);
   const closeModal = useCallback(() => {
     if (gameArea) {
       coveyTownController.unPause();
@@ -18,6 +20,10 @@ export default function NewGameOverScreen({
       controller.leaveGame();
     }
   }, [coveyTownController, gameArea]);
+
+  const handleReplay = useCallback(() => {
+    setReplayGame(true);
+  }, [])
 
   return (
     <>
@@ -38,6 +44,7 @@ export default function NewGameOverScreen({
             Exit
           </Button>
         </Center>
+        {replayGame && <NewSillySharkCanvas gameAreaController={gameAreaController} newSillySharkGame={gameArea} coveyTownController={coveyTownController} gameArea={gameArea}/>}
       </ModalContent>
     </>
   );
