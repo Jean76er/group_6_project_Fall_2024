@@ -348,6 +348,7 @@ export default function NewSillySharkCanvas({
           gameArea={gameArea}
           coveyTownController={coveyTownController}
           gameAreaController={gameAreaController}
+          finalScore={score}
         />
       )}
     </Modal>
