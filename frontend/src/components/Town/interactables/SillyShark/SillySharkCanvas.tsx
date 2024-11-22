@@ -41,6 +41,7 @@ export default function NewSillySharkCanvas({
     top: Obstacle;
     bottom: Obstacle;
     x: number;
+    scored: boolean;
   }
 
   const [obstacles, setObstacles] = useState<ObstaclePair[]>([]);
@@ -90,7 +91,12 @@ export default function NewSillySharkCanvas({
           obstacleImage.current,
         );
         setObstacles([
-          { top: firstTopObstacle, bottom: firstBottomObstacle, x: canvas.current?.width || 500 },
+          {
+            top: firstTopObstacle,
+            bottom: firstBottomObstacle,
+            x: canvas.current?.width || 500,
+            scored: false,
+          },
         ]);
       };
 
@@ -231,18 +237,10 @@ export default function NewSillySharkCanvas({
 
       setObstacles(prevObstacles => {
         /** Move all obstacles to the left */
-        const newObstacles = prevObstacles.map(obstacle => {
-          const updatedX = obstacle.x - 2;
-
-          if (updatedX + obstacleWidth < spriteX && obstacle.x + obstacleWidth >= spriteX) {
-            setScore(prevScore => prevScore + 1);
-          }
-
-          return {
-            ...obstacle,
-            x: updatedX,
-          };
-        });
+        const newObstacles = prevObstacles.map(obstacle => ({
+          ...obstacle,
+          x: obstacle.x - 2,
+        }));
 
         /** Remove obstacles that have moved off screen */
         const filteredObstacles = newObstacles.filter(obstacle => obstacle.x + obstacleWidth > 0);
@@ -264,10 +262,22 @@ export default function NewSillySharkCanvas({
             top: newTopObstacle,
             bottom: newBottomObstacle,
             x: newObstacleX,
+            scored: false,
           });
         }
 
         return filteredObstacles;
+      });
+
+      setObstacles(prevObstacles => {
+        prevObstacles.forEach(obstacle => {
+          if (obstacle.x + obstacleWidth < spriteX && !obstacle.scored) {
+            setScore(prevScore => prevScore + 1);
+            obstacle.scored = true;
+          }
+        });
+
+        return prevObstacles;
       });
     };
 
