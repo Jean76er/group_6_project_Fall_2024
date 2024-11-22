@@ -300,16 +300,10 @@ export default function NewSillySharkCanvas({
       }
     };
 
-    const handleMouseClick = () => {
-      gameAreaController.emit('JUMP');
-    };
-
     window.addEventListener('keydown', handleKeyDown);
-    window.addEventListener('click', handleMouseClick);
 
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
-      window.removeEventListener('click', handleMouseClick);
     };
   }, [gameAreaController]);
 
@@ -321,8 +315,16 @@ export default function NewSillySharkCanvas({
         coveyTownController.unPause();
       }}
       size='xs'>
-      <ModalOverlay />
-      <ModalContent maxW='500px' h='720px' bg='skyblue'>
+      <ModalOverlay style={{ pointerEvents: 'none' }} />
+      <ModalContent
+        maxW='500px'
+        h='720px'
+        bg='skyblue'
+        style={{ pointerEvents: 'auto' }}
+        onClick={() => {
+          console.log('Click event triggered');
+          gameAreaController.emit('JUMP');
+        }}>
         <canvas ref={canvas} width='500' height='720' />
       </ModalContent>
     </Modal>
