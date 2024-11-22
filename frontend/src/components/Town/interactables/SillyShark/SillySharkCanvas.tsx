@@ -100,7 +100,7 @@ export default function NewSillySharkCanvas({
    */
 
   const checkCollision = () => {
-    obstacles.forEach((obstacle) => {
+    for(let obstacle of obstacles){
       const spriteLeft = canvas.current!.width/4; /** Position the sprite at 1/4 the width of the canvas */
       const spriteRight = spriteLeft + spriteWidth;
       const spriteTop = spriteY;
@@ -120,10 +120,23 @@ export default function NewSillySharkCanvas({
     const bottomObstacleBottom = canvasHeight;
 
     /** Check collision with top obstacle*/
+    if(spriteRight > topObstacleLeft && 
+      spriteLeft < topObstacleRight &&
+      spriteBottom > topObstacleTop && 
+      spriteTop < topObstacleBottom) {
+        return true;
+    }
 
-
-
-  });
+    /** Check collision with bottom obstacle */
+    if(spriteRight > bottomObstacleLeft &&
+       spriteLeft < bottomObstacleRight&& 
+      spriteBottom > bottomObstacleTop && 
+      spriteTop < bottomObstacleBottom) {
+        return true;
+      }
+      return false;
+  };
+};
   /** Draw is responsible for rendering the current game state on the canvas.
    *  It also clears the canvas on each frame and redraws the obstacles at their updated positions,
    *  redrawing at 60 fps resulting in smooth animation
@@ -169,6 +182,12 @@ export default function NewSillySharkCanvas({
           canvasCurr.height - obstacle.top.obstacleHeight - gapHeight,
         );
       });
+
+      /** Check for collision */
+      if(checkCollision()){
+        console.log('Collision detected! Game Over.');
+        clearInterval(interval);
+      }
     };
 
     /** The update obstacles function updates the position of each obstacle, moving them
