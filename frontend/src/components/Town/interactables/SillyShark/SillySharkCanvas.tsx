@@ -19,6 +19,8 @@ export default function NewSillySharkCanvas({
   const coveyTownController = useTownController();
   const isOpen = newSillySharkGame !== undefined;
   const [gameOver, setGameOver] = useState(false);
+  const gravity = 1; /**Makes spirte fall faster or slower*/
+  const [velocity, setVelocity] = useState(0);
 
   useEffect(() => {
     if (newSillySharkGame) {
@@ -48,7 +50,7 @@ export default function NewSillySharkCanvas({
    * change, however, the space between them should not become smaller or bigger.
    * obstacleSpacing: The space between each obstacle pair. This will determine how far apart each obstacle pair is
    */
-  const canvasHeight = 600;
+  const canvasHeight = 720;
   const gapHeight = 150;
   const obstacleWidth = 50;
   const obstacleImage = useRef(new Image());
@@ -143,6 +145,11 @@ export default function NewSillySharkCanvas({
         ) {
           return true;
         }
+
+        /** Check if sprite hit the floor */
+        if (spriteY + spriteHeight >= canvasHeight) {
+          return true;
+        }
         return false;
       }
     };
@@ -204,6 +211,18 @@ export default function NewSillySharkCanvas({
       }
     };
 
+    /**Handles sprite's vertical movement */
+    const updateSpritePosition = () => {
+      setSpriteY(prevY => {
+        const newY = prevY + velocity;
+        return Math.max(0, newY);
+      });
+
+      setVelocity(prevVelocity =>
+        Math.min(prevVelocity + gravity, 4),
+      ); /** Cap the downward velocity*/
+    };
+
     /** The update obstacles function updates the position of each obstacle, moving them
      * to the left and removing obstacles that have moved off-screen to free memory
      */
@@ -254,17 +273,17 @@ export default function NewSillySharkCanvas({
 
     /** Redraw and update obstacles every frame */
     const interval = setInterval(() => {
-      setSpriteY(prevY => Math.min(prevY + 2, canvasHeight - spriteHeight));
+      updateSpritePosition();
       draw();
       updateObstacles();
     }, 1000 / 60);
 
     return () => clearInterval(interval);
-  }, [obstacles, spriteY, gameOver, score]);
+  }, [obstacles, spriteY, gameOver, score, gravity, velocity]);
 
   useEffect(() => {
     const handleJumpEvent = () => {
-      setSpriteY(prevY => Math.max(prevY - 50, 0)); /** Jump up, but cap at the top of the canvas */
+      setVelocity(-10);
     };
 
     gameAreaController.addListener('JUMP', handleJumpEvent);
