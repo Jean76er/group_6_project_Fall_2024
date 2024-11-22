@@ -65,7 +65,6 @@ export default function SkinSelectionScreen({
 }): JSX.Element {
   const [showCanvas, setShowCanvas] = useState(false);
   const [skinSelected, setSkinSelected] = useState<Skin | undefined>(undefined);
-  const [resetGame, setResetGame] = useState(true) //This assumes we are restarting the game. This is because we must change this when the skin is selected. Indicating to the canvas that this is a normal start.
 
   const handleSkinSelection = useCallback(
     (skin: Skin) => {
@@ -78,7 +77,6 @@ export default function SkinSelectionScreen({
   const handleCanvas = useCallback(() => {
     if (skinSelected) {
       setShowCanvas(true);
-      setResetGame(false); //When canvas is called from skin selection, do not reset the game
     } else {
       alert('Please select a skin before continuing!!!!');
     }
@@ -115,7 +113,6 @@ export default function SkinSelectionScreen({
             newSillySharkGame={gameArea}
             coveyTownController={coveyTownController}
             gameArea={gameArea}
-            resetGame={resetGame} //Pass this to the canvas
           />
         )}
         <></>

@@ -16,28 +16,16 @@ export default function NewSillySharkCanvas({
   newSillySharkGame,
   gameArea,
   coveyTownController,
-  resetGame = true //Default. We assume the canvas is not being reset
 }: {
   gameAreaController: SillySharkAreaController;
   newSillySharkGame: GameAreaInteractable;
   gameArea: GameArea;
   coveyTownController: TownController;
-  resetGame?: boolean;
 }): JSX.Element {
   const isOpen = newSillySharkGame !== undefined;
   const [gameOver, setGameOver] = useState(false);
   const gravity = 1; /**Makes spirte fall faster or slower*/
   const [velocity, setVelocity] = useState(0);
-
-
-  //Resets all the variables when the game is being reset
-  useEffect(() => {
-    if(resetGame) {
-      setScore(0);
-      setObstacles([]);
-      setSpriteY(360);
-    }
-  }, [resetGame]);
 
   useEffect(() => {
     if (newSillySharkGame) {
@@ -340,7 +328,7 @@ export default function NewSillySharkCanvas({
       onClose={() => {
         closeModal();
         coveyTownController.unPause();
-        resetGame(); //Resets the game state when we close. Used incase of replay
+        //resetGame(); //Resets the game state when we close. Used incase of replay
       }}
       size='xs'>
       <ModalOverlay style={{ pointerEvents: 'none' }} />
