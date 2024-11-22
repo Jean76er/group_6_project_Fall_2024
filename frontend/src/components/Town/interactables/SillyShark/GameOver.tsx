@@ -3,13 +3,12 @@ import React, { useCallback, useState } from 'react';
 import GameArea from '../GameArea';
 import TownController from '../../../../classes/TownController';
 import NewSillySharkCanvas from './SillySharkCanvas';
-import GameAreaController from '../../../../classes/interactable/GameAreaController';
 import SillySharkAreaController from '../../../../classes/interactable/SillySharkAreaController';
 
 export default function NewGameOverScreen({
   gameArea,
   coveyTownController,
-  gameAreaController
+  gameAreaController,
 }: {
   gameArea: GameArea;
   coveyTownController: TownController;
