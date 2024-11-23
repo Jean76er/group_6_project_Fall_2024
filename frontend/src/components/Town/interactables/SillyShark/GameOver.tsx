@@ -39,7 +39,9 @@ export default function NewGameOverScreen({
             alt='Minecraft fonts'
           />
         </ModalHeader>
-        <Center>{finalScore}</Center>
+        <Center fontSize={30} fontStyle={'Ariel'}>
+          Final Score: {finalScore}
+        </Center>
         <Center paddingTop='400'>
           <Button size='lg' bg='blue' color='white' onClick={handleReplay}>
             Replay
