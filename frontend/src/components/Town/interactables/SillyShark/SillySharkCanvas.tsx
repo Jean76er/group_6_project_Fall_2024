@@ -311,6 +311,8 @@ export default function NewSillySharkCanvas({
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.code === 'Space') {
+        /** Prevent "space" from from scrolling down the window*/
+        event.preventDefault();
         gameAreaController.emit('JUMP');
       }
     };
