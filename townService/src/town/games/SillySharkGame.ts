@@ -25,7 +25,6 @@ export default class SillySharkGame extends Game<SillySharkGameState> {
     if (this.state.player1 === player.id || this.state.player2 === player.id) {
       throw new InvalidParametersError(paramerrors.PLAYER_ALREADY_IN_GAME_MESSAGE);
     }
-
     if (this.state.player1 === undefined) {
       this.state.player1 = player.id;
       this.state.status = 'SINGLE_PLAYER_IN_PROGRESS';

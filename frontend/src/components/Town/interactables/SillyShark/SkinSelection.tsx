@@ -6,6 +6,8 @@ import {
   ModalHeader,
   Container,
   Center,
+  List,
+  ListItem,
 } from '@chakra-ui/react';
 import React, { useCallback, useState } from 'react';
 import SillySharkAreaController from '../../../../classes/interactable/SillySharkAreaController';
@@ -67,6 +69,9 @@ export default function SkinSelectionScreen({
   const townController = useTownController();
   const [showCanvas, setShowCanvas] = useState(false);
   const [skinSelected, setSkinSelected] = useState<Skin | undefined>(undefined);
+  const isMultiGameInProgress = gameAreaController.status === 'MULTI_PLAYER_IN_PROGRESS'
+  const [player1, setPlayer1] = useState(gameAreaController.player1);
+  const [player2, setPlayer2] = useState(gameAreaController.player2)
   const ourPlayer = townController.ourPlayer;
 
   const handleSkinSelection = useCallback(
@@ -103,6 +108,15 @@ export default function SkinSelectionScreen({
               </StyledSelectionSquare>
             ))}
           </StyledSelectionContainer>
+
+          {isMultiGameInProgress &&(
+            <Center>
+                <List aria-label='list of players in the game'>
+                  <ListItem>{player1?.userName || '(Waiting for player)'}</ListItem>
+                  <ListItem>{player2?.userName || '(Waiting for player)'}</ListItem>
+                </List>
+            </Center>
+          )}
 
           <Center paddingTop='10px'>
             <Button size='sm' width='fit-content' onClick={handleCanvas}>
