@@ -42,7 +42,8 @@ function SillySharkArea({
   const ourPlayer = coveyTownController.ourPlayer;
   //const [history, setHistory] = useState(gameAreaController?.history || []);
   const [joining, setJoin] = useState(false);
-  const [canJoin, setCanJoin] = useState(false);
+  const [CanJoinSinglePlayer, setCanJoinSinglePlayer] = useState(false);
+  const [CanJoinMultiPlayer, setCanJoinMultiPlayer] = useState(false);
   const [observers, setObservers] = useState(gameAreaController?.observers);
   const [showSkinSelection, setShowSkinSelection] = useState(false); //Used to determine if the next screen should be called
 
@@ -70,11 +71,15 @@ function SillySharkArea({
     const isMultiGameInProgress = status === 'MULTI_PLAYER_IN_PROGRESS';
     const isGameOver = status === 'OVER';
 
-    setCanJoin(
+    setCanJoinSinglePlayer(
       !isPlayer &&
         !isSingleGameInProgress &&
         !isMultiGameInProgress &&
         (isWaitingToStart || isGameOver),
+    );
+
+    setCanJoinMultiPlayer(
+      !isPlayer && !isMultiGameInProgress && (isWaitingToStart || isGameOver || isSingleGameInProgress)
     );
   }, [gameAreaController]);
 
@@ -108,7 +113,7 @@ function SillySharkArea({
 
   return (
     <>
-      {canJoin && (
+      {CanJoinSinglePlayer && (
         <Center paddingTop='400'>
           <Button onClick={handleJoinGame} isDisabled={joining} size='lg' bg='blue' color='white'>
             {joining ? 'Loading...' : 'Start'}
@@ -122,11 +127,20 @@ function SillySharkArea({
           coveyTownController={coveyTownController}
         />
       )}
-      <Center paddingTop='10px'>
-        <Button size='lg' bg='blue' color='white'>
-          Join
-        </Button>
-      </Center>
+      {CanJoinMultiPlayer&& (
+        <Center paddingTop='10px'>
+          <Button onClick={handleJoinGame} isDisabled={joining} size='lg' bg='blue' color='white'>
+            Join
+          </Button>
+        </Center>
+      )}
+      {showSkinSelection && (
+        <SkinSelectionScreen
+          gameAreaController={gameAreaController}
+          gameArea={gameArea}
+          coveyTownController={coveyTownController}
+        />
+      )}
       <Center paddingTop='10px'>{gameAreaController.status}</Center>
       <List aria-label='observers:'>
         {observers.map(observer => (
