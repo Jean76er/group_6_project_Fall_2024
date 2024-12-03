@@ -6,16 +6,13 @@ import {
   ModalHeader,
   Container,
   Center,
-  List,
-  ListItem,
 } from '@chakra-ui/react';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import SillySharkAreaController from '../../../../classes/interactable/SillySharkAreaController';
 import NewSillySharkCanvas from './SillySharkCanvas';
 import GameAreaInteractable from '../GameArea';
 import { Skin } from '../../../../types/CoveyTownSocket';
 import TownController from '../../../../classes/TownController';
-import useTownController from '../../../../hooks/useTownController';
 
 export enum Skins {
   SillyShark = '/SillySharkResources/skins/sillyshark.jpg',
@@ -68,11 +65,8 @@ export default function SkinSelectionScreen({
 }): JSX.Element {
   const [showCanvas, setShowCanvas] = useState(false);
   const [skinSelected, setSkinSelected] = useState<Skin | undefined>(undefined);
-  const [playersReady, setPlayersReady] = useState(0);
   const isSingleGameInProgress = gameAreaController.status === 'SINGLE_PLAYER_IN_PROGRESS';
   const isMultiGameInProgress = gameAreaController.status === 'MULTI_PLAYER_IN_PROGRESS';
-  const [player1, setPlayer1] = useState(gameAreaController.player1);
-  const [player2, setPlayer2] = useState(gameAreaController.player2);
   const ourPlayer = coveyTownController.ourPlayer;
 
   const handleSkinSelection = useCallback(
@@ -92,15 +86,9 @@ export default function SkinSelectionScreen({
       setShowCanvas(true)
     }
 
-    setPlayersReady(prevReady => {
-      const newReadyCount = prevReady + 1;
-  
-      if (newReadyCount === 2) {
-        setShowCanvas(true);
-      }
-      return newReadyCount;
-    });
   }, [skinSelected, isMultiGameInProgress]);
+
+
 
   const renderSkins = useCallback(() => {
     return (

@@ -9,7 +9,7 @@ import {
   List,
   ListItem,
 } from '@chakra-ui/react';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import SillySharkAreaController from '../../../../classes/interactable/SillySharkAreaController';
 import NewSillySharkCanvas from './SillySharkCanvas';
 import GameAreaInteractable from '../GameArea';
@@ -69,7 +69,6 @@ export default function MultiplayerSkinSelectionScreen({
   const [showCanvas, setShowCanvas] = useState(false);
   const [skinSelected, setSkinSelected] = useState<Skin | undefined>(undefined);
   const [playersReady, setPlayersReady] = useState(0);
-  const isSingleGameInProgress = gameAreaController.status === 'SINGLE_PLAYER_IN_PROGRESS';
   const isMultiGameInProgress = gameAreaController.status === 'MULTI_PLAYER_IN_PROGRESS';
   const [player1, setPlayer1] = useState(gameAreaController.player1);
   const [player2, setPlayer2] = useState(gameAreaController.player2);
@@ -88,9 +87,6 @@ export default function MultiplayerSkinSelectionScreen({
       alert('Please select a skin before continuing!!!!');
       return;
     }
-    else if (isSingleGameInProgress){
-      setShowCanvas(true)
-    }
 
     setPlayersReady(prevReady => {
       const newReadyCount = prevReady + 1;
@@ -101,6 +97,21 @@ export default function MultiplayerSkinSelectionScreen({
       return newReadyCount;
     });
   }, [skinSelected, isMultiGameInProgress]);
+
+  useEffect(() => {    
+    const handleScreenUpdate = () => {
+      setPlayer1(gameAreaController.player1)
+      setPlayer2(gameAreaController.player2)
+    }
+
+    gameAreaController.addListener('screenUpdated', handleScreenUpdate);
+    gameAreaController.addListener('skinSelected', handleSkinSelection);
+
+    return () => {
+      gameAreaController.removeListener('screenUpdated', handleScreenUpdate);
+      gameAreaController.addListener('skinSelected', handleSkinSelection);
+    };
+  }, [gameAreaController, player1,player2]);
 
   const renderSkins = useCallback(() => {
     return (
