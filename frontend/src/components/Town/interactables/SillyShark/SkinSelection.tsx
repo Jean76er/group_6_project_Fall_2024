@@ -13,6 +13,7 @@ import NewSillySharkCanvas from './SillySharkCanvas';
 import GameAreaInteractable from '../GameArea';
 import { Skin } from '../../../../types/CoveyTownSocket';
 import TownController from '../../../../classes/TownController';
+import useTownController from '../../../../hooks/useTownController';
 
 export enum Skins {
   SillyShark = '/SillySharkResources/skins/sillyshark.jpg',
@@ -63,8 +64,10 @@ export default function SkinSelectionScreen({
   gameArea: GameAreaInteractable;
   coveyTownController: TownController;
 }): JSX.Element {
+  const townController = useTownController();
   const [showCanvas, setShowCanvas] = useState(false);
   const [skinSelected, setSkinSelected] = useState<Skin | undefined>(undefined);
+  const ourPlayer = townController.ourPlayer;
 
   const handleSkinSelection = useCallback(
     (skin: Skin) => {
@@ -87,7 +90,7 @@ export default function SkinSelectionScreen({
       <>
         <ModalContent maxW='500px' h='720px' bg='skyblue'>
           <ModalHeader>
-            <Center>Select you skin!</Center>
+            <Center>Select you skin {ourPlayer.userName}!</Center>
           </ModalHeader>
 
           <StyledSelectionContainer>
@@ -126,6 +129,7 @@ export default function SkinSelectionScreen({
     gameArea,
     skinSelected,
     coveyTownController,
+    ourPlayer
   ]);
 
   return <>{renderSkins()}</>;
