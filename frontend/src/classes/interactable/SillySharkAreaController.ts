@@ -11,39 +11,31 @@ export default class SillySharkAreaController extends GameAreaController<
   SillySharkGameState,
   SillySharkEvents
 > {
-  protected _skin1?: Skin;
-
-  protected _skin2?: Skin;
+  protected _skins: { [playerName: string]: Skin } = {}; 
 
   get player1(): PlayerController | undefined {
-    if (this._model.game?.state.player1) {
-      return this._players[0];
-    }
-    return undefined;
+    return this._players[0] || undefined;
   }
 
   get player2(): PlayerController | undefined {
-    if (this._model.game?.state.player2) {
-      return this._players[1];
+    return this._players[1] || undefined;
+  }
+
+  get skin(): Skin | undefined {
+    if (this._skins) {
+      return this._skins[this._townController.ourPlayer.id];
     }
     return undefined;
   }
-
-  get skin1(): Skin | undefined {
-    return this._skin1;
+  
+  set skin(skin: string | undefined) {
+    if (skin) {
+      this._skins[this._townController.ourPlayer.id] = skin;
+    } else {
+      this._skins[this._townController.ourPlayer.id] = '/SillySharkResources/skins/sillyshark.png';
+    }
   }
 
-  set skin1(skin: Skin | undefined) {
-    this._skin1 = skin;
-  }
-
-  get skin2(): Skin | undefined {
-    return this._skin2;
-  }
-
-  set skin2(skin: Skin | undefined) {
-    this._skin2 = skin;
-  }
 
   get winner(): PlayerController | undefined {
     const gameState = this._model.game?.state;

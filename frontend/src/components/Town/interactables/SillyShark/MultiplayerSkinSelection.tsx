@@ -57,7 +57,7 @@ const StyledSelectionContainer = chakra(Container, {
 
 const SKINS = [Skins.SillyShark, Skins.Walrus, Skins.Penguin, Skins.PolarBear];
 
-export default function SkinSelectionScreen({
+export default function MultiplayerSkinSelectionScreen({
   gameAreaController,
   gameArea,
   coveyTownController,
@@ -121,13 +121,27 @@ export default function SkinSelectionScreen({
             ))}
           </StyledSelectionContainer>
 
+          
+          <Center>
+            <List aria-label='list of players in the game'>
+              <ListItem>{player1?.userName || '(Waiting for player)'}</ListItem>
+              <ListItem>{player2?.userName || '(Waiting for player)'}</ListItem>
+            </List>
+          </Center>
+        
+
           <Center paddingTop='10px'>
             <Button size='sm' width='fit-content' onClick={handleCanvas}>
               Continue
             </Button>
-
             
           </Center>
+          <Center paddingTop='10px'>
+              <p>{playersReady}/2 players are ready</p>
+          </Center>
+          
+            
+          
         </ModalContent>
         {showCanvas && (
           <NewSillySharkCanvas

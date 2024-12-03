@@ -21,6 +21,7 @@ import { InteractableID } from '../../../../types/CoveyTownSocket';
 import GameAreaInteractable from '../GameArea';
 import SillySharkAreaController from '../../../../classes/interactable/SillySharkAreaController';
 import SkinSelectionScreen from './SkinSelection';
+import MultiplayerSkinSelectionScreen from './MultiplayerSkinSelection';
 
 export type SillySharkGameProps = {
   gameAreaController: SillySharkAreaController;
@@ -37,8 +38,8 @@ function SillySharkArea({
 }): JSX.Element {
   const gameAreaController =
     useInteractableAreaController<SillySharkAreaController>(interactableID);
-  //const [player1, setPlayer1] = useState(gameAreaController?.player1);
-  //const [player2, setPlayer2] = useState(gameAreaController?.player2);
+  const [player1, setPlayer1] = useState(gameAreaController?.player1);
+  const [player2, setPlayer2] = useState(gameAreaController?.player2);
   const ourPlayer = coveyTownController.ourPlayer;
   //const [history, setHistory] = useState(gameAreaController?.history || []);
   const [joining, setJoin] = useState(false);
@@ -46,10 +47,14 @@ function SillySharkArea({
   const [CanJoinMultiPlayer, setCanJoinMultiPlayer] = useState(false);
   const [observers, setObservers] = useState(gameAreaController?.observers);
   const [showSkinSelection, setShowSkinSelection] = useState(false); //Used to determine if the next screen should be called
+  const [showMultiplayerSkinSelection, setShowMultiplayerSkinSelection] = useState(false); // For multiplayer skin selection
+  const [playerCount, setPlayerCount] = useState(coveyTownController.players.length)
 
   const toast = useToast();
 
-  const handleJoinGame = useCallback(async () => {
+  
+  
+  const handleJoinSinglePlayerGame = useCallback(async () => {
     setJoin(true);
     setShowSkinSelection(true);
     try {
@@ -63,6 +68,22 @@ function SillySharkArea({
       setJoin(false);
     }
   }, [gameAreaController, toast]);
+  
+  const handleJoinMultiplayerGame = useCallback(async () => {
+    setJoin(true);
+    setShowMultiplayerSkinSelection(true);
+    try {
+      await gameAreaController.joinGame();
+    } catch (error) {
+      toast({
+        description: `${error}`,
+        status: 'error',
+      });
+    } finally {
+      setJoin(false);
+    }
+  }, [gameAreaController, toast]);
+  
 
   const handleJoinButtonVisibility = useCallback(() => {
     const { status, isPlayer } = gameAreaController;
@@ -89,8 +110,8 @@ function SillySharkArea({
     const handleGameUpdate = () => {
       //setHistory(gameAreaController.history || []);
       setObservers(gameAreaController.observers);
-      //setPlayer1(gameAreaController.player1);
-      //setPlayer2(gameAreaController.player2);
+      setPlayer1(gameAreaController.player1);
+      setPlayer2(gameAreaController.player2);
 
       handleJoinButtonVisibility();
     };
@@ -102,10 +123,16 @@ function SillySharkArea({
       toast({ description: message });
     };
 
+    const updatePlayerCount = () => {
+      setPlayerCount(coveyTownController.players.length);
+    };
+
+    coveyTownController.addListener('playersChanged', updatePlayerCount);
     gameAreaController.addListener('gameUpdated', handleGameUpdate);
     gameAreaController.addListener('gameEnd', handleGameEnd);
 
     return () => {
+      coveyTownController.removeListener('playersChanged', updatePlayerCount);
       gameAreaController.removeListener('gameUpdated', handleGameUpdate);
       gameAreaController.removeListener('gameEnd', handleGameEnd);
     };
@@ -115,25 +142,19 @@ function SillySharkArea({
     <>
       {CanJoinSinglePlayer && (
         <Center paddingTop='400'>
-          <Button onClick={handleJoinGame} isDisabled={joining} size='lg' bg='blue' color='white'>
+          <Button onClick={handleJoinSinglePlayerGame} isDisabled={joining} size='lg' bg='blue' color='white'>
             {joining ? 'Loading...' : 'Start'}
           </Button>
         </Center>
       )}
-      {showSkinSelection && (
-        <SkinSelectionScreen
-          gameAreaController={gameAreaController}
-          gameArea={gameArea}
-          coveyTownController={coveyTownController}
-        />
-      )}
-      {CanJoinMultiPlayer&& (
+      {CanJoinMultiPlayer&&(
         <Center paddingTop='10px'>
-          <Button onClick={handleJoinGame} isDisabled={joining} size='lg' bg='blue' color='white'>
+          <Button onClick={handleJoinMultiplayerGame} isDisabled={joining || playerCount <= 1 } size='lg' bg='blue' color='white'>
             Join
           </Button>
         </Center>
       )}
+      
       {showSkinSelection && (
         <SkinSelectionScreen
           gameAreaController={gameAreaController}
@@ -141,6 +162,14 @@ function SillySharkArea({
           coveyTownController={coveyTownController}
         />
       )}
+      {showMultiplayerSkinSelection && (
+        <MultiplayerSkinSelectionScreen
+          gameAreaController={gameAreaController}
+          gameArea={gameArea}
+          coveyTownController={coveyTownController}
+        />
+      )}
+
       <Center paddingTop='10px'>{gameAreaController.status}</Center>
       <List aria-label='observers:'>
         {observers.map(observer => (

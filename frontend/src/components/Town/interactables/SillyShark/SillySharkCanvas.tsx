@@ -6,6 +6,7 @@ import GameAreaInteractable from '../GameArea';
 import Obstacle from './Obstacle';
 import TownController from '../../../../classes/TownController';
 import NewGameOverScreen from './GameOver';
+import useTownController from '../../../../hooks/useTownController';
 
 export type SillySharkProps = {
   gameAreaController: SillySharkAreaController;
@@ -26,6 +27,8 @@ export default function NewSillySharkCanvas({
   const [gameOver, setGameOver] = useState(false);
   const gravity = 1; /**Makes spirte fall faster or slower*/
   const [velocity, setVelocity] = useState(0);
+  const townController = useTownController();
+  const ourPlayer = townController.ourPlayer;
 
   useEffect(() => {
     if (newSillySharkGame) {
@@ -72,8 +75,8 @@ export default function NewSillySharkCanvas({
 
   /**Load the sprite image when the component mounts */
   useEffect(() => {
-    spriteImage.current.src = gameAreaController.skin1 as string;
-  }, [gameAreaController.skin1]);
+    spriteImage.current.src = gameAreaController.skin as string;
+  }, [gameAreaController.skin]);
 
   /** Generate random heights for obstacles */
   const randomObstacleHeights = () => {

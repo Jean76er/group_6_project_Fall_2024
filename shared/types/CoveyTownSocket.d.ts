@@ -131,8 +131,7 @@ export interface GameInstance<GS extends GameState> {
 export interface SillySharkGameState extends WinnableGameState {
   player1?: PlayerID;
   player2?: PlayerID;
-  skin1?: Skin;
-  skin2?: Skin;
+  skins?: {[player: string]: Skin }
 } 
 
 /**
