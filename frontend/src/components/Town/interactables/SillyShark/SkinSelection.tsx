@@ -14,10 +14,10 @@ import GameAreaInteractable from '../GameArea';
 import { Skin } from '../../../../types/CoveyTownSocket';
 
 export enum Skins {
-  SillyShark = '/SillySharkResources/skins/sillyshark.jpg',
-  Walrus = '/SillySharkResources/skins/walrus.jpg',
-  Penguin = '/SillySharkResources/skins/penguin.jpg',
-  PolarBear = '/SillySharkResources/skins/polarbear.jpg',
+  SillyShark = '/SillySharkResources/skins/sillyshark.png',
+  Walrus = '/SillySharkResources/skins/walrus.png',
+  Penguin = '/SillySharkResources/skins/penguin.png',
+  PolarBear = '/SillySharkResources/skins/polarbear.png',
 }
 
 /**
@@ -93,7 +93,7 @@ export default function SkinSelectionScreen({
                 key={skin}
                 onClick={() => handleSkinSelection(skin)}
                 border={skinSelected === skin ? '8px solid blue' : 'none'}>
-                <Image src={skin} alt='Skin Image' objectFit='cover' boxSize='100%' />
+                <Image src={skin} alt='Skin Image' objectFit='contain' boxSize='100%' />
               </StyledSelectionSquare>
             ))}
           </StyledSelectionContainer>

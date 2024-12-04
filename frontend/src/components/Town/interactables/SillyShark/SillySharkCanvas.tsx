@@ -59,7 +59,7 @@ export default function NewSillySharkCanvas({
   const obstacleSpacing = 300;
   /** Sprite properties and state */
   const [spriteY, setSpriteY] = useState(canvasHeight / 2);
-  const spriteWidth = 50;
+  const spriteWidth = 70;
   const spriteHeight = 50;
   const spriteImage = useRef(new Image());
   /** adding state for the score*/
