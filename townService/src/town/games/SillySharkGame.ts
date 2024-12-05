@@ -50,7 +50,7 @@ export default class SillySharkGame extends Game<SillySharkGameState> {
       this.state = {
         ...this.state,
         player2: player.id,
-        ready: { ...this.state.ready,[player.id]: false },
+        ready: { ...this.state.ready, [player.id]: false },
       };
     } else {
       throw new InvalidParametersError(paramerrors.GAME_FULL_MESSAGE);
