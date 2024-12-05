@@ -15,8 +15,6 @@ import NewSillySharkCanvas from './SillySharkCanvas';
 import GameAreaInteractable from '../GameArea';
 import { Skin } from '../../../../types/CoveyTownSocket';
 import TownController from '../../../../classes/TownController';
-import useTownController from '../../../../hooks/useTownController';
-
 export enum Skins {
   SillyShark = '/SillySharkResources/skins/sillyshark.jpg',
   Walrus = '/SillySharkResources/skins/walrus.jpg',
@@ -68,10 +66,10 @@ export default function MultiplayerSkinSelectionScreen({
 }): JSX.Element {
   const [showCanvas, setShowCanvas] = useState(false);
   const [skinSelected, setSkinSelected] = useState<Skin | undefined>(undefined);
-  const [playersReady, setPlayersReady] = useState(0);
-  const isMultiGameInProgress = gameAreaController.status === 'MULTI_PLAYER_IN_PROGRESS';
+  const [playersReady, setPlayersReady] = useState(gameAreaController.readyCount);
   const [player1, setPlayer1] = useState(gameAreaController.player1);
   const [player2, setPlayer2] = useState(gameAreaController.player2);
+  const [hasClickedContinue, setHasClickedContinue] = useState(false);
   const ourPlayer = coveyTownController.ourPlayer;
 
   const handleSkinSelection = useCallback(
@@ -83,35 +81,39 @@ export default function MultiplayerSkinSelectionScreen({
   );
 
   const handleCanvas = useCallback(() => {
+    if (hasClickedContinue) {
+      return;
+    }
     if (!skinSelected) {
       alert('Please select a skin before continuing!!!!');
       return;
     }
 
-    setPlayersReady(prevReady => {
-      const newReadyCount = prevReady + 1;
-  
-      if (newReadyCount === 2) {
-        setShowCanvas(true);
-      }
-      return newReadyCount;
-    });
-  }, [skinSelected, isMultiGameInProgress]);
+    setHasClickedContinue(true); // Disable the button for this player
+    gameAreaController.setReady(ourPlayer.id); // Mark the player as ready
 
-  useEffect(() => {    
-    const handleScreenUpdate = () => {
-      setPlayer1(gameAreaController.player1)
-      setPlayer2(gameAreaController.player2)
+    if (playersReady === 2) {
+      setShowCanvas(true); // Start the game when both players are ready
     }
+  }, [skinSelected, playersReady, gameAreaController, hasClickedContinue, ourPlayer.id]);
 
-    gameAreaController.addListener('screenUpdated', handleScreenUpdate);
-    gameAreaController.addListener('skinSelected', handleSkinSelection);
+  useEffect(() => {
+    const handleScreenUpdate = () => {
+      setPlayer1(gameAreaController.player1);
+      setPlayer2(gameAreaController.player2);
+    };
+    const handlePlayersReadyUpdated = (readyCount: number) => {
+      setPlayersReady(readyCount);
+    };
+
+    gameAreaController.addListener('playersReadyUpdated', handlePlayersReadyUpdated);
+    gameAreaController.addListener('playersUpdated', handleScreenUpdate);
 
     return () => {
-      gameAreaController.removeListener('screenUpdated', handleScreenUpdate);
-      gameAreaController.addListener('skinSelected', handleSkinSelection);
+      gameAreaController.removeListener('playersReadyUpdated', handlePlayersReadyUpdated);
+      gameAreaController.removeListener('playersUpdated', handleScreenUpdate);
     };
-  }, [gameAreaController, player1,player2]);
+  }, [gameAreaController, handleSkinSelection]);
 
   const renderSkins = useCallback(() => {
     return (
@@ -132,27 +134,25 @@ export default function MultiplayerSkinSelectionScreen({
             ))}
           </StyledSelectionContainer>
 
-          
           <Center>
             <List aria-label='list of players in the game'>
               <ListItem>{player1?.userName || '(Waiting for player)'}</ListItem>
               <ListItem>{player2?.userName || '(Waiting for player)'}</ListItem>
             </List>
           </Center>
-        
 
           <Center paddingTop='10px'>
-            <Button size='sm' width='fit-content' onClick={handleCanvas}>
+            <Button
+              size='sm'
+              width='fit-content'
+              onClick={handleCanvas}
+              disabled={hasClickedContinue}>
               Continue
             </Button>
-            
           </Center>
           <Center paddingTop='10px'>
-              <p>{playersReady}/2 players are ready</p>
+            <p>{playersReady}/2 players are ready</p>
           </Center>
-          
-            
-          
         </ModalContent>
         {showCanvas && (
           <NewSillySharkCanvas
@@ -174,6 +174,10 @@ export default function MultiplayerSkinSelectionScreen({
     skinSelected,
     coveyTownController,
     ourPlayer,
+    player1?.userName,
+    player2?.userName,
+    playersReady,
+    hasClickedContinue,
   ]);
 
   return <>{renderSkins()}</>;

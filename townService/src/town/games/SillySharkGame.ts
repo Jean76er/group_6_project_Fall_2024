@@ -25,15 +25,33 @@ export default class SillySharkGame extends Game<SillySharkGameState> {
     if (this.state.player1 === player.id || this.state.player2 === player.id) {
       throw new InvalidParametersError(paramerrors.PLAYER_ALREADY_IN_GAME_MESSAGE);
     }
-    if (this.state.player1 === undefined) {
-      this.state.player1 = player.id;
-      this.state.status = 'SINGLE_PLAYER_IN_PROGRESS';
-    } else if (this.state.player2 === undefined) {
-      this.state.player2 = player.id;
-      this.state.status = 'MULTI_PLAYER_IN_PROGRESS';
+    if (!this.state.player1){
+      this.state = {
+        ...this.state,
+        player1: player.id,
+      }
+    } else if (!this.state.player2){
+      this.state = {
+        ...this.state,
+        player2: player.id,
+      }
     } else {
       throw new InvalidParametersError(paramerrors.GAME_FULL_MESSAGE);
     }
+
+    if (this.state.player1 && this.state.player2){
+      this.state = {
+        ...this.state,
+        status: 'MULTI_PLAYER_IN_PROGRESS'
+      }
+    }else{
+      this.state = {
+        ...this.state,
+        status: 'SINGLE_PLAYER_IN_PROGRESS'
+      }
+    }
+
+
   }
 
   /**
@@ -46,20 +64,44 @@ export default class SillySharkGame extends Game<SillySharkGameState> {
     if (this.state.player1 !== player.id && this.state.player2 !== player.id) {
       throw new InvalidParametersError(paramerrors.PLAYER_NOT_IN_GAME_MESSAGE);
     }
-    if (this.state.status === 'MULTI_PLAYER_IN_PROGRESS') {
-      this.state.status = 'SINGLE_PLAYER_IN_PROGRESS';
-      if (this.state.player1 === player.id) {
-        this.state.winner = this.state.player2;
-      } else if (this.state.player2 === player.id) {
-        this.state.winner = this.state.player1;
+
+    if (this.state.status === 'SINGLE_PLAYER_IN_PROGRESS'){
+      this.state = {
+        status: 'WAITING_TO_START',
       }
-    } else {
-      if (this.state.player1 === player.id) {
-        this.state.player1 = undefined;
-      } else if (this.state.player2 === player.id) {
-        this.state.player2 = undefined;
-      }
-      this.state.status = 'WAITING_TO_START';
     }
+    else if (this.state.status === 'MULTI_PLAYER_IN_PROGRESS'){
+      if (this.state.player1 === player.id){
+        this.state = {
+          ...this.state,
+          status: 'WAITING_TO_START',
+          winner: this.state.player2,
+        };
+      } else {
+        this.state = {
+          ...this.state,
+          status: 'WAITING_TO_START',
+          winner: this.state.player1,
+        }
+      }
+    }
+
+
+    // if (this.state.status === 'MULTI_PLAYER_IN_PROGRESS') {
+    //   this.state.status = 'SINGLE_PLAYER_IN_PROGRESS';
+    //   if (this.state.player1 === player.id) {
+    //     this.state.winner = this.
+    //     state.player2;
+    //   } else if (this.state.player2 === player.id) {
+    //     this.state.winner = this.state.player1;
+    //   }
+    // } else {
+    //   if (this.state.player1 === player.id) {
+    //     this.state.player1 = undefined;
+    //   } else if (this.state.player2 === player.id) {
+    //     this.state.player2 = undefined;
+    //   }
+    //   this.state.status = 'WAITING_TO_START';
+    // }
   }
 }

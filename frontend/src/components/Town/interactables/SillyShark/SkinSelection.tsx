@@ -7,7 +7,7 @@ import {
   Container,
   Center,
 } from '@chakra-ui/react';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import SillySharkAreaController from '../../../../classes/interactable/SillySharkAreaController';
 import NewSillySharkCanvas from './SillySharkCanvas';
 import GameAreaInteractable from '../GameArea';
@@ -66,7 +66,6 @@ export default function SkinSelectionScreen({
   const [showCanvas, setShowCanvas] = useState(false);
   const [skinSelected, setSkinSelected] = useState<Skin | undefined>(undefined);
   const isSingleGameInProgress = gameAreaController.status === 'SINGLE_PLAYER_IN_PROGRESS';
-  const isMultiGameInProgress = gameAreaController.status === 'MULTI_PLAYER_IN_PROGRESS';
   const ourPlayer = coveyTownController.ourPlayer;
 
   const handleSkinSelection = useCallback(
@@ -81,14 +80,10 @@ export default function SkinSelectionScreen({
     if (!skinSelected) {
       alert('Please select a skin before continuing!!!!');
       return;
+    } else if (isSingleGameInProgress) {
+      setShowCanvas(true);
     }
-    else if (isSingleGameInProgress){
-      setShowCanvas(true)
-    }
-
-  }, [skinSelected, isMultiGameInProgress]);
-
-
+  }, [skinSelected, isSingleGameInProgress]);
 
   const renderSkins = useCallback(() => {
     return (
@@ -113,8 +108,6 @@ export default function SkinSelectionScreen({
             <Button size='sm' width='fit-content' onClick={handleCanvas}>
               Continue
             </Button>
-
-            
           </Center>
         </ModalContent>
         {showCanvas && (

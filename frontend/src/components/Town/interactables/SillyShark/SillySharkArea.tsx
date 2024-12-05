@@ -1,7 +1,5 @@
 import {
   Button,
-  List,
-  ListItem,
   Modal,
   ModalCloseButton,
   ModalContent,
@@ -36,29 +34,36 @@ function SillySharkArea({
   gameArea: GameAreaInteractable;
   coveyTownController: TownController;
 }): JSX.Element {
-  const gameAreaController =
+  const singleGameAreaController =
     useInteractableAreaController<SillySharkAreaController>(interactableID);
-  const [player1, setPlayer1] = useState(gameAreaController?.player1);
-  const [player2, setPlayer2] = useState(gameAreaController?.player2);
+
+  const multiGameAreaController =
+    useInteractableAreaController<SillySharkAreaController>(interactableID);
   const ourPlayer = coveyTownController.ourPlayer;
   //const [history, setHistory] = useState(gameAreaController?.history || []);
   const [joining, setJoin] = useState(false);
-  const [CanJoinSinglePlayer, setCanJoinSinglePlayer] = useState(false);
-  const [CanJoinMultiPlayer, setCanJoinMultiPlayer] = useState(false);
-  const [observers, setObservers] = useState(gameAreaController?.observers);
+  const [canJoinSinglePlayer, setCanJoinSinglePlayer] = useState(false);
+  const [canJoinMultiPlayer, setCanJoinMultiPlayer] = useState(false);
+  // const [observers, setObservers] = useState(singleGameAreaController?.observers);
   const [showSkinSelection, setShowSkinSelection] = useState(false); //Used to determine if the next screen should be called
   const [showMultiplayerSkinSelection, setShowMultiplayerSkinSelection] = useState(false); // For multiplayer skin selection
-  const [playerCount, setPlayerCount] = useState(coveyTownController.players.length)
+  const [playerCount, setPlayerCount] = useState(coveyTownController.players.length);
 
   const toast = useToast();
 
-  
-  
+  const renderMultiSkinScreen = useCallback(()=>{
+    return <MultiplayerSkinSelectionScreen
+    gameAreaController={multiGameAreaController}
+    gameArea={gameArea}
+    coveyTownController={coveyTownController}
+    />
+  }, [multiGameAreaController, gameArea, coveyTownController])
+
   const handleJoinSinglePlayerGame = useCallback(async () => {
     setJoin(true);
     setShowSkinSelection(true);
     try {
-      await gameAreaController.joinGame();
+      await singleGameAreaController.joinGame();
     } catch (error) {
       toast({
         description: `${error}`,
@@ -67,13 +72,13 @@ function SillySharkArea({
     } finally {
       setJoin(false);
     }
-  }, [gameAreaController, toast]);
-  
+  }, [singleGameAreaController, toast]);
+
   const handleJoinMultiplayerGame = useCallback(async () => {
     setJoin(true);
     setShowMultiplayerSkinSelection(true);
     try {
-      await gameAreaController.joinGame();
+      await multiGameAreaController.joinGame();
     } catch (error) {
       toast({
         description: `${error}`,
@@ -82,11 +87,10 @@ function SillySharkArea({
     } finally {
       setJoin(false);
     }
-  }, [gameAreaController, toast]);
-  
+  }, [multiGameAreaController, toast]);
 
-  const handleJoinButtonVisibility = useCallback(() => {
-    const { status, isPlayer } = gameAreaController;
+  const handleSingleJoinButtonVisibility = useCallback(() => {
+    const { status, isPlayer } = singleGameAreaController;
     const isWaitingToStart = status === 'WAITING_TO_START';
     const isSingleGameInProgress = status === 'SINGLE_PLAYER_IN_PROGRESS';
     const isMultiGameInProgress = status === 'MULTI_PLAYER_IN_PROGRESS';
@@ -98,84 +102,128 @@ function SillySharkArea({
         !isMultiGameInProgress &&
         (isWaitingToStart || isGameOver),
     );
+  }, [singleGameAreaController]);
+
+  const handleMultiJoinButtonVisibility = useCallback(() => {
+    const { status, isPlayer } = multiGameAreaController;
+    const isWaitingToStart = status === 'WAITING_TO_START';
+    const isSingleGameInProgress = status === 'SINGLE_PLAYER_IN_PROGRESS';
+    const isMultiGameInProgress = status === 'MULTI_PLAYER_IN_PROGRESS';
+    const isGameOver = status === 'OVER';
 
     setCanJoinMultiPlayer(
-      !isPlayer && !isMultiGameInProgress && (isWaitingToStart || isGameOver || isSingleGameInProgress)
+      !isPlayer &&
+        !isMultiGameInProgress &&
+        (isWaitingToStart || isGameOver || isSingleGameInProgress),
     );
-  }, [gameAreaController]);
+  }, [multiGameAreaController]);
 
   useEffect(() => {
-    handleJoinButtonVisibility();
+    handleSingleJoinButtonVisibility();
+    handleMultiJoinButtonVisibility();
 
-    const handleGameUpdate = () => {
+    const handleSingleGameUpdate = () => {
       //setHistory(gameAreaController.history || []);
-      setObservers(gameAreaController.observers);
-      setPlayer1(gameAreaController.player1);
-      setPlayer2(gameAreaController.player2);
+      // setObservers(singleGameAreaController.observers);
 
-      handleJoinButtonVisibility();
+      handleSingleJoinButtonVisibility();
     };
 
-    const handleGameEnd = () => {
-      const { winner } = gameAreaController;
+    const handleMultiGameUpdate = () => {
+      //setHistory(gameAreaController.history || []);
+      // setObservers(multiGameAreaController.observers);
+
+      handleMultiJoinButtonVisibility();
+    };
+
+    const handleSingleGameEnd = () => {
+      const { winner } = singleGameAreaController;
       const message = winner ? (winner === ourPlayer ? 'Winner' : 'Loser') : 'Tie';
 
       toast({ description: message });
     };
 
+    const handleMultiGameEnd = () => {
+      const { winner } = multiGameAreaController;
+      const message = winner ? (winner === ourPlayer ? 'Winner' : 'Loser') : 'Tie';
+
+      toast({ description: message });
+    };
     const updatePlayerCount = () => {
       setPlayerCount(coveyTownController.players.length);
     };
 
     coveyTownController.addListener('playersChanged', updatePlayerCount);
-    gameAreaController.addListener('gameUpdated', handleGameUpdate);
-    gameAreaController.addListener('gameEnd', handleGameEnd);
+    singleGameAreaController.addListener('gameUpdated', handleSingleGameUpdate);
+    singleGameAreaController.addListener('gameEnd', handleSingleGameEnd);
+    multiGameAreaController.addListener('gameUpdated', handleMultiGameUpdate);
+    multiGameAreaController.addListener('gameEnd', handleMultiGameEnd);
 
     return () => {
       coveyTownController.removeListener('playersChanged', updatePlayerCount);
-      gameAreaController.removeListener('gameUpdated', handleGameUpdate);
-      gameAreaController.removeListener('gameEnd', handleGameEnd);
+      singleGameAreaController.removeListener('gameUpdated', handleSingleGameUpdate);
+      singleGameAreaController.removeListener('gameEnd', handleSingleGameEnd);
+      multiGameAreaController.removeListener('gameUpdated', handleMultiGameUpdate);
+      multiGameAreaController.removeListener('gameEnd', handleMultiGameEnd);
     };
-  }, [ourPlayer, gameAreaController, handleJoinButtonVisibility, toast]);
+  }, [
+    coveyTownController,
+    ourPlayer,
+    singleGameAreaController,
+    multiGameAreaController,
+    handleMultiJoinButtonVisibility,
+    handleSingleJoinButtonVisibility,
+    toast,
+  ]);
 
   return (
     <>
-      {CanJoinSinglePlayer && (
+      {canJoinSinglePlayer && (
         <Center paddingTop='400'>
-          <Button onClick={handleJoinSinglePlayerGame} isDisabled={joining} size='lg' bg='blue' color='white'>
+          <Button
+            onClick={handleJoinSinglePlayerGame}
+            isDisabled={joining}
+            size='lg'
+            bg='blue'
+            color='white'>
             {joining ? 'Loading...' : 'Start'}
           </Button>
         </Center>
       )}
-      {CanJoinMultiPlayer&&(
+      {canJoinMultiPlayer && (
         <Center paddingTop='10px'>
-          <Button onClick={handleJoinMultiplayerGame} isDisabled={joining || playerCount <= 1 } size='lg' bg='blue' color='white'>
+          <Button
+            onClick={handleJoinMultiplayerGame}
+            isDisabled={joining || playerCount <= 1}
+            size='lg'
+            bg='blue'
+            color='white'>
             Join
           </Button>
         </Center>
       )}
-      
+
       {showSkinSelection && (
         <SkinSelectionScreen
-          gameAreaController={gameAreaController}
+          gameAreaController={singleGameAreaController}
           gameArea={gameArea}
           coveyTownController={coveyTownController}
         />
       )}
       {showMultiplayerSkinSelection && (
         <MultiplayerSkinSelectionScreen
-          gameAreaController={gameAreaController}
+          gameAreaController={multiGameAreaController}
           gameArea={gameArea}
           coveyTownController={coveyTownController}
         />
       )}
 
-      <Center paddingTop='10px'>{gameAreaController.status}</Center>
+      {/* <Center paddingTop='10px'>{gameAreaController.status}</Center>
       <List aria-label='observers:'>
         {observers.map(observer => (
           <ListItem key={observer.id}>{observer.userName}</ListItem>
         ))}
-      </List>
+      </List> */}
     </>
   );
 }
