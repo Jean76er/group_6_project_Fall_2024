@@ -103,6 +103,7 @@ export default function MultiplayerSkinSelectionScreen({
       setPlayer2(gameAreaController.player2);
     };
     const handlePlayersReadyUpdated = (readyCount: number) => {
+      console.log('Ready count updated:', readyCount); // Debugging log
       setPlayersReady(readyCount);
     };
 
@@ -113,7 +114,7 @@ export default function MultiplayerSkinSelectionScreen({
       gameAreaController.removeListener('playersReadyUpdated', handlePlayersReadyUpdated);
       gameAreaController.removeListener('playersUpdated', handleScreenUpdate);
     };
-  }, [gameAreaController, handleSkinSelection]);
+  }, [gameAreaController]);
 
   const renderSkins = useCallback(() => {
     return (

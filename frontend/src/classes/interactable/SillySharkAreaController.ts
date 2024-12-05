@@ -17,14 +17,26 @@ export default class SillySharkAreaController extends GameAreaController<
 
   protected _ready: { [playerID: string]: boolean } = {};
 
-  public setReady(playerId: string): void {
-    this._ready[playerId] = true;
-    this.emit('playersReadyUpdated', this.readyCount); // Notify about player readiness
+  public async setReady(playerId: string): Promise<void> {
+    const instanceID = this._instanceID;
+    if (!instanceID) {
+      throw new Error('No game instance found');
+    }
+    // Send the ready command to the server
+    await this._townController.sendInteractableCommand(this.id, {
+      type: 'SetReady',
+      gameID: instanceID,
+      playerID: playerId,
+    });
   }
 
   /**get how many players are ready */
   public get readyCount(): number {
-    return Object.values(this._ready).filter(ready => ready).length;
+    const readymap = this._model.game?.state.ready;
+    if (readymap) {
+      return Object.values(readymap).filter(ready => ready).length;
+    }
+    return 0;
   }
 
   get player1(): PlayerController | undefined {
@@ -87,21 +99,20 @@ export default class SillySharkAreaController extends GameAreaController<
 
   public updateFrom(newModel: GameArea<SillySharkGameState>): void {
     const previousPlayers = this._players.map(player => player.id);
-    const previousReadyCount = Object.values(this._ready).filter(ready => ready).length;
+    const oldReadyCount = this.readyCount;
     super._updateFrom(newModel);
+    console.log('Updated model, new ready count:', this.readyCount);
     const currentPlayers = this._players.map(player => player.id);
+    const currentReadyCount = this.readyCount;
 
     // Check if players have changed
-    if (
-      previousPlayers.length !== currentPlayers.length ||
-      !previousPlayers.every((id, index) => id === currentPlayers[index])
-    ) {
-      this.emit('playersUpdated', this._players); // Pass the updated players list
+    if (JSON.stringify(previousPlayers) !== JSON.stringify(currentPlayers)) {
+      console.log('players updated', this._players);
+      this.emit('playersUpdated', this._players);
     }
-    // Check if readiness state has changed
-    const currentReadyCount = this.readyCount; // Use the getter to calculate current ready count
-    if (previousReadyCount !== currentReadyCount) {
-      this.emit('playersReadyUpdated', currentReadyCount); // Notify listeners about readiness state
+    if (oldReadyCount !== currentReadyCount) {
+      console.log('Emitting playersReadyUpdated:', currentReadyCount); // Debug log
+      this.emit('playersReadyUpdated', currentReadyCount);
     }
   }
 

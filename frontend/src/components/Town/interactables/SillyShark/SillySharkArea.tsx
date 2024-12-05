@@ -51,13 +51,15 @@ function SillySharkArea({
 
   const toast = useToast();
 
-  const renderMultiSkinScreen = useCallback(()=>{
-    return <MultiplayerSkinSelectionScreen
-    gameAreaController={multiGameAreaController}
-    gameArea={gameArea}
-    coveyTownController={coveyTownController}
-    />
-  }, [multiGameAreaController, gameArea, coveyTownController])
+  const renderMultiSkinScreen = useCallback(() => {
+    return (
+      <MultiplayerSkinSelectionScreen
+        gameAreaController={multiGameAreaController}
+        gameArea={gameArea}
+        coveyTownController={coveyTownController}
+      />
+    );
+  }, [multiGameAreaController, gameArea, coveyTownController]);
 
   const handleJoinSinglePlayerGame = useCallback(async () => {
     setJoin(true);
@@ -210,13 +212,7 @@ function SillySharkArea({
           coveyTownController={coveyTownController}
         />
       )}
-      {showMultiplayerSkinSelection && (
-        <MultiplayerSkinSelectionScreen
-          gameAreaController={multiGameAreaController}
-          gameArea={gameArea}
-          coveyTownController={coveyTownController}
-        />
-      )}
+      {showMultiplayerSkinSelection && renderMultiSkinScreen()}
 
       {/* <Center paddingTop='10px'>{gameAreaController.status}</Center>
       <List aria-label='observers:'>
