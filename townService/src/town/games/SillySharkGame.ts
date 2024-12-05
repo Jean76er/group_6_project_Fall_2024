@@ -2,7 +2,7 @@ import SillySharkPlayer from './SillySharkPlayer';
 import InvalidParametersError from '../../lib/InvalidParametersError';
 import * as paramerrors from '../../lib/InvalidParametersError';
 import Game from './Game';
-import { SillySharkGameState } from '../../types/CoveyTownSocket';
+import { Player, SillySharkGameState } from '../../types/CoveyTownSocket';
 
 export default class SillySharkGame extends Game<SillySharkGameState> {
   /* This constructor may need to be revised later with further development. */
@@ -13,7 +13,22 @@ export default class SillySharkGame extends Game<SillySharkGameState> {
        * this was causing conflicts with SillySharkGameArea.ts
        */
       status: 'WAITING_TO_START',
+      ready: {},
     });
+  }
+
+  private _setReady(player: Player): void {
+    this.state = {
+      ...this.state,
+      ready: { ...this.state.ready, [player.id]: true },
+    };
+  }
+
+  public setReady(player: Player): void {
+    if (!this._players.some(p => p.id === player.id)) {
+      throw new InvalidParametersError('Player is not in the game');
+    }
+    this._setReady(player);
   }
 
   /**
@@ -25,15 +40,32 @@ export default class SillySharkGame extends Game<SillySharkGameState> {
     if (this.state.player1 === player.id || this.state.player2 === player.id) {
       throw new InvalidParametersError(paramerrors.PLAYER_ALREADY_IN_GAME_MESSAGE);
     }
-
-    if (this.state.player1 === undefined) {
-      this.state.player1 = player.id;
-      this.state.status = 'SINGLE_PLAYER_IN_PROGRESS';
-    } else if (this.state.player2 === undefined) {
-      this.state.player2 = player.id;
-      this.state.status = 'MULTI_PLAYER_IN_PROGRESS';
+    if (!this.state.player1) {
+      this.state = {
+        ...this.state,
+        player1: player.id,
+        ready: { ...this.state.ready, [player.id]: false },
+      };
+    } else if (!this.state.player2) {
+      this.state = {
+        ...this.state,
+        player2: player.id,
+        ready: { ...this.state.ready, [player.id]: false },
+      };
     } else {
       throw new InvalidParametersError(paramerrors.GAME_FULL_MESSAGE);
+    }
+
+    if (this.state.player1 && this.state.player2) {
+      this.state = {
+        ...this.state,
+        status: 'MULTI_PLAYER_IN_PROGRESS',
+      };
+    } else {
+      this.state = {
+        ...this.state,
+        status: 'SINGLE_PLAYER_IN_PROGRESS',
+      };
     }
   }
 
@@ -47,20 +79,26 @@ export default class SillySharkGame extends Game<SillySharkGameState> {
     if (this.state.player1 !== player.id && this.state.player2 !== player.id) {
       throw new InvalidParametersError(paramerrors.PLAYER_NOT_IN_GAME_MESSAGE);
     }
-    if (this.state.status === 'MULTI_PLAYER_IN_PROGRESS') {
-      this.state.status = 'SINGLE_PLAYER_IN_PROGRESS';
+
+    if (this.state.status === 'SINGLE_PLAYER_IN_PROGRESS') {
+      this.state = {
+        status: 'WAITING_TO_START',
+        ready: {},
+      };
+    } else if (this.state.status === 'MULTI_PLAYER_IN_PROGRESS') {
       if (this.state.player1 === player.id) {
-        this.state.winner = this.state.player2;
-      } else if (this.state.player2 === player.id) {
-        this.state.winner = this.state.player1;
+        this.state = {
+          ...this.state,
+          status: 'WAITING_TO_START',
+          winner: this.state.player2,
+        };
+      } else {
+        this.state = {
+          ...this.state,
+          status: 'WAITING_TO_START',
+          winner: this.state.player1,
+        };
       }
-    } else {
-      if (this.state.player1 === player.id) {
-        this.state.player1 = undefined;
-      } else if (this.state.player2 === player.id) {
-        this.state.player2 = undefined;
-      }
-      this.state.status = 'WAITING_TO_START';
     }
   }
 }

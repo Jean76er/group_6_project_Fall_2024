@@ -131,8 +131,8 @@ export interface GameInstance<GS extends GameState> {
 export interface SillySharkGameState extends WinnableGameState {
   player1?: PlayerID;
   player2?: PlayerID;
-  skin1?: Skin;
-  skin2?: Skin;
+  skins?: {[player: string]: Skin }
+  ready: { [playerId: string]: boolean };
 } 
 
 /**
@@ -171,7 +171,7 @@ interface InteractableCommandBase {
 
 
 
-export type InteractableCommand =  ViewingAreaUpdateCommand | JoinGameCommand | LeaveGameCommand;
+export type InteractableCommand =  ViewingAreaUpdateCommand | JoinGameCommand | LeaveGameCommand | SetReadyCommand;
 export interface ViewingAreaUpdateCommand  {
   type: 'ViewingAreaUpdate';
   update: ViewingArea;
@@ -183,10 +183,16 @@ export interface LeaveGameCommand {
   type: 'LeaveGame';
   gameID: GameInstanceID;
 }
+export interface SetReadyCommand {
+  type: 'SetReady';
+  gameID: GameInstanceID;
+  playerID: PlayerID;
+}
 
 export type InteractableCommandReturnType<CommandType extends InteractableCommand> = 
   CommandType extends JoinGameCommand ? { gameID: string}:
   CommandType extends ViewingAreaUpdateCommand ? undefined :
+  CommandType extends SetReadyCommand ? undefined :
   CommandType extends LeaveGameCommand ? undefined :
   never;
 

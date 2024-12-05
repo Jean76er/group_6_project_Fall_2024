@@ -26,6 +26,7 @@ export default function NewSillySharkCanvas({
   const [gameOver, setGameOver] = useState(false);
   const gravity = 1; /**Makes spirte fall faster or slower*/
   const [velocity, setVelocity] = useState(0);
+  // const ourPlayer = townController.ourPlayer;
 
   useEffect(() => {
     if (newSillySharkGame) {
@@ -72,8 +73,8 @@ export default function NewSillySharkCanvas({
 
   /**Load the sprite image when the component mounts */
   useEffect(() => {
-    spriteImage.current.src = gameAreaController.skin1 as string;
-  }, [gameAreaController.skin1]);
+    spriteImage.current.src = gameAreaController.skin as string;
+  }, [gameAreaController.skin]);
 
   /** Generate random heights for obstacles */
   const randomObstacleHeights = () => {
