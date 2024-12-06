@@ -91,6 +91,102 @@ class Obstacle {
     +passed()
     +passed(passed)
 }
+class SillySharkArea {
+    +boolean canJoinSinglePlayer
+    +boolean canJoinMultiPlayer
+    +number playerCount
+    +boolean joining
+    +boolean showSkinSelection
+    +boolean showMultiplayerSkinSelection
+    +void handleJoinSinglePlayerGame()
+    +void handleJoinMultiplayerGame()
+    +void handleSingleJoinButtonVisibility()
+    +void handleMultiJoinButtonVisibility()
+    +void handleSingleGameEnd()
+    +void handleMultiGameEnd()
+    +void updatePlayerCount()
+    +void useEffectListeners()
+}
+class SillySharkAreaWrapper {
+    +GameAreaInteractable gameArea
+    +TownController coveyTownController
+    +void closeModal()
+    +JSX.Element render()
+}
+
+class Diagram
+class NewSillySharkCanvas {
+    +SillySharkAreaController gameAreaController
+    +GameAreaInteractable newSillySharkGame
+    +GameArea gameArea
+    +TownController coveyTownController
+    +boolean isOpen
+    +boolean gameOver
+    +number gravity
+    +number velocity
+    +number spriteY
+    +number score
+    +ObstaclePair[] obstacles
+    +HTMLCanvasElement canvas
+    +HTMLImageElement spriteImage
+    +HTMLImageElement obstacleImage
+    +void closeModal()
+    +void draw()
+    +void updateSpritePosition()
+    +void updateObstacles()
+    +void checkCollision(): boolean
+    +void handleJumpEvent()
+    +void handleKeyDown(event: KeyboardEvent)
+    +void randomObstacleHeights(): {topHeight: number, bottomHeight: number}
+    +JSX.Element render()
+}
+```
+class Diagram
+class Skins {
++boolean SillyShark
++boolean Walrus
++boolean Penguin
++boolean PolarBear
+}
+
+class StyledSelectionSquare {
++Button base
++string justifyContent
++string alignItems
++string flexBasis
++string padding
++string border
++string height
++string fontSize
+}
+
+class StyledSelectionContainer {
++Container base
++string display
++string width
++string height
++string padding
++string flexWrap
+}
+
+class SkinSelectionScreen {
++Skins[] SKINS
++boolean isOpen
++void render()
++void handleSkinSelection(skin: Skins)
+}
+
+class SillySharkAreaController {
++void manageSkinSelection()
+}
+
+class TownController {
++void updatePlayerSkin()
+}
+
+class GameAreaInteractable {
++void interactWithGameArea()
+}
 ```
 
 ## Event flows
