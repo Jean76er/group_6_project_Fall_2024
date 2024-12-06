@@ -174,7 +174,7 @@ interface InteractableCommandBase {
 
 
 
-export type InteractableCommand =  ViewingAreaUpdateCommand | JoinGameCommand | LeaveGameCommand | SetReadyCommand | SetSkinCommand | StartGame;
+export type InteractableCommand =  ViewingAreaUpdateCommand | JoinGameCommand | LeaveGameCommand | SetReadyCommand | SetSkinCommand | UpdateScoreCommand | CheckForWinnerCommand | StartGame;
 export interface ViewingAreaUpdateCommand  {
   type: 'ViewingAreaUpdate';
   update: ViewingArea;
@@ -205,7 +205,7 @@ export interface UpdateScoreCommand {
   score: number;
 }
 
-export interface ChckForWinnerCommand {
+export interface CheckForWinnerCommand {
   type: 'CheckForWinner'
   gameID: GameInstanceID;
   player1ID: PlayerID;
