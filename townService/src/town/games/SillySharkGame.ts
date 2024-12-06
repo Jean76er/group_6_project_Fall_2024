@@ -13,6 +13,8 @@ export default class SillySharkGame extends Game<SillySharkGameState> {
     super({
       status: 'WAITING_TO_START',
       ready: {},
+      score: {},
+      lost: {}
     });
   }
 
@@ -176,6 +178,8 @@ export default class SillySharkGame extends Game<SillySharkGameState> {
       this.state = {
         status: 'WAITING_TO_START',
         ready: {},
+        score: {},
+        lost: {}
       };
     } else if (this.state.status === 'MULTI_PLAYER_IN_PROGRESS') {
       if (this.state.player1 === player.id) {
