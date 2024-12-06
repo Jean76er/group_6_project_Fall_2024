@@ -8,6 +8,7 @@ export const NO_GAME_IN_PROGRESS_ERROR = 'No game in progress';
 export type SillySharkEvents = GameEventTypes & {
   playersUpdated: (newPlayers: PlayerController[]) => void;
   playersReadyUpdated: (readyCount: number) => void;
+  skinChanged: (data: [string, Skin | undefined][]) => void;
 };
 export default class SillySharkAreaController extends GameAreaController<
   SillySharkGameState,
