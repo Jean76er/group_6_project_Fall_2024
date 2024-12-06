@@ -24,6 +24,8 @@ export default class SillySharkGameArea extends GameArea<SillySharkGame> {
     return 'SillySharkArea';
   }
 
+  private _checkForWin() {}
+
   private _stateUpdated(updatedState: GameInstance<SillySharkGameState>) {
     if (updatedState.state.status === 'OVER') {
       // If we haven't yet recorded the outcome, do so now.
@@ -112,6 +114,36 @@ export default class SillySharkGameArea extends GameArea<SillySharkGame> {
       game.setReady(player);
       // Update the state to notify listeners
       this._stateUpdated(game.toModel());
+
+      return undefined as InteractableCommandReturnType<CommandType>;
+    }
+
+    if (command.type === 'UpdateScore') {
+      const game = this._game;
+      if (!game) {
+        throw new InvalidParametersError(GAME_NOT_IN_PROGRESS_MESSAGE);
+      }
+      if (this._game?.id !== command.gameID) {
+        throw new InvalidParametersError(GAME_ID_MISSMATCH_MESSAGE);
+      }
+
+      game.updateScore(player, command.score);
+
+      this._stateUpdated(game.toModel());
+
+      return undefined as InteractableCommandReturnType<CommandType>;
+    }
+
+    if (command.type === 'CheckForWinner') {
+      const game = this._game;
+      if (!game) {
+        throw new InvalidParametersError(GAME_NOT_IN_PROGRESS_MESSAGE);
+      }
+      if (this._game?.id !== command.gameID) {
+        throw new InvalidParametersError(GAME_ID_MISSMATCH_MESSAGE);
+      }
+
+      game.checkForWinner();
 
       return undefined as InteractableCommandReturnType<CommandType>;
     }

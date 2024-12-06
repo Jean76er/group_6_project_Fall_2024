@@ -5,6 +5,7 @@ import Game from './Game';
 import { Player, SillySharkGameState, Skin } from '../../types/CoveyTownSocket';
 
 const DEFAULT_SKIN = '/SillySharkResources/skins/sillyshark.png';
+const DEFAULT_SCORE = 0;
 
 export default class SillySharkGame extends Game<SillySharkGameState> {
   /* This constructor may need to be revised later with further development. */
@@ -12,6 +13,8 @@ export default class SillySharkGame extends Game<SillySharkGameState> {
     super({
       status: 'WAITING_TO_START',
       ready: {},
+      score: {},
+      lost: {},
     });
   }
 
@@ -78,6 +81,50 @@ export default class SillySharkGame extends Game<SillySharkGameState> {
     this._setSkin(player, skin);
   }
 
+  private _updateScore(player: Player, score: number) {
+    this.state = {
+      ...this.state,
+      score: {
+        ...(this.state.score || {}),
+        [player.id]: score || DEFAULT_SCORE,
+      },
+    };
+  }
+
+  public updateScore(player: Player, score: number) {
+    if (!this._players.some(p => p.id === player.id)) {
+      throw new InvalidParametersError(paramerrors.PLAYER_NOT_IN_GAME_MESSAGE);
+    }
+    this._updateScore(player, score);
+  }
+
+  private _checkForWinner() {
+    const player1Id = this.state.player1;
+    const player2Id = this.state.player2;
+
+    const player1Score = player1Id !== undefined ? this.state.score[player1Id] || 0 : 0;
+    const player2Score = player2Id !== undefined ? this.state.score[player2Id] || 0 : 0;
+    if (player1Id !== undefined && player2Id !== undefined) {
+      if (player1Score > player2Score) {
+        this.state.lost[player2Id] = true;
+        this.state.lost[player1Id] = false;
+        this.state.winner = player1Id;
+      } else if (player2Score > player1Score) {
+        this.state.lost[player1Id] = true;
+        this.state.lost[player2Id] = false;
+        this.state.winner = player2Id;
+      } else {
+        this.state.lost[player1Id] = true;
+        this.state.lost[player2Id] = true;
+        this.state.winner = undefined;
+      }
+    }
+  }
+
+  public checkForWinner() {
+    this._checkForWinner();
+  }
+
   /**
    * Adds a player to the game.
    * Updates the game's state to reflect the addition of the new player.
@@ -131,6 +178,8 @@ export default class SillySharkGame extends Game<SillySharkGameState> {
       this.state = {
         status: 'WAITING_TO_START',
         ready: {},
+        score: {},
+        lost: {},
       };
     } else if (this.state.status === 'MULTI_PLAYER_IN_PROGRESS') {
       if (this.state.player1 === player.id) {
