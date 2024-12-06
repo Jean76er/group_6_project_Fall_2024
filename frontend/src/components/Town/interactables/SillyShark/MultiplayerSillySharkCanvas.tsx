@@ -26,7 +26,7 @@ export default function NewMultiplayerSillySharkCanvas({
   const [gameOver, setGameOver] = useState(false);
   const gravity = 1; /**Makes spirte fall faster or slower*/
   const [velocity, setVelocity] = useState(0);
-  // const ourPlayer = townController.ourPlayer;
+  const ourPlayer = coveyTownController.ourPlayer;
 
   useEffect(() => {
     if (newSillySharkGame) {
@@ -68,14 +68,32 @@ export default function NewMultiplayerSillySharkCanvas({
   const spriteWidth = 70;
   const spriteHeight = 50;
   const spriteImage = useRef(new Image());
+  const otherSpriteImage = useRef(new Image());
+
   /** adding state for the score*/
   const [score, setScore] = useState(0);
 
   /**Load the sprite image when the component mounts */
-  useEffect(() => {
-    spriteImage.current.src = gameAreaController.skin as string;
-  }, [gameAreaController.skin]);
-
+  const setSkins = () => {
+    const ourPlayerSkin = gameAreaController.skinsState.find(
+      ([username]) => username === ourPlayer.userName,
+    );
+    
+    const otherPlayer = gameAreaController.players.find(player => player.id !== ourPlayer.id);
+    const otherPlayerSkin = otherPlayer
+      ? gameAreaController.skinsState.find(([username]) => username === otherPlayer.userName)
+      : undefined;
+  
+    if (ourPlayerSkin) {
+      spriteImage.current.src = ourPlayerSkin[1] as string;
+    }
+    
+    if (otherPlayerSkin) {
+      otherSpriteImage.current.src = otherPlayerSkin[1] as string;
+    }
+  };
+  
+  
   /** Generate random heights for obstacles */
   const randomObstacleHeights = () => {
     const topHeight = Math.floor(Math.random() * (canvasHeight - gapHeight - 100)) + 50;
@@ -110,7 +128,7 @@ export default function NewMultiplayerSillySharkCanvas({
         console.error('Failed to load bottom obstacle image:', obstacleImage.current.src);
       };
     }
-  }, [isOpen]);
+  }, [isOpen, gameAreaController]);
 
   useEffect(() => {
     /** checkCollision function calculates the position of the sprite and checks for collision between the
@@ -180,6 +198,7 @@ export default function NewMultiplayerSillySharkCanvas({
       }
 
       context.clearRect(0, 0, canvasCurr.width, canvasCurr.height);
+      setSkins();
 
       if (spriteImage.current.complete) {
         context.drawImage(
@@ -189,6 +208,18 @@ export default function NewMultiplayerSillySharkCanvas({
           spriteWidth,
           spriteHeight,
         );
+      }
+
+      if (otherSpriteImage.current.complete) {
+        context.globalAlpha = 0.5; // Set opacity for the other player's sprite (50% opacity)
+        context.drawImage(
+          otherSpriteImage.current,
+          canvasCurr.width / 4,
+          spriteY,
+          spriteWidth,
+          spriteHeight,
+        );
+        context.globalAlpha = 1; 
       }
 
       /** Drawing obstacles on the canvas */
@@ -233,6 +264,8 @@ export default function NewMultiplayerSillySharkCanvas({
       setVelocity(prevVelocity =>
         Math.min(prevVelocity + gravity, 4),
       ); /** Cap the downward velocity*/
+
+      gameAreaController.emit('updatePosition', spriteY);
     };
 
     /** The update obstacles function updates the position of each obstacle, moving them
@@ -295,7 +328,7 @@ export default function NewMultiplayerSillySharkCanvas({
     }, 1000 / 60);
 
     return () => clearInterval(interval);
-  }, [obstacles, spriteY, gameOver, score, gravity, velocity]);
+  }, [gameAreaController, obstacles, spriteY, gameOver, score, gravity, velocity]);
 
   useEffect(() => {
     const handleJumpEvent = () => {
@@ -306,6 +339,17 @@ export default function NewMultiplayerSillySharkCanvas({
 
     return () => {
       gameAreaController.removeListener('JUMP', handleJumpEvent);
+    };
+  }, [gameAreaController]);
+
+  useEffect(() => {
+    const handlePositionUpdate = () => {
+      console.log('Position updated');
+    };
+    gameAreaController.addListener('updatePosition', handlePositionUpdate);
+
+    return () => {
+      gameAreaController.removeListener('updatePosition', handlePositionUpdate);
     };
   }, [gameAreaController]);
 

@@ -2,18 +2,20 @@ import SillySharkPlayer from './SillySharkPlayer';
 import InvalidParametersError from '../../lib/InvalidParametersError';
 import * as paramerrors from '../../lib/InvalidParametersError';
 import Game from './Game';
-import { Player, SillySharkGameState, Skin } from '../../types/CoveyTownSocket';
+import { Player, SillySharkCanvasState, SillySharkGameState, Skin } from '../../types/CoveyTownSocket';
 
 const DEFAULT_SKIN = '/SillySharkResources/skins/sillyshark.png';
 
-export default class SillySharkGame extends Game<SillySharkGameState> {
+export default class SillySharkGame extends Game<SillySharkGameState & SillySharkCanvasState> {
   /* This constructor may need to be revised later with further development. */
   public constructor() {
     super({
       status: 'WAITING_TO_START',
       ready: {},
+      spritesData: {},
+      canvasHeight: 720,
     });
-  }
+  }  
 
   public isReady(): boolean {
     const readyCount = Object.values(this.state.ready).filter(isReady => isReady).length;
@@ -78,6 +80,28 @@ export default class SillySharkGame extends Game<SillySharkGameState> {
     this._setSkin(player, skin);
   }
 
+
+  public setPosition(player: Player, positionY: number): void {
+    // Ensure the player is part of the game
+    const gamePlayer = this._players.find(p => p.id === player.id);
+    if (!gamePlayer) {
+      throw new InvalidParametersError('Player is not part of this game.');
+    }
+  
+    // Validate the position 
+    if (positionY < 0 || positionY > this.state.canvasHeight) {
+      throw new InvalidParametersError('Position is out of bounds.');
+    }
+  
+    // Update the player's position in the game state
+    this.state.spritesData[gamePlayer.id] = positionY;
+  
+    // Log for debugging
+    console.log(`Player ${player.userName} position updated to ${positionY}`);
+
+  }
+  
+
   /**
    * Adds a player to the game.
    * Updates the game's state to reflect the addition of the new player.
@@ -131,6 +155,8 @@ export default class SillySharkGame extends Game<SillySharkGameState> {
       this.state = {
         status: 'WAITING_TO_START',
         ready: {},
+        spritesData: {},
+        canvasHeight: 720,
       };
     } else if (this.state.status === 'MULTI_PLAYER_IN_PROGRESS') {
       if (this.state.player1 === player.id) {
@@ -149,3 +175,5 @@ export default class SillySharkGame extends Game<SillySharkGameState> {
     }
   }
 }
+
+
