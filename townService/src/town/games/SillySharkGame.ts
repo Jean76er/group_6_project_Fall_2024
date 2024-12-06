@@ -4,17 +4,46 @@ import * as paramerrors from '../../lib/InvalidParametersError';
 import Game from './Game';
 import { Player, SillySharkGameState, Skin } from '../../types/CoveyTownSocket';
 
+const DEFAULT_SKIN = '/SillySharkResources/skins/sillyshark.png';
+
 export default class SillySharkGame extends Game<SillySharkGameState> {
   /* This constructor may need to be revised later with further development. */
   public constructor() {
-    /** initialState: SillySharkGameState */
     super({
-      /** ...initialState, uncomment if we need it in the future
-       * this was causing conflicts with SillySharkGameArea.ts
-       */
       status: 'WAITING_TO_START',
       ready: {},
     });
+  }
+
+  public isReady(): boolean {
+    const readyCount = Object.values(this.state.ready).filter(isReady => isReady).length;
+    return readyCount === 2;
+  }
+
+  public start(): void {
+    if (this.state.status === 'MULTI_PLAYER_IN_PROGRESS') {
+      throw new Error(paramerrors.GAME_ALREADY_IN_PROGRESS_MESSAGE);
+    }
+
+    // Ensure both players are ready
+    if (!this.isReady()) {
+      throw new InvalidParametersError(paramerrors.BOTH_PLAYERS_READY_MESSAGE);
+    }
+
+    // Only set status to MULTI_PLAYER_IN_PROGRESS if players are ready and status is WAITING_TO_START
+    if (this.state.status === 'WAITING_TO_START') {
+      this.state = {
+        ...this.state,
+        status: 'MULTI_PLAYER_IN_PROGRESS',
+      };
+    }
+
+    // Initialize game mechanics
+    this.startGameLogic();
+  }
+
+  startGameLogic(): void {
+    // to add later
   }
 
   private _setReady(player: Player): void {
@@ -26,8 +55,9 @@ export default class SillySharkGame extends Game<SillySharkGameState> {
 
   public setReady(player: Player): void {
     if (!this._players.some(p => p.id === player.id)) {
-      throw new InvalidParametersError('Player is not in the game');
+      throw new InvalidParametersError(paramerrors.PLAYER_NOT_IN_GAME_MESSAGE);
     }
+
     this._setReady(player);
   }
 
@@ -36,14 +66,14 @@ export default class SillySharkGame extends Game<SillySharkGameState> {
       ...this.state,
       skins: {
         ...(this.state.skins || {}),
-        [player.id]: skin || '/SillySharkResources/skins/sillyshark.png', // Set skin or default to SillyShark
+        [player.id]: skin || DEFAULT_SKIN, // Set skin or default to SillyShark
       },
     };
   }
 
   public setSkin(player: Player, skin: Skin | undefined): void {
     if (!this._players.some(p => p.id === player.id)) {
-      throw new InvalidParametersError('Player is not in the game');
+      throw new InvalidParametersError(paramerrors.PLAYER_NOT_IN_GAME_MESSAGE);
     }
     this._setSkin(player, skin);
   }
@@ -73,17 +103,17 @@ export default class SillySharkGame extends Game<SillySharkGameState> {
       throw new InvalidParametersError(paramerrors.GAME_FULL_MESSAGE);
     }
 
-    if (this.state.player1 && this.state.player2) {
-      this.state = {
-        ...this.state,
-        status: 'MULTI_PLAYER_IN_PROGRESS',
-      };
-    } else {
-      this.state = {
-        ...this.state,
-        status: 'SINGLE_PLAYER_IN_PROGRESS',
-      };
-    }
+    // if (this.state.player1 && this.state.player2) {
+    //   this.state = {
+    //     ...this.state,
+    //     status: 'WAITING_TO_START',
+    //   };
+    // } else {
+    //   this.state = {
+    //     ...this.state,
+    //     status: 'WAITING_TO_START',
+    //   };
+    // }
   }
 
   /**

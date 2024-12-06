@@ -4,11 +4,13 @@ import GameAreaController, { GameEventTypes } from './GameAreaController';
 
 export const PLAYER_NOT_IN_GAME_ERROR = 'Player is not in game';
 export const NO_GAME_IN_PROGRESS_ERROR = 'No game in progress';
+export const NO_INSTANCE_ERROR = 'No game instance found';
 
 export type SillySharkEvents = GameEventTypes & {
   playersUpdated: (newPlayers: PlayerController[]) => void;
   playersReadyUpdated: (readyCount: number) => void;
   skinChanged: (data: [string, Skin | undefined][]) => void;
+  gameStarted: () => void;
 };
 export default class SillySharkAreaController extends GameAreaController<
   SillySharkGameState,
@@ -19,10 +21,7 @@ export default class SillySharkAreaController extends GameAreaController<
   protected _ready: { [playerID: string]: boolean } = {};
 
   public async setReady(playerId: string): Promise<void> {
-    const instanceID = this._instanceID;
-    if (!instanceID) {
-      throw new Error('No game instance found');
-    }
+    const instanceID = this._ensureInstanceID();
     // Send the ready command to the server
     await this._townController.sendInteractableCommand(this.id, {
       type: 'SetReady',
@@ -32,10 +31,7 @@ export default class SillySharkAreaController extends GameAreaController<
   }
 
   public async setSkin(playerId: string, skin: Skin): Promise<void> {
-    const instanceID = this._instanceID;
-    if (!instanceID) {
-      throw new Error('No game instance found');
-    }
+    const instanceID = this._ensureInstanceID();
     // Send the ready command to the server
     await this._townController.sendInteractableCommand(this.id, {
       type: 'SetSkin',
@@ -45,6 +41,17 @@ export default class SillySharkAreaController extends GameAreaController<
     });
 
     this.skin = skin;
+  }
+
+  public async startGame(): Promise<void> {
+    const instanceID = this._ensureInstanceID();
+    // Send the ready command to the server
+    await this._townController.sendInteractableCommand(this.id, {
+      type: 'StartGame',
+      gameID: instanceID,
+    });
+
+    this.emit('gameStarted');
   }
 
   public get skinsState(): [string, Skin | undefined][] {
@@ -83,12 +90,9 @@ export default class SillySharkAreaController extends GameAreaController<
     return undefined;
   }
 
-  set skin(skin: string | undefined) {
-    if (skin) {
-      this._skins[this._townController.ourPlayer.id] = skin;
-    } else {
-      this._skins[this._townController.ourPlayer.id] = '/SillySharkResources/skins/sillyshark.png';
-    }
+  set skin(skin: Skin | undefined) {
+    this._skins[this._townController.ourPlayer.id] =
+      skin ?? '/SillySharkResources/skins/sillyshark.png';
   }
 
   get winner(): PlayerController | undefined {
@@ -127,29 +131,40 @@ export default class SillySharkAreaController extends GameAreaController<
   }
 
   public updateFrom(newModel: GameArea<SillySharkGameState>): void {
-    const previousPlayers = this._players.map(player => player.id);
-    const oldReadyCount = this.readyCount;
+    const previousReadyCount = this.readyCount;
     const previousSkinsState = this.skinsState;
+    const previousPlayerIds = this._players.map(player => player.id);
+
     super._updateFrom(newModel);
-    console.log('Updated model, new ready count:', this.readyCount);
-    const currentPlayers = this._players.map(player => player.id);
+
     const currentReadyCount = this.readyCount;
     const currentSkinsState = this.skinsState;
+    const currentPlayerIds = this._players.map(player => player.id);
 
-    // Check if players have changed
-    if (JSON.stringify(previousPlayers) !== JSON.stringify(currentPlayers)) {
-      console.log('players updated', this._players);
+    if (!this._arraysEqual(previousPlayerIds, currentPlayerIds)) {
       this.emit('playersUpdated', this._players);
     }
-    if (oldReadyCount !== currentReadyCount) {
-      console.log('Emitting playersReadyUpdated:', currentReadyCount); // Debug log
+    if (previousReadyCount !== currentReadyCount) {
       this.emit('playersReadyUpdated', currentReadyCount);
+      if (currentReadyCount === 2) {
+        this.startGame().catch(console.error);
+      }
     }
-
-    if (JSON.stringify(previousSkinsState) !== JSON.stringify(currentSkinsState)) {
-      console.log('skins Changed', currentSkinsState);
+    if (!this._arraysEqual(previousSkinsState, currentSkinsState)) {
       this.emit('skinChanged', currentSkinsState);
     }
+  }
+
+  private _arraysEqual<T>(a: T[], b: T[]): boolean {
+    return a.length === b.length && a.every((value, index) => value === b[index]);
+  }
+
+  private _ensureInstanceID(): string {
+    const instanceID = this._instanceID;
+    if (!instanceID) {
+      throw new Error(NO_INSTANCE_ERROR);
+    }
+    return instanceID;
   }
 
   public async jump(): Promise<void> {

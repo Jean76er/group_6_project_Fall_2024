@@ -63,6 +63,7 @@ export default function MultiplayerSkinSelectionScreen({
   const [skinSelected, setSkinSelected] = useState<Skin | undefined>(undefined);
   const [playersReady, setPlayersReady] = useState(gameAreaController.readyCount);
   const [skinsState, setSkinsState] = useState(gameAreaController.skinsState);
+  const [hasClickedContinue, setHasClickedContinue] = useState(false);
   const ourPlayer = coveyTownController.ourPlayer;
 
   const handleSkinSelection = useCallback(
@@ -74,16 +75,21 @@ export default function MultiplayerSkinSelectionScreen({
   );
 
   const handleCanvas = useCallback(() => {
+    if (hasClickedContinue) {
+      return;
+    }
     if (!skinSelected) {
       alert('Please select a skin before continuing!');
       return;
     }
-
+    setHasClickedContinue(true);
     gameAreaController.setReady(ourPlayer.id); // Mark the player as ready
-    if (playersReady + 1 === 2) {
+
+    if (playersReady === 2) {
       setShowCanvas(true); // Start the game when both players are ready
+      gameAreaController.startGame(); // Call startGame when both players are ready
     }
-  }, [skinSelected, playersReady, gameAreaController, ourPlayer.id]);
+  }, [skinSelected, playersReady, gameAreaController, ourPlayer.id, hasClickedContinue]);
 
   useEffect(() => {
     const handlePlayersReadyUpdated = (readyCount: number) => {
@@ -94,12 +100,18 @@ export default function MultiplayerSkinSelectionScreen({
       setSkinsState(updatedSkins);
     };
 
+    const handleGameStarted = () => {
+      setShowCanvas(true);
+    };
+
     gameAreaController.addListener('playersReadyUpdated', handlePlayersReadyUpdated);
     gameAreaController.addListener('skinChanged', handleSkinChanged);
+    gameAreaController.addListener('gameStarted', handleGameStarted);
 
     return () => {
       gameAreaController.removeListener('playersReadyUpdated', handlePlayersReadyUpdated);
       gameAreaController.removeListener('skinChanged', handleSkinChanged);
+      gameAreaController.removeListener('gameStarted', handleGameStarted);
     };
   }, [gameAreaController]);
 
@@ -148,7 +160,11 @@ export default function MultiplayerSkinSelectionScreen({
         </Center>
 
         <Center paddingTop='10px'>
-          <Button size='sm' width='fit-content' onClick={handleCanvas}>
+          <Button
+            size='sm'
+            width='fit-content'
+            onClick={handleCanvas}
+            isDisabled={hasClickedContinue}>
             Continue
           </Button>
         </Center>
@@ -165,6 +181,7 @@ export default function MultiplayerSkinSelectionScreen({
       playersReady,
       ourPlayer.userName,
       ourPlayer.id,
+      hasClickedContinue,
     ],
   );
 
@@ -173,6 +190,7 @@ export default function MultiplayerSkinSelectionScreen({
       {renderSkins()}
       {showCanvas && (
         <NewSillySharkCanvas
+          key={gameArea.id} // Ensure the canvas re-renders when the game state changes
           gameAreaController={gameAreaController}
           newSillySharkGame={gameArea}
           coveyTownController={coveyTownController}
