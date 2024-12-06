@@ -135,8 +135,14 @@ export interface SillySharkGameState extends WinnableGameState {
   score: {[playerId: string]: number}
   lost: {[playerId: string]: boolean}
   ready: { [playerId: string]: boolean };
+  spritesData: { [playerId: string]: number}; 
+}
 
-} 
+export interface SillySharkCanvasState {
+  canvasHeight: number;
+  
+}
+
 
 /**
  * Base type for an area that can host a game
@@ -174,7 +180,7 @@ interface InteractableCommandBase {
 
 
 
-export type InteractableCommand =  ViewingAreaUpdateCommand | JoinGameCommand | LeaveGameCommand | SetReadyCommand | SetSkinCommand | UpdateScoreCommand | CheckForWinnerCommand | StartGame;
+export type InteractableCommand =  ViewingAreaUpdateCommand | JoinGameCommand | LeaveGameCommand | SetReadyCommand | SetSkinCommand | UpdateScoreCommand | CheckForWinnerCommand | StartGame | RenderSprite;
 export interface ViewingAreaUpdateCommand  {
   type: 'ViewingAreaUpdate';
   update: ViewingArea;
@@ -213,6 +219,11 @@ export interface CheckForWinnerCommand {
 export interface StartGame {
   type: 'StartGame';
   gameID: GameInstanceID;
+}
+export interface RenderSprite {
+  type: 'RenderSprite';
+  gameID: GameInstanceID;
+  positionY: number;
 }
 
 export type InteractableCommandReturnType<CommandType extends InteractableCommand> = 

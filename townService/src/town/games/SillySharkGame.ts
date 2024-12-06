@@ -2,17 +2,24 @@ import SillySharkPlayer from './SillySharkPlayer';
 import InvalidParametersError from '../../lib/InvalidParametersError';
 import * as paramerrors from '../../lib/InvalidParametersError';
 import Game from './Game';
-import { Player, SillySharkGameState, Skin } from '../../types/CoveyTownSocket';
+import {
+  Player,
+  SillySharkCanvasState,
+  SillySharkGameState,
+  Skin,
+} from '../../types/CoveyTownSocket';
 
 const DEFAULT_SKIN = '/SillySharkResources/skins/sillyshark.png';
 const DEFAULT_SCORE = 0;
 
-export default class SillySharkGame extends Game<SillySharkGameState> {
+export default class SillySharkGame extends Game<SillySharkGameState & SillySharkCanvasState> {
   /* This constructor may need to be revised later with further development. */
   public constructor() {
     super({
       status: 'WAITING_TO_START',
       ready: {},
+      spritesData: {},
+      canvasHeight: 720,
       score: {},
       lost: {},
     });
@@ -40,13 +47,6 @@ export default class SillySharkGame extends Game<SillySharkGameState> {
         status: 'MULTI_PLAYER_IN_PROGRESS',
       };
     }
-
-    // Initialize game mechanics
-    this.startGameLogic();
-  }
-
-  startGameLogic(): void {
-    // to add later
   }
 
   private _setReady(player: Player): void {
@@ -79,6 +79,26 @@ export default class SillySharkGame extends Game<SillySharkGameState> {
       throw new InvalidParametersError(paramerrors.PLAYER_NOT_IN_GAME_MESSAGE);
     }
     this._setSkin(player, skin);
+  }
+
+  public setPosition(player: Player, positionY: number): void {
+    // Ensure the player is part of the game
+    const gamePlayer = this._players.find(p => p.id === player.id);
+    if (!gamePlayer) {
+      throw new InvalidParametersError('Player is not part of this game.');
+    }
+    // Validate the position
+    if (positionY < 0 || positionY > this.state.canvasHeight) {
+      throw new InvalidParametersError('Position is out of bounds.');
+    }
+    // Update the player's position in the game state'
+    this.state = {
+      ...this.state,
+      spritesData: {
+        ...(this.state.spritesData || {}),
+        [player.id]: positionY,
+      },
+    };
   }
 
   private _updateScore(player: Player, score: number) {
@@ -178,6 +198,8 @@ export default class SillySharkGame extends Game<SillySharkGameState> {
       this.state = {
         status: 'WAITING_TO_START',
         ready: {},
+        spritesData: {},
+        canvasHeight: 720,
         score: {},
         lost: {},
       };

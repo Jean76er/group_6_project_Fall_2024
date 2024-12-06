@@ -11,6 +11,7 @@ export type SillySharkEvents = GameEventTypes & {
   playersReadyUpdated: (readyCount: number) => void;
   skinChanged: (data: [string, Skin | undefined][]) => void;
   gameStarted: () => void;
+  positionUpdated: (data: [string, number][]) => void;
 };
 export default class SillySharkAreaController extends GameAreaController<
   SillySharkGameState,
@@ -43,6 +44,16 @@ export default class SillySharkAreaController extends GameAreaController<
     this.skin = skin;
   }
 
+  public async setPosition(positionY: number): Promise<void> {
+    const instanceID = this._ensureInstanceID();
+    // Send the ready command to the server
+    await this._townController.sendInteractableCommand(this.id, {
+      type: 'RenderSprite',
+      gameID: instanceID,
+      positionY: positionY,
+    });
+  }
+
   public async startGame(): Promise<void> {
     const instanceID = this._ensureInstanceID();
     // Send the ready command to the server
@@ -73,6 +84,16 @@ export default class SillySharkAreaController extends GameAreaController<
       return Object.values(readymap).filter(ready => ready).length;
     }
     return 0;
+  }
+
+  public get renderPlayerState(): [string, number][] {
+    const renderPlayerMap = this._model.game?.state.spritesData;
+    const players = this._players;
+
+    if (renderPlayerMap && players) {
+      return players.map(player => [player.id, renderPlayerMap[player.id]]);
+    }
+    return [];
   }
 
   get player1(): PlayerController | undefined {
@@ -134,12 +155,14 @@ export default class SillySharkAreaController extends GameAreaController<
     const previousReadyCount = this.readyCount;
     const previousSkinsState = this.skinsState;
     const previousPlayerIds = this._players.map(player => player.id);
+    const previousPosition = this.renderPlayerState;
 
     super._updateFrom(newModel);
 
     const currentReadyCount = this.readyCount;
     const currentSkinsState = this.skinsState;
     const currentPlayerIds = this._players.map(player => player.id);
+    const currentPosition = this.renderPlayerState;
 
     if (!this._arraysEqual(previousPlayerIds, currentPlayerIds)) {
       this.emit('playersUpdated', this._players);
@@ -152,6 +175,9 @@ export default class SillySharkAreaController extends GameAreaController<
     }
     if (!this._arraysEqual(previousSkinsState, currentSkinsState)) {
       this.emit('skinChanged', currentSkinsState);
+    }
+    if (!this._arraysEqual(previousPosition, currentPosition)) {
+      this.emit('positionUpdated', currentPosition);
     }
   }
 
