@@ -208,8 +208,6 @@ export interface UpdateScoreCommand {
 export interface CheckForWinnerCommand {
   type: 'CheckForWinner'
   gameID: GameInstanceID;
-  player1ID: PlayerID;
-  player2ID: PlayerID;
 }
 
 export interface StartGame {
