@@ -5,6 +5,7 @@ import Game from './Game';
 import { Player, SillySharkGameState, Skin } from '../../types/CoveyTownSocket';
 
 const DEFAULT_SKIN = '/SillySharkResources/skins/sillyshark.png';
+const DEFAULT_SCORE = 0;
 
 export default class SillySharkGame extends Game<SillySharkGameState> {
   /* This constructor may need to be revised later with further development. */
@@ -76,6 +77,27 @@ export default class SillySharkGame extends Game<SillySharkGameState> {
       throw new InvalidParametersError(paramerrors.PLAYER_NOT_IN_GAME_MESSAGE);
     }
     this._setSkin(player, skin);
+  }
+  
+  private _updateScore(player: Player, score: number) {
+    this.state = {
+      ...this.state,
+      score: {
+        ...(this.state.score || {}),
+        [player.id]: score || DEFAULT_SCORE, 
+      },
+    };
+  }
+
+  public updateScore(player: Player, score: number) {
+    if(!this._players.some(p => p.id === player.id)) {
+      throw new InvalidParametersError(paramerrors.PLAYER_NOT_IN_GAME_MESSAGE);
+    }
+    this._updateScore(player, score);
+  }
+
+  private _checkForWinner() {
+    
   }
 
   /**

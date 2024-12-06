@@ -24,6 +24,10 @@ export default class SillySharkGameArea extends GameArea<SillySharkGame> {
     return 'SillySharkArea';
   }
 
+  private _checkForWin() {
+    
+  }
+
   private _stateUpdated(updatedState: GameInstance<SillySharkGameState>) {
     if (updatedState.state.status === 'OVER') {
       // If we haven't yet recorded the outcome, do so now.

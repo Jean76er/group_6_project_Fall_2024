@@ -132,7 +132,10 @@ export interface SillySharkGameState extends WinnableGameState {
   player1?: PlayerID;
   player2?: PlayerID;
   skins?: {[player: string]: Skin }
+  score: {[playerId: string]: number}
+  lost: {[playerId: string]: boolean}
   ready: { [playerId: string]: boolean };
+
 } 
 
 /**
