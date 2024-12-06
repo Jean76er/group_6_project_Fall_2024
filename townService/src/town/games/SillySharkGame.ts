@@ -44,13 +44,6 @@ export default class SillySharkGame extends Game<SillySharkGameState & SillyShar
         status: 'MULTI_PLAYER_IN_PROGRESS',
       };
     }
-
-    // Initialize game mechanics
-    this.startGameLogic();
-  }
-
-  startGameLogic(): void {
-    // to add later
   }
 
   private _setReady(player: Player): void {

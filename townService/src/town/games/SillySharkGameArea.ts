@@ -153,8 +153,6 @@ export default class SillySharkGameArea extends GameArea<SillySharkGame> {
       // Notify listeners about the game start
       this._stateUpdated(game.toModel());
 
-      // game.startGameLogic();
-
       return undefined as InteractableCommandReturnType<CommandType>;
     }
 
