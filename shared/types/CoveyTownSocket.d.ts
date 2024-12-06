@@ -171,7 +171,7 @@ interface InteractableCommandBase {
 
 
 
-export type InteractableCommand =  ViewingAreaUpdateCommand | JoinGameCommand | LeaveGameCommand | SetReadyCommand;
+export type InteractableCommand =  ViewingAreaUpdateCommand | JoinGameCommand | LeaveGameCommand | SetReadyCommand | SetSkinCommand | StartGame;
 export interface ViewingAreaUpdateCommand  {
   type: 'ViewingAreaUpdate';
   update: ViewingArea;
@@ -188,12 +188,23 @@ export interface SetReadyCommand {
   gameID: GameInstanceID;
   playerID: PlayerID;
 }
+export interface SetSkinCommand {
+  type: 'SetSkin';
+  gameID: GameInstanceID;
+  playerID: PlayerID;
+  skin: Skin;
+}
+export interface StartGame {
+  type: 'StartGame';
+  gameID: GameInstanceID;
+}
 
 export type InteractableCommandReturnType<CommandType extends InteractableCommand> = 
   CommandType extends JoinGameCommand ? { gameID: string}:
   CommandType extends ViewingAreaUpdateCommand ? undefined :
   CommandType extends SetReadyCommand ? undefined :
   CommandType extends LeaveGameCommand ? undefined :
+  CommandType extends SetSkinCommand ? undefined :
   never;
 
 export type InteractableCommandResponse<MessageType> = {
