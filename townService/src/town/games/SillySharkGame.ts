@@ -2,7 +2,12 @@ import SillySharkPlayer from './SillySharkPlayer';
 import InvalidParametersError from '../../lib/InvalidParametersError';
 import * as paramerrors from '../../lib/InvalidParametersError';
 import Game from './Game';
-import { Player, SillySharkCanvasState, SillySharkGameState, Skin } from '../../types/CoveyTownSocket';
+import {
+  Player,
+  SillySharkCanvasState,
+  SillySharkGameState,
+  Skin,
+} from '../../types/CoveyTownSocket';
 
 const DEFAULT_SKIN = '/SillySharkResources/skins/sillyshark.png';
 
@@ -15,7 +20,7 @@ export default class SillySharkGame extends Game<SillySharkGameState & SillyShar
       spritesData: {},
       canvasHeight: 720,
     });
-  }  
+  }
 
   public isReady(): boolean {
     const readyCount = Object.values(this.state.ready).filter(isReady => isReady).length;
@@ -80,27 +85,25 @@ export default class SillySharkGame extends Game<SillySharkGameState & SillyShar
     this._setSkin(player, skin);
   }
 
-
   public setPosition(player: Player, positionY: number): void {
     // Ensure the player is part of the game
     const gamePlayer = this._players.find(p => p.id === player.id);
     if (!gamePlayer) {
       throw new InvalidParametersError('Player is not part of this game.');
     }
-  
-    // Validate the position 
+    // Validate the position
     if (positionY < 0 || positionY > this.state.canvasHeight) {
       throw new InvalidParametersError('Position is out of bounds.');
     }
-  
-    // Update the player's position in the game state
-    this.state.spritesData[gamePlayer.id] = positionY;
-  
-    // Log for debugging
-    console.log(`Player ${player.userName} position updated to ${positionY}`);
-
+    // Update the player's position in the game state'
+    this.state = {
+      ...this.state,
+      spritesData: {
+        ...(this.state.spritesData || {}),
+        [player.id]: positionY,
+      },
+    };
   }
-  
 
   /**
    * Adds a player to the game.
@@ -175,5 +178,3 @@ export default class SillySharkGame extends Game<SillySharkGameState & SillyShar
     }
   }
 }
-
-

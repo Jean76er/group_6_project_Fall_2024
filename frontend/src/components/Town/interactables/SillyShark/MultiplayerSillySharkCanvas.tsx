@@ -27,6 +27,7 @@ export default function NewMultiplayerSillySharkCanvas({
   const gravity = 1; /**Makes spirte fall faster or slower*/
   const [velocity, setVelocity] = useState(0);
   const ourPlayer = coveyTownController.ourPlayer;
+  const otherPlayer = gameAreaController.players.find(player => player.id !== ourPlayer.id);
 
   useEffect(() => {
     if (newSillySharkGame) {
@@ -65,6 +66,7 @@ export default function NewMultiplayerSillySharkCanvas({
   const obstacleSpacing = 300;
   /** Sprite properties and state */
   const [spriteY, setSpriteY] = useState(canvasHeight / 2);
+  const [otherSpriteY, setOtherSpriteY] = useState(canvasHeight / 2);
   const spriteWidth = 70;
   const spriteHeight = 50;
   const spriteImage = useRef(new Image());
@@ -74,26 +76,29 @@ export default function NewMultiplayerSillySharkCanvas({
   const [score, setScore] = useState(0);
 
   /**Load the sprite image when the component mounts */
-  const setSkins = () => {
-    const ourPlayerSkin = gameAreaController.skinsState.find(
-      ([username]) => username === ourPlayer.userName,
-    );
-    
-    const otherPlayer = gameAreaController.players.find(player => player.id !== ourPlayer.id);
-    const otherPlayerSkin = otherPlayer
-      ? gameAreaController.skinsState.find(([username]) => username === otherPlayer.userName)
-      : undefined;
-  
-    if (ourPlayerSkin) {
-      spriteImage.current.src = ourPlayerSkin[1] as string;
-    }
-    
-    if (otherPlayerSkin) {
-      otherSpriteImage.current.src = otherPlayerSkin[1] as string;
-    }
-  };
-  
-  
+  useEffect(() => {
+    const setSkins = () => {
+      const ourPlayerSkin = gameAreaController.skinsState.find(
+        ([username]) => username === ourPlayer.userName,
+      );
+
+      const otherPlayerSkin = otherPlayer
+        ? gameAreaController.skinsState.find(([username]) => username === otherPlayer.userName)
+        : undefined;
+
+      if (ourPlayerSkin) {
+        spriteImage.current.src = ourPlayerSkin[1] as string;
+      }
+
+      if (otherPlayerSkin) {
+        otherSpriteImage.current.src = otherPlayerSkin[1] as string;
+      }
+    };
+
+    // Now call setSkins within the effect
+    setSkins();
+  }, [gameAreaController, ourPlayer.userName, ourPlayer.id, otherPlayer]);
+
   /** Generate random heights for obstacles */
   const randomObstacleHeights = () => {
     const topHeight = Math.floor(Math.random() * (canvasHeight - gapHeight - 100)) + 50;
@@ -198,7 +203,6 @@ export default function NewMultiplayerSillySharkCanvas({
       }
 
       context.clearRect(0, 0, canvasCurr.width, canvasCurr.height);
-      setSkins();
 
       if (spriteImage.current.complete) {
         context.drawImage(
@@ -211,15 +215,15 @@ export default function NewMultiplayerSillySharkCanvas({
       }
 
       if (otherSpriteImage.current.complete) {
-        context.globalAlpha = 0.5; // Set opacity for the other player's sprite (50% opacity)
+        context.globalAlpha = 0.5;
         context.drawImage(
           otherSpriteImage.current,
           canvasCurr.width / 4,
-          spriteY,
+          otherSpriteY,
           spriteWidth,
           spriteHeight,
         );
-        context.globalAlpha = 1; 
+        context.globalAlpha = 1;
       }
 
       /** Drawing obstacles on the canvas */
@@ -264,8 +268,7 @@ export default function NewMultiplayerSillySharkCanvas({
       setVelocity(prevVelocity =>
         Math.min(prevVelocity + gravity, 4),
       ); /** Cap the downward velocity*/
-
-      gameAreaController.emit('updatePosition', spriteY);
+      gameAreaController.setPosition(spriteY);
     };
 
     /** The update obstacles function updates the position of each obstacle, moving them
@@ -328,7 +331,7 @@ export default function NewMultiplayerSillySharkCanvas({
     }, 1000 / 60);
 
     return () => clearInterval(interval);
-  }, [gameAreaController, obstacles, spriteY, gameOver, score, gravity, velocity]);
+  }, [otherSpriteY, gameAreaController, obstacles, spriteY, gameOver, score, gravity, velocity]);
 
   useEffect(() => {
     const handleJumpEvent = () => {
@@ -343,15 +346,24 @@ export default function NewMultiplayerSillySharkCanvas({
   }, [gameAreaController]);
 
   useEffect(() => {
-    const handlePositionUpdate = () => {
-      console.log('Position updated');
-    };
-    gameAreaController.addListener('updatePosition', handlePositionUpdate);
+    const handlePositionUpdate = (updatedState: [string, number][]) => {
+      // Find the entry for the other player
+      if (otherPlayer) {
+        const otherPlayerPosition = updatedState.find(([playerId]) => playerId === otherPlayer.id);
 
-    return () => {
-      gameAreaController.removeListener('updatePosition', handlePositionUpdate);
+        // If the other player is found, update their Y position
+        if (otherPlayerPosition) {
+          const [, position] = otherPlayerPosition; // Extract the position (second element)
+          setOtherSpriteY(position); // Update the Y position for the other player
+        }
+      }
     };
-  }, [gameAreaController]);
+
+    gameAreaController.addListener('positionUpdated', handlePositionUpdate);
+    return () => {
+      gameAreaController.removeListener('positionUpdated', handlePositionUpdate);
+    };
+  }, [gameAreaController, ourPlayer.id, otherPlayer]);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {

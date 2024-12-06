@@ -153,14 +153,12 @@ export default class SillySharkGameArea extends GameArea<SillySharkGame> {
       // Notify listeners about the game start
       this._stateUpdated(game.toModel());
 
-      
-
       // game.startGameLogic();
 
       return undefined as InteractableCommandReturnType<CommandType>;
     }
 
-    if (command.type === 'RenderSprite' ){
+    if (command.type === 'RenderSprite') {
       const game = this._game;
       if (!game) {
         throw new InvalidParametersError(GAME_NOT_IN_PROGRESS_MESSAGE);
@@ -169,12 +167,11 @@ export default class SillySharkGameArea extends GameArea<SillySharkGame> {
         throw new InvalidParametersError(GAME_ID_MISSMATCH_MESSAGE);
       }
 
-      game.setPosition(player,command.positionY);
+      game.setPosition(player, command.positionY);
 
       this._stateUpdated(game.toModel());
 
       return undefined as InteractableCommandReturnType<CommandType>;
-
     }
 
     throw new InvalidParametersError(INVALID_COMMAND_MESSAGE);

@@ -91,7 +91,7 @@ export default class SillySharkAreaController extends GameAreaController<
     const players = this._players;
 
     if (renderPlayerMap && players) {
-      return players.map(player => [player.userName, renderPlayerMap[player.id]]);
+      return players.map(player => [player.id, renderPlayerMap[player.id]]);
     }
     return [];
   }
