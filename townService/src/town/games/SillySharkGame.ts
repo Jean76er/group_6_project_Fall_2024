@@ -78,26 +78,52 @@ export default class SillySharkGame extends Game<SillySharkGameState> {
     }
     this._setSkin(player, skin);
   }
-  
+
   private _updateScore(player: Player, score: number) {
     this.state = {
       ...this.state,
       score: {
         ...(this.state.score || {}),
-        [player.id]: score || DEFAULT_SCORE, 
+        [player.id]: score || DEFAULT_SCORE,
       },
     };
   }
 
   public updateScore(player: Player, score: number) {
-    if(!this._players.some(p => p.id === player.id)) {
+    if (!this._players.some(p => p.id === player.id)) {
       throw new InvalidParametersError(paramerrors.PLAYER_NOT_IN_GAME_MESSAGE);
     }
     this._updateScore(player, score);
   }
 
-  private _checkForWinner() {
-    
+  private _checkForWinner(player1: Player, player2: Player) {
+    const player1Score = this.state.score[player1.id];
+    const player2Score = this.state.score[player2.id];
+
+    if (player1Score > player2Score) {
+      this.state.lost[player2.id] = true;
+      this.state.lost[player1.id] = false;
+      this.state.winner = player1.id;
+    } else if (player2Score > player1Score) {
+      this.state.lost[player1.id] = true;
+      this.state.lost[player2.id] = false;
+      this.state.winner = player2.id;
+    } else {
+      this.state.lost[player1.id] = true;
+      this.state.lost[player2.id] = true;
+      this.state.winner = undefined;
+    }
+  }
+
+  public checkForWinner(player1: Player, player2: Player) {
+    if (
+      !this._players.some(p => p.id === player1.id) ||
+      !this._players.some(p => p.id === player2.id)
+    ) {
+      throw new InvalidParametersError(paramerrors.PLAYER_NOT_IN_GAME_MESSAGE);
+    }
+
+    this._checkForWinner(player1, player2);
   }
 
   /**
