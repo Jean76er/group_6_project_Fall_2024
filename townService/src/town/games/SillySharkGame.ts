@@ -96,34 +96,31 @@ export default class SillySharkGame extends Game<SillySharkGameState> {
     this._updateScore(player, score);
   }
 
-  private _checkForWinner(player1: Player, player2: Player) {
-    const player1Score = this.state.score[player1.id];
-    const player2Score = this.state.score[player2.id];
+  private _checkForWinner() {
+    const player1Id = this.state.player1;
+    const player2Id = this.state.player2;
 
-    if (player1Score > player2Score) {
-      this.state.lost[player2.id] = true;
-      this.state.lost[player1.id] = false;
-      this.state.winner = player1.id;
-    } else if (player2Score > player1Score) {
-      this.state.lost[player1.id] = true;
-      this.state.lost[player2.id] = false;
-      this.state.winner = player2.id;
-    } else {
-      this.state.lost[player1.id] = true;
-      this.state.lost[player2.id] = true;
-      this.state.winner = undefined;
+    const player1Score = player1Id !== undefined ? this.state.score[player1Id] || 0 : 0;
+    const player2Score = player2Id !== undefined ? this.state.score[player2Id] || 0 : 0;
+    if (player1Id !== undefined && player2Id !== undefined) {
+      if (player1Score > player2Score) {
+        this.state.lost[player2Id] = true;
+        this.state.lost[player1Id] = false;
+        this.state.winner = player1Id;
+      } else if (player2Score > player1Score) {
+        this.state.lost[player1Id] = true;
+        this.state.lost[player2Id] = false;
+        this.state.winner = player2Id;
+      } else {
+        this.state.lost[player1Id] = true;
+        this.state.lost[player2Id] = true;
+        this.state.winner = undefined;
+      }
     }
   }
 
-  public checkForWinner(player1: Player, player2: Player) {
-    if (
-      !this._players.some(p => p.id === player1.id) ||
-      !this._players.some(p => p.id === player2.id)
-    ) {
-      throw new InvalidParametersError(paramerrors.PLAYER_NOT_IN_GAME_MESSAGE);
-    }
-
-    this._checkForWinner(player1, player2);
+  public checkForWinner() {
+    this._checkForWinner();
   }
 
   /**
