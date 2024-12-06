@@ -11,10 +11,10 @@ import {
 } from '@chakra-ui/react';
 import React, { useCallback, useEffect, useState } from 'react';
 import SillySharkAreaController from '../../../../classes/interactable/SillySharkAreaController';
-import NewSillySharkCanvas from './SillySharkCanvas';
 import GameAreaInteractable from '../GameArea';
 import { Skin } from '../../../../types/CoveyTownSocket';
 import TownController from '../../../../classes/TownController';
+import NewMultiplayerSillySharkCanvas from './MultiplayerSillySharkCanvas';
 
 export enum Skins {
   SillyShark = '/SillySharkResources/skins/sillyshark.png',
@@ -189,7 +189,7 @@ export default function MultiplayerSkinSelectionScreen({
     <>
       {renderSkins()}
       {showCanvas && (
-        <NewSillySharkCanvas
+        <NewMultiplayerSillySharkCanvas
           key={gameArea.id} // Ensure the canvas re-renders when the game state changes
           gameAreaController={gameAreaController}
           newSillySharkGame={gameArea}
