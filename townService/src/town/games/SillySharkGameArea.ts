@@ -115,6 +115,23 @@ export default class SillySharkGameArea extends GameArea<SillySharkGame> {
 
       return undefined as InteractableCommandReturnType<CommandType>;
     }
+
+    if (command.type === 'SetSkin') {
+      const game = this._game;
+      if (!game) {
+        throw new InvalidParametersError(GAME_NOT_IN_PROGRESS_MESSAGE);
+      }
+      if (this._game?.id !== command.gameID) {
+        throw new InvalidParametersError(GAME_ID_MISSMATCH_MESSAGE);
+      }
+
+      // Set the skin for the player
+      game.setSkin(player, command.skin);
+      // Update the state to notify listeners
+      this._stateUpdated(game.toModel());
+
+      return undefined as InteractableCommandReturnType<CommandType>;
+    }
     throw new InvalidParametersError(INVALID_COMMAND_MESSAGE);
   }
 }

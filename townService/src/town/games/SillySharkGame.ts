@@ -2,7 +2,7 @@ import SillySharkPlayer from './SillySharkPlayer';
 import InvalidParametersError from '../../lib/InvalidParametersError';
 import * as paramerrors from '../../lib/InvalidParametersError';
 import Game from './Game';
-import { Player, SillySharkGameState } from '../../types/CoveyTownSocket';
+import { Player, SillySharkGameState, Skin } from '../../types/CoveyTownSocket';
 
 export default class SillySharkGame extends Game<SillySharkGameState> {
   /* This constructor may need to be revised later with further development. */
@@ -29,6 +29,23 @@ export default class SillySharkGame extends Game<SillySharkGameState> {
       throw new InvalidParametersError('Player is not in the game');
     }
     this._setReady(player);
+  }
+
+  private _setSkin(player: Player, skin: Skin | undefined): void {
+    this.state = {
+      ...this.state,
+      skins: {
+        ...(this.state.skins || {}),
+        [player.id]: skin || '/SillySharkResources/skins/sillyshark.png', // Set skin or default to SillyShark
+      },
+    };
+  }
+
+  public setSkin(player: Player, skin: Skin | undefined): void {
+    if (!this._players.some(p => p.id === player.id)) {
+      throw new InvalidParametersError('Player is not in the game');
+    }
+    this._setSkin(player, skin);
   }
 
   /**

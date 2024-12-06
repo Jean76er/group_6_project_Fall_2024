@@ -30,6 +30,34 @@ export default class SillySharkAreaController extends GameAreaController<
     });
   }
 
+  public async setSkin(playerId: string, skin: Skin): Promise<void> {
+    const instanceID = this._instanceID;
+    if (!instanceID) {
+      throw new Error('No game instance found');
+    }
+    // Send the ready command to the server
+    await this._townController.sendInteractableCommand(this.id, {
+      type: 'SetSkin',
+      gameID: instanceID,
+      playerID: playerId,
+      skin: skin,
+    });
+
+    this.skin = skin;
+  }
+
+  public get skinsState(): [string, Skin | undefined][] {
+    const skinsmap = this._model.game?.state.skins;
+    const players = this._players;
+
+    if (skinsmap && players) {
+      return players.map(player => [player.userName, skinsmap[player.id]]);
+    }
+
+    // If no skinsmap or players are available, return an empty array
+    return [];
+  }
+
   /**get how many players are ready */
   public get readyCount(): number {
     const readymap = this._model.game?.state.ready;
@@ -100,10 +128,12 @@ export default class SillySharkAreaController extends GameAreaController<
   public updateFrom(newModel: GameArea<SillySharkGameState>): void {
     const previousPlayers = this._players.map(player => player.id);
     const oldReadyCount = this.readyCount;
+    const previousSkinsState = this.skinsState;
     super._updateFrom(newModel);
     console.log('Updated model, new ready count:', this.readyCount);
     const currentPlayers = this._players.map(player => player.id);
     const currentReadyCount = this.readyCount;
+    const currentSkinsState = this.skinsState;
 
     // Check if players have changed
     if (JSON.stringify(previousPlayers) !== JSON.stringify(currentPlayers)) {
@@ -113,6 +143,11 @@ export default class SillySharkAreaController extends GameAreaController<
     if (oldReadyCount !== currentReadyCount) {
       console.log('Emitting playersReadyUpdated:', currentReadyCount); // Debug log
       this.emit('playersReadyUpdated', currentReadyCount);
+    }
+
+    if (JSON.stringify(previousSkinsState) !== JSON.stringify(currentSkinsState)) {
+      console.log('skins Changed', currentSkinsState);
+      this.emit('skinChanged', currentSkinsState);
     }
   }
 
