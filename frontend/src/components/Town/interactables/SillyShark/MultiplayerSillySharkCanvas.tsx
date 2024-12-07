@@ -79,11 +79,11 @@ export default function NewMultiplayerSillySharkCanvas({
   useEffect(() => {
     const setSkins = () => {
       const ourPlayerSkin = gameAreaController.skinsState.find(
-        ([username]) => username === ourPlayer.userName,
+        ([username]) => username === ourPlayer.id,
       );
 
       const otherPlayerSkin = otherPlayer
-        ? gameAreaController.skinsState.find(([username]) => username === otherPlayer.userName)
+        ? gameAreaController.skinsState.find(([username]) => username === otherPlayer.id)
         : undefined;
 
       if (ourPlayerSkin) {

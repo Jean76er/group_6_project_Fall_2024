@@ -174,14 +174,23 @@ export default class SillySharkGameArea extends GameArea<SillySharkGame> {
         throw new InvalidParametersError(GAME_ID_MISSMATCH_MESSAGE);
       }
 
-      // Check if both players are ready
-      if (!game.isReady()) {
-        throw new InvalidParametersError('Both players must be ready to start the game.');
+      if (!command.multiPlayer){
+        game.startSinglePlayer()
+      }
+      else{
+        // Check if both players are ready
+        if (!game.isReady()) {
+          throw new InvalidParametersError('Both players must be ready to start the game.');
+        }
+
+        if (game.isReady() && game.state.status === 'WAITING_TO_START') {
+          game.startMultiPlayer();
+        }
+
       }
 
-      if (game.isReady() && game.state.status === 'WAITING_TO_START') {
-        game.start();
-      }
+
+      console.log('status:', game.state.status)
       // Notify listeners about the game start
       this._stateUpdated(game.toModel());
 

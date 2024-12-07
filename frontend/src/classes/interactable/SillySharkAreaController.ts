@@ -21,6 +21,7 @@ export default class SillySharkAreaController extends GameAreaController<
 
   protected _ready: { [playerID: string]: boolean } = {};
 
+
   public async setReady(playerId: string): Promise<void> {
     const instanceID = this._ensureInstanceID();
     // Send the ready command to the server
@@ -54,23 +55,25 @@ export default class SillySharkAreaController extends GameAreaController<
     });
   }
 
-  public async startGame(): Promise<void> {
+  public async startGame(isMultiplayer: boolean): Promise<void> {
     const instanceID = this._ensureInstanceID();
     // Send the ready command to the server
     await this._townController.sendInteractableCommand(this.id, {
       type: 'StartGame',
       gameID: instanceID,
+      multiPlayer: isMultiplayer,
     });
 
     this.emit('gameStarted');
   }
+
 
   public get skinsState(): [string, Skin | undefined][] {
     const skinsmap = this._model.game?.state.skins;
     const players = this._players;
 
     if (skinsmap && players) {
-      return players.map(player => [player.userName, skinsmap[player.id]]);
+      return players.map(player => [player.id, skinsmap[player.id]]);
     }
 
     // If no skinsmap or players are available, return an empty array
@@ -157,7 +160,10 @@ export default class SillySharkAreaController extends GameAreaController<
     const previousPlayerIds = this._players.map(player => player.id);
     const previousPosition = this.renderPlayerState;
 
+
     super._updateFrom(newModel);
+
+    console.log('Current status', this.status)
 
     const currentReadyCount = this.readyCount;
     const currentSkinsState = this.skinsState;
@@ -170,9 +176,10 @@ export default class SillySharkAreaController extends GameAreaController<
     if (previousReadyCount !== currentReadyCount) {
       this.emit('playersReadyUpdated', currentReadyCount);
       if (currentReadyCount === 2) {
-        this.startGame().catch(console.error);
+        this.startGame(true).catch(console.error);
       }
     }
+
     if (!this._arraysEqual(previousSkinsState, currentSkinsState)) {
       this.emit('skinChanged', currentSkinsState);
     }
