@@ -65,7 +65,6 @@ export default function SkinSelectionScreen({
 }): JSX.Element {
   const [showCanvas, setShowCanvas] = useState(false);
   const [skinSelected, setSkinSelected] = useState<Skin | undefined>(undefined);
-  const isSingleGameInProgress = gameAreaController.status === 'SINGLE_PLAYER_IN_PROGRESS';
   const ourPlayer = coveyTownController.ourPlayer;
 
   const handleSkinSelection = useCallback(
@@ -80,10 +79,11 @@ export default function SkinSelectionScreen({
     if (!skinSelected) {
       alert('Please select a skin before continuing!!!!');
       return;
-    } else if (isSingleGameInProgress) {
-      setShowCanvas(true);
     }
-  }, [skinSelected, isSingleGameInProgress]);
+
+    setShowCanvas(true);
+    gameAreaController.startGame(false);
+  }, [gameAreaController, skinSelected]);
 
   const renderSkins = useCallback(() => {
     return (

@@ -87,7 +87,7 @@ export default function MultiplayerSkinSelectionScreen({
 
     if (playersReady === 2) {
       setShowCanvas(true); // Start the game when both players are ready
-      gameAreaController.startGame(); // Call startGame when both players are ready
+      gameAreaController.startGame(true); // Call startGame when both players are ready
     }
   }, [skinSelected, playersReady, gameAreaController, ourPlayer.id, hasClickedContinue]);
 
@@ -151,11 +151,21 @@ export default function MultiplayerSkinSelectionScreen({
 
         <Center>
           <List aria-label='list of players in the game'>
-            {skinsState.map(([playerName, skin]) => (
-              <ListItem key={playerName}>
-                {playerName}: {skin ? <Image src={skin} boxSize='20px' /> : '(No skin selected)'}
-              </ListItem>
-            ))}
+            {skinsState.map(([playerID, skin]) => {
+              const player =
+                gameAreaController.player1?.id === playerID
+                  ? gameAreaController.player1
+                  : gameAreaController.player2?.id === playerID
+                  ? gameAreaController.player2
+                  : null;
+
+              return (
+                <ListItem key={playerID}>
+                  {player?.userName || 'Unknown Player'}:{' '}
+                  {skin ? <Image src={skin} boxSize='20px' /> : '(No skin selected)'}
+                </ListItem>
+              );
+            })}
           </List>
         </Center>
 
@@ -174,6 +184,8 @@ export default function MultiplayerSkinSelectionScreen({
       </ModalContent>
     ),
     [
+      gameAreaController.player1,
+      gameAreaController.player2,
       skinSelected,
       handleSkinSelection,
       handleCanvas,
