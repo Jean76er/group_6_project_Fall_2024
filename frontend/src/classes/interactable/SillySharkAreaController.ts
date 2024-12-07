@@ -21,7 +21,6 @@ export default class SillySharkAreaController extends GameAreaController<
 
   protected _ready: { [playerID: string]: boolean } = {};
 
-
   public async setReady(playerId: string): Promise<void> {
     const instanceID = this._ensureInstanceID();
     // Send the ready command to the server
@@ -66,7 +65,6 @@ export default class SillySharkAreaController extends GameAreaController<
 
     this.emit('gameStarted');
   }
-
 
   public get skinsState(): [string, Skin | undefined][] {
     const skinsmap = this._model.game?.state.skins;
@@ -160,10 +158,9 @@ export default class SillySharkAreaController extends GameAreaController<
     const previousPlayerIds = this._players.map(player => player.id);
     const previousPosition = this.renderPlayerState;
 
-
     super._updateFrom(newModel);
 
-    console.log('Current status', this.status)
+    console.log('Current status', this.status);
 
     const currentReadyCount = this.readyCount;
     const currentSkinsState = this.skinsState;

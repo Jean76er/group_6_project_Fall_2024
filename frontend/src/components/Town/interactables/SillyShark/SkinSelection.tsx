@@ -82,9 +82,8 @@ export default function SkinSelectionScreen({
     }
 
     setShowCanvas(true);
-    gameAreaController.startGame(false)
-  
-  }, [skinSelected]);
+    gameAreaController.startGame(false);
+  }, [gameAreaController, skinSelected]);
 
   const renderSkins = useCallback(() => {
     return (

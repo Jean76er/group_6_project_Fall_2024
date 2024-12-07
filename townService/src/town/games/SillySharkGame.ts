@@ -30,8 +30,6 @@ export default class SillySharkGame extends Game<SillySharkGameState & SillyShar
     return readyCount === 2;
   }
 
-
-
   public startSinglePlayer(): void {
     if (this.state.status === 'SINGLE_PLAYER_IN_PROGRESS') {
       throw new Error(paramerrors.GAME_ALREADY_IN_PROGRESS_MESSAGE);
@@ -43,7 +41,6 @@ export default class SillySharkGame extends Game<SillySharkGameState & SillyShar
         status: 'SINGLE_PLAYER_IN_PROGRESS',
       };
     }
-
   }
 
   public startMultiPlayer(): void {
@@ -212,15 +209,23 @@ export default class SillySharkGame extends Game<SillySharkGameState & SillyShar
         this.state = {
           ...this.state,
           player1: undefined,
-          status: 'WAITING_TO_START',
           winner: this.state.player2,
         };
-      } else {
+      } else if (this.state.player2 === player.id) {
         this.state = {
           ...this.state,
           player2: undefined,
-          status: 'WAITING_TO_START',
           winner: this.state.player1,
+        };
+      }
+
+      // Check if both players are undefined
+      if (!this.state.player1 && !this.state.player2) {
+        this.state = {
+          ...this.state,
+          status: 'WAITING_TO_START',
+          winner: undefined,
+          ready: {},
         };
       }
     }

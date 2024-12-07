@@ -174,10 +174,9 @@ export default class SillySharkGameArea extends GameArea<SillySharkGame> {
         throw new InvalidParametersError(GAME_ID_MISSMATCH_MESSAGE);
       }
 
-      if (!command.multiPlayer){
-        game.startSinglePlayer()
-      }
-      else{
+      if (!command.multiPlayer) {
+        game.startSinglePlayer();
+      } else {
         // Check if both players are ready
         if (!game.isReady()) {
           throw new InvalidParametersError('Both players must be ready to start the game.');
@@ -186,12 +185,8 @@ export default class SillySharkGameArea extends GameArea<SillySharkGame> {
         if (game.isReady() && game.state.status === 'WAITING_TO_START') {
           game.startMultiPlayer();
         }
-
       }
 
-
-      console.log('status:', game.state.status)
-      // Notify listeners about the game start
       this._stateUpdated(game.toModel());
 
       return undefined as InteractableCommandReturnType<CommandType>;
