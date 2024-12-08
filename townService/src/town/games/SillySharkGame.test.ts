@@ -159,7 +159,6 @@ describe('SillySharkGame', () => {
           game.leave(player1);
           game.leave(player2);
 
-          // Ensure the game resets completely
           expect(game.state.player1).toBeUndefined();
           expect(game.state.player2).toBeUndefined();
           expect(game.state.status).toEqual('WAITING_TO_START');
@@ -241,6 +240,60 @@ describe('SillySharkGame', () => {
       expect(game.state.winner).toBeUndefined();
       expect(game.state.lost[player1.id]).toEqual(true);
       expect(game.state.lost[player2.id]).toEqual(true);
+    });
+  });
+
+  describe('[T1.5] Position Updates', () => {
+    let player: Player;
+
+    beforeEach(() => {
+      player = createPlayerForTesting();
+      game.join(player);
+      expect(game.state.player1).toEqual(player.id);
+    });
+
+    it('should update the position for a valid input within bounds', () => {
+      const validPosition = 100;
+
+      game.setPosition(player, validPosition);
+      expect(game.state.spritesData[player.id]).toEqual(validPosition);
+    });
+
+    it('should allow position at the boundary (0)', () => {
+      const boundaryPosition = 0;
+      game.setPosition(player, boundaryPosition);
+      expect(game.state.spritesData[player.id]).toEqual(boundaryPosition);
+    });
+
+    it('should allow position at the upper boundary (canvas height)', () => {
+      const boundaryPosition = game.state.canvasHeight;
+
+      game.setPosition(player, boundaryPosition);
+      expect(game.state.spritesData[player.id]).toEqual(boundaryPosition);
+    });
+
+    it('should throw an error for a position below 0', () => {
+      const invalidPosition = -10;
+
+      expect(() => game.setPosition(player, invalidPosition)).toThrowError(
+        'Position is out of bounds.',
+      );
+    });
+
+    it('should throw an error for a position above canvas height', () => {
+      const invalidPosition = game.state.canvasHeight + 1;
+
+      expect(() => game.setPosition(player, invalidPosition)).toThrowError(
+        'Position is out of bounds.',
+      );
+    });
+
+    it('should throw an error if a non-participating player attempts to update position', () => {
+      const nonParticipatingPlayer = createPlayerForTesting();
+
+      expect(() => game.setPosition(nonParticipatingPlayer, 100)).toThrowError(
+        'Player is not part of this game.',
+      );
     });
   });
 });
