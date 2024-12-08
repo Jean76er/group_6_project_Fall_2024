@@ -296,4 +296,48 @@ describe('SillySharkGame', () => {
       );
     });
   });
+
+  describe('[T1.6] Score Management', () => {
+    const player1 = createPlayerForTesting();
+    const player2 = createPlayerForTesting();
+
+    beforeEach(() => {
+      game.join(player1);
+      game.join(player2);
+    });
+
+    it('should update the score for a valid player', () => {
+      game.updateScore(player1, 10);
+
+      expect(game.state.score[player1.id]).toEqual(10);
+    });
+
+    it('should allow scores to be updated multiple times', () => {
+      game.updateScore(player1, 5);
+      game.updateScore(player1, 15);
+
+      expect(game.state.score[player1.id]).toEqual(15);
+    });
+
+    it('should not affect other players when updating one player’s score', () => {
+      game.updateScore(player1, 20);
+
+      expect(game.state.score[player2.id]).toBeUndefined();
+      expect(game.state.score[player1.id]).toEqual(20);
+    });
+
+    it('should throw an error when updating score for a non-participating player', () => {
+      const nonParticipatingPlayer = createPlayerForTesting();
+
+      expect(() => game.updateScore(nonParticipatingPlayer, 10)).toThrowError(
+        'Player is not in this game',
+      );
+    });
+
+    it('should handle a score of 0 without errors', () => {
+      game.updateScore(player1, 0);
+
+      expect(game.state.score[player1.id]).toEqual(0);
+    });
+  });
 });
