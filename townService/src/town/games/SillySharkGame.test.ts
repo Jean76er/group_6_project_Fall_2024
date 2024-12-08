@@ -169,4 +169,78 @@ describe('SillySharkGame', () => {
       });
     });
   });
+
+  describe('[T1.3] gamestart', () => {
+    it('should throw an error if the both players are not ready before starting multiplayer', () => {
+      const player1 = createPlayerForTesting();
+      const player2 = createPlayerForTesting();
+      game.join(player1);
+      game.join(player2);
+      game.setReady(player1);
+      expect(() => game.startMultiPlayer()).toThrowError(BOTH_PLAYERS_READY_MESSAGE);
+    });
+    it('should successfully enter SINGLE_PLAYER_IN_PROGRESS', () => {
+      const player = createPlayerForTesting();
+      game.join(player);
+      expect(game.state.status).toEqual('WAITING_TO_START');
+      game.setReady(player);
+      game.startSinglePlayer();
+      expect(game.state.status).toEqual('SINGLE_PLAYER_IN_PROGRESS');
+    });
+  });
+
+  describe('[T1.4] Winner Detection', () => {
+    const player1 = createPlayerForTesting();
+    const player2 = createPlayerForTesting();
+    beforeEach(() => {
+      game.join(player1);
+      game.join(player2);
+      game.setReady(player1);
+      game.setReady(player2);
+      game.startMultiPlayer();
+
+      expect(game.state.status).toEqual('MULTI_PLAYER_IN_PROGRESS');
+    });
+
+    it('should declare player 1 as the winner when their score is higher', () => {
+      game.updateScore(player1, 10);
+      game.updateScore(player2, 5);
+
+      game.checkForWinner();
+
+      expect(game.state.winner).toEqual(player1.id);
+      expect(game.state.lost[player1.id]).toEqual(false);
+      expect(game.state.lost[player2.id]).toEqual(true);
+    });
+
+    it('should declare player 2 as the winner when their score is higher', () => {
+      game.updateScore(player1, 5);
+      game.updateScore(player2, 15);
+
+      game.checkForWinner();
+
+      expect(game.state.winner).toEqual(player2.id);
+      expect(game.state.lost[player1.id]).toEqual(true);
+      expect(game.state.lost[player2.id]).toEqual(false);
+    });
+
+    it('should declare a tie when both players have the same score', () => {
+      game.updateScore(player1, 10);
+      game.updateScore(player2, 10);
+
+      game.checkForWinner();
+
+      expect(game.state.winner).toBeUndefined();
+      expect(game.state.lost[player1.id]).toEqual(true);
+      expect(game.state.lost[player2.id]).toEqual(true);
+    });
+
+    it('should not declare a winner when no scores are set', () => {
+      game.checkForWinner();
+
+      expect(game.state.winner).toBeUndefined();
+      expect(game.state.lost[player1.id]).toEqual(true);
+      expect(game.state.lost[player2.id]).toEqual(true);
+    });
+  });
 });
