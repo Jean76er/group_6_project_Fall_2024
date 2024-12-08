@@ -1,7 +1,6 @@
 import { createPlayerForTesting } from '../../TestUtils';
 import {
   GAME_FULL_MESSAGE,
-  GAME_NOT_IN_PROGRESS_MESSAGE,
   BOTH_PLAYERS_READY_MESSAGE,
   PLAYER_ALREADY_IN_GAME_MESSAGE,
   PLAYER_NOT_IN_GAME_MESSAGE,
@@ -338,6 +337,103 @@ describe('SillySharkGame', () => {
       game.updateScore(player1, 0);
 
       expect(game.state.score[player1.id]).toEqual(0);
+    });
+  });
+
+  describe('[T1.7] Skin Customization', () => {
+    const player = createPlayerForTesting();
+    beforeEach(() => {
+      game.join(player);
+      expect(game.state.player1).toEqual(player.id);
+    });
+
+    it('should set a custom skin for a valid player', () => {
+      const customSkin = '/customSkin.png';
+
+      game.setSkin(player, customSkin);
+
+      expect(game.state.skins?.[player.id]).toEqual(customSkin);
+    });
+
+    it('should apply the default skin if no skin is provided', () => {
+      game.setSkin(player, undefined);
+
+      expect(game.state.skins?.[player.id]).toEqual('/SillySharkResources/skins/sillyshark.png');
+    });
+
+    it('should allow the player to update their skin multiple times', () => {
+      const skin1 = '/skin1.png';
+      const skin2 = '/skin2.png';
+
+      game.setSkin(player, skin1);
+      expect(game.state.skins?.[player.id]).toEqual(skin1);
+
+      game.setSkin(player, skin2);
+      expect(game.state.skins?.[player.id]).toEqual(skin2);
+    });
+
+    it('should throw an error if a non-participating player tries to set a skin', () => {
+      const nonParticipatingPlayer = createPlayerForTesting();
+
+      expect(() => game.setSkin(nonParticipatingPlayer, '/customSkin.png')).toThrowError(
+        'Player is not in this game',
+      );
+    });
+  });
+
+  describe('[T1.8] Skin Selection Prioritization', () => {
+    const player1 = createPlayerForTesting();
+    const player2 = createPlayerForTesting();
+
+    beforeEach(() => {
+      game.join(player1);
+      game.join(player2);
+      expect(game.state.player1).toEqual(player1.id);
+      expect(game.state.player2).toEqual(player2.id);
+    });
+
+    it('should allow the first player to select any skin', () => {
+      const customSkin = '/uniqueSkin1.png';
+
+      game.setSkin(player1, customSkin);
+      expect(game.state.skins?.[player1.id]).toEqual(customSkin);
+    });
+
+    it('should prevent the second player from selecting the same skin as the first player', () => {
+      const customSkin = '/uniqueSkin1.png';
+
+      game.setSkin(player1, customSkin);
+
+      expect(game.state.skins?.[player2.id]).toBeUndefined();
+    });
+
+    it('should allow the second player to select a different skin', () => {
+      const skin1 = '/uniqueSkin1.png';
+      const skin2 = '/uniqueSkin2.png';
+
+      game.setSkin(player1, skin1);
+      game.setSkin(player2, skin2);
+
+      expect(game.state.skins?.[player1.id]).toEqual(skin1);
+      expect(game.state.skins?.[player2.id]).toEqual(skin2);
+    });
+
+    it('should not allow the second player to overwrite the first player’s skin', () => {
+      const skin1 = '/uniqueSkin1.png';
+
+      game.setSkin(player1, skin1);
+
+      expect(game.state.skins?.[player1.id]).toEqual(skin1);
+    });
+
+    it('should allow the first player to change their skin, and the second player cannot use the new skin', () => {
+      const skin1 = '/uniqueSkin1.png';
+      const skin2 = '/uniqueSkin2.png';
+
+      game.setSkin(player1, skin1);
+      game.setSkin(player1, skin2);
+
+      expect(game.state.skins?.[player1.id]).toEqual(skin2);
     });
   });
 });
