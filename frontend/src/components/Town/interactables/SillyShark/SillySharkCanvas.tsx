@@ -26,6 +26,9 @@ export default function NewSillySharkCanvas({
   const [gameOver, setGameOver] = useState(false);
   const gravity = 1; /**Makes spirte fall faster or slower*/
   const [velocity, setVelocity] = useState(0);
+  const ourPlayer = coveyTownController.ourPlayer;
+  const [gameOverScore, setGameOverScore] = useState(0);
+
   // const ourPlayer = townController.ourPlayer;
 
   useEffect(() => {
@@ -215,11 +218,15 @@ export default function NewSillySharkCanvas({
 
       /** Check for collision */
       if (checkCollision()) {
+        const playerId = ourPlayer.id; // Get the current player's ID
+        const updatedScores = { ...gameAreaController.scores }; // Copy existing scores
+        updatedScores[playerId] = score; // Set the player's score
+
+        gameAreaController.scores = updatedScores; // Update scores in the game controller
+
+        setGameOverScore(score)
         setGameOver(true);
         setScore(0);
-        /** Implement additional logic to set the game state to game over and switch to game
-         * over screen
-         */
       }
     };
 
@@ -346,7 +353,7 @@ export default function NewSillySharkCanvas({
         <canvas ref={canvas} width='500' height='720' />
       </ModalContent>
       {gameOver && (
-        <NewGameOverScreen gameArea={gameArea} coveyTownController={coveyTownController} />
+        <NewGameOverScreen gameArea={gameArea} coveyTownController={coveyTownController} score={gameOverScore}/>
       )}
     </Modal>
   );

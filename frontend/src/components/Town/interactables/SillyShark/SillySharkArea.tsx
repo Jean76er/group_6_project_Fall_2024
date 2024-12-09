@@ -40,11 +40,9 @@ function SillySharkArea({
   const multiGameAreaController =
     useInteractableAreaController<SillySharkAreaController>(interactableID);
   const ourPlayer = coveyTownController.ourPlayer;
-  //const [history, setHistory] = useState(gameAreaController?.history || []);
   const [joining, setJoin] = useState(false);
   const [canJoinSinglePlayer, setCanJoinSinglePlayer] = useState(false);
   const [canJoinMultiPlayer, setCanJoinMultiPlayer] = useState(false);
-  // const [observers, setObservers] = useState(singleGameAreaController?.observers);
   const [showSkinSelection, setShowSkinSelection] = useState(false); //Used to determine if the next screen should be called
   const [showMultiplayerSkinSelection, setShowMultiplayerSkinSelection] = useState(false); // For multiplayer skin selection
   const [playerCount, setPlayerCount] = useState(coveyTownController.players.length);
@@ -125,16 +123,10 @@ function SillySharkArea({
     handleMultiJoinButtonVisibility();
 
     const handleSingleGameUpdate = () => {
-      //setHistory(gameAreaController.history || []);
-      // setObservers(singleGameAreaController.observers);
-
       handleSingleJoinButtonVisibility();
     };
 
     const handleMultiGameUpdate = () => {
-      //setHistory(gameAreaController.history || []);
-      // setObservers(multiGameAreaController.observers);
-
       handleMultiJoinButtonVisibility();
     };
 
@@ -213,13 +205,6 @@ function SillySharkArea({
         />
       )}
       {showMultiplayerSkinSelection && renderMultiSkinScreen()}
-
-      {/* <Center paddingTop='10px'>{gameAreaController.status}</Center>
-      <List aria-label='observers:'>
-        {observers.map(observer => (
-          <ListItem key={observer.id}>{observer.userName}</ListItem>
-        ))}
-      </List> */}
     </>
   );
 }
