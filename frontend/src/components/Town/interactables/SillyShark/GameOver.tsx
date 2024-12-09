@@ -1,4 +1,4 @@
-import { Button, ModalContent, ModalHeader, Center, Image } from '@chakra-ui/react';
+import { Button, ModalContent, ModalHeader, Center, Image, Text } from '@chakra-ui/react';
 import React, { useCallback } from 'react';
 import GameArea from '../GameArea';
 import TownController from '../../../../classes/TownController';
@@ -6,10 +6,13 @@ import TownController from '../../../../classes/TownController';
 export default function NewGameOverScreen({
   gameArea,
   coveyTownController,
+  score,
 }: {
   gameArea: GameArea;
   coveyTownController: TownController;
+  score: number;
 }) {
+  const ourPlayer = coveyTownController.ourPlayer;
   const closeModal = useCallback(() => {
     if (gameArea) {
       coveyTownController.unPause();
@@ -24,16 +27,33 @@ export default function NewGameOverScreen({
       <ModalContent maxW='500px' h='720px' bg='skyblue'>
         <ModalHeader>
           <Image
-            src='https://see.fontimg.com/api/rf5/MXOr/NGM3ZDI5YTQ3NTg3NGU1YzhkMWFmNTAxOGFlMTQ1MjUudHRm/R2FtZSBPdmVy/botsmatic-demo.png?r=fs&h=81&w=1250&fg=000000&bg=FFFFFF&tb=1&s=65 '
+            src='https://see.fontimg.com/api/rf5/MXOr/NGM3ZDI5YTQ3NTg3NGU1YzhkMWFmNTAxOGFlMTQ1MjUudHRm/R2FtZSBPdmVy/botsmatic-demo.png?r=fs&h=81&w=1250&fg=000000&bg=FFFFFF&tb=1&s=65'
             alt='Minecraft fonts'
           />
         </ModalHeader>
-        <Center paddingTop='400'>
-          <Button size='lg' bg='blue' color='white'>
-            Replay
-          </Button>
+        <Center>
+          <Text fontSize='3xl' fontWeight='bold' color='white' mt={5}>
+            Your score was:
+          </Text>
         </Center>
-        <Center paddingTop='10px'>
+
+        <Center>
+          <Text fontSize='5xl' fontWeight='bold' color='yellow.400' mt={2}>
+            {score}
+          </Text>
+        </Center>
+
+        <Center>
+          <Text fontSize='3xl' fontWeight='bold' color='white' mt={5}>
+            Your best score is:
+          </Text>
+        </Center>
+        <Center>
+          <Text fontSize='5xl' fontWeight='bold' color='yellow.400' mt={2}>
+            {ourPlayer.highScore}
+          </Text>
+        </Center>
+        <Center paddingTop='200'>
           <Button size='lg' bg='blue' color='white' onClick={closeModal}>
             Exit
           </Button>

@@ -76,6 +76,7 @@ export default function NewMultiplayerSillySharkCanvas({
 
   /** adding state for the score*/
   const [score, setScore] = useState(0);
+  const [gameOverScore, setGameOverScore] = useState(0);
 
   const toast = useToast();
 
@@ -253,13 +254,14 @@ export default function NewMultiplayerSillySharkCanvas({
 
       /** Check for collision */
       if (checkCollision()) {
-        gameAreaController.setLoser(ourPlayer);
+        gameAreaController.setLoser(ourPlayer); // Mark the player as the loser
+
+        setGameOverScore(score);
+        if (score > ourPlayer.highScore) {
+          ourPlayer.highScore = score;
+        }
         setGameOver(true);
         setScore(0);
-
-        /** Implement additional logic to set the game state to game over and switch to game
-         * over screen
-         */
       }
     };
 
@@ -440,7 +442,11 @@ export default function NewMultiplayerSillySharkCanvas({
         <canvas ref={canvas} width='500' height='720' />
       </ModalContent>
       {gameOver && (
-        <NewGameOverScreen gameArea={gameArea} coveyTownController={coveyTownController} />
+        <NewGameOverScreen
+          gameArea={gameArea}
+          coveyTownController={coveyTownController}
+          score={gameOverScore}
+        />
       )}
     </Modal>
   );

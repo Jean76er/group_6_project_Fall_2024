@@ -18,6 +18,8 @@ export default class PlayerController extends (EventEmitter as new () => TypedEm
 
   private readonly _userName: string;
 
+  private _highScore?: number;
+
   public gameObjects?: PlayerGameObjects;
 
   constructor(id: string, userName: string, location: PlayerLocation) {
@@ -43,6 +45,17 @@ export default class PlayerController extends (EventEmitter as new () => TypedEm
 
   get id(): string {
     return this._id;
+  }
+
+  set highScore(score: number) {
+    this._highScore = score;
+  }
+
+  get highScore(): number {
+    if (this._highScore) {
+      return this._highScore;
+    }
+    return 0;
   }
 
   toPlayerModel(): PlayerModel {

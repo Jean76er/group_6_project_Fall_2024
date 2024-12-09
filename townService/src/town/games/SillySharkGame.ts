@@ -10,8 +10,6 @@ import {
 } from '../../types/CoveyTownSocket';
 
 const DEFAULT_SKIN = '/SillySharkResources/skins/sillyshark.png';
-const DEFAULT_SCORE = 0;
-
 export default class SillySharkGame extends Game<SillySharkGameState & SillySharkCanvasState> {
   /* This constructor may need to be revised later with further development. */
   public constructor() {
@@ -20,7 +18,6 @@ export default class SillySharkGame extends Game<SillySharkGameState & SillyShar
       ready: {},
       spritesData: {},
       canvasHeight: 720,
-      score: {},
       lost: {},
     });
   }
@@ -114,23 +111,6 @@ export default class SillySharkGame extends Game<SillySharkGameState & SillyShar
     };
   }
 
-  private _updateScore(player: Player, score: number) {
-    this.state = {
-      ...this.state,
-      score: {
-        ...(this.state.score || {}),
-        [player.id]: score || DEFAULT_SCORE,
-      },
-    };
-  }
-
-  public updateScore(player: Player, score: number) {
-    if (!this._players.some(p => p.id === player.id)) {
-      throw new InvalidParametersError(paramerrors.PLAYER_NOT_IN_GAME_MESSAGE);
-    }
-    this._updateScore(player, score);
-  }
-
   private _checkForWinner(playerId: string) {
     const { player1, player2 } = this.state;
 
@@ -208,7 +188,6 @@ export default class SillySharkGame extends Game<SillySharkGameState & SillyShar
         ready: {},
         spritesData: {},
         canvasHeight: 720,
-        score: {},
         lost: {},
       };
     } else if (this.state.status === 'MULTI_PLAYER_IN_PROGRESS') {

@@ -125,8 +125,6 @@ export default class SillySharkGameArea extends GameArea<SillySharkGame> {
         throw new InvalidParametersError(GAME_ID_MISSMATCH_MESSAGE);
       }
 
-      game.updateScore(player, command.score);
-
       this._stateUpdated(game.toModel());
 
       return undefined as InteractableCommandReturnType<CommandType>;
