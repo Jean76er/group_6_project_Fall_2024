@@ -24,8 +24,6 @@ export default class SillySharkGameArea extends GameArea<SillySharkGame> {
     return 'SillySharkArea';
   }
 
-  private _checkForWin() {}
-
   private _stateUpdated(updatedState: GameInstance<SillySharkGameState>) {
     if (updatedState.state.status === 'OVER') {
       // If we haven't yet recorded the outcome, do so now.
@@ -143,7 +141,8 @@ export default class SillySharkGameArea extends GameArea<SillySharkGame> {
         throw new InvalidParametersError(GAME_ID_MISSMATCH_MESSAGE);
       }
 
-      game.checkForWinner();
+      game.checkForWinner(player.id);
+      this._stateUpdated(game.toModel());
 
       return undefined as InteractableCommandReturnType<CommandType>;
     }

@@ -1,4 +1,4 @@
-import { Modal, ModalContent, ModalOverlay } from '@chakra-ui/react';
+import { Modal, ModalContent, ModalOverlay, useToast } from '@chakra-ui/react';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import SillySharkAreaController from '../../../../classes/interactable/SillySharkAreaController';
 import GameArea from '../GameArea';
@@ -6,6 +6,7 @@ import GameAreaInteractable from '../GameArea';
 import Obstacle from './Obstacle';
 import TownController from '../../../../classes/TownController';
 import NewGameOverScreen from './GameOver';
+import PlayerController from '../../../../classes/PlayerController';
 
 export type SillySharkProps = {
   gameAreaController: SillySharkAreaController;
@@ -28,6 +29,7 @@ export default function NewMultiplayerSillySharkCanvas({
   const [velocity, setVelocity] = useState(0);
   const ourPlayer = coveyTownController.ourPlayer;
   const otherPlayer = gameAreaController.players.find(player => player.id !== ourPlayer.id);
+  const [messageShown, setMessageShown] = useState(false);
 
   useEffect(() => {
     if (newSillySharkGame) {
@@ -75,6 +77,8 @@ export default function NewMultiplayerSillySharkCanvas({
   /** adding state for the score*/
   const [score, setScore] = useState(0);
 
+  const toast = useToast();
+
   /**Load the sprite image when the component mounts */
   useEffect(() => {
     const setSkins = () => {
@@ -111,7 +115,6 @@ export default function NewMultiplayerSillySharkCanvas({
       obstacleImage.current.src = '/SillySharkResources/obstacles/obstacle.png';
 
       obstacleImage.current.onload = () => {
-        console.log('Obstacle image loaded:', obstacleImage.current.src);
         const { topHeight, bottomHeight } = randomObstacleHeights();
         const firstTopObstacle = new Obstacle(topHeight, obstacleWidth, obstacleImage.current);
         const firstBottomObstacle = new Obstacle(
@@ -250,8 +253,10 @@ export default function NewMultiplayerSillySharkCanvas({
 
       /** Check for collision */
       if (checkCollision()) {
+        gameAreaController.setLoser(ourPlayer);
         setGameOver(true);
         setScore(0);
+
         /** Implement additional logic to set the game state to game over and switch to game
          * over screen
          */
@@ -331,7 +336,17 @@ export default function NewMultiplayerSillySharkCanvas({
     }, 1000 / 60);
 
     return () => clearInterval(interval);
-  }, [otherSpriteY, gameAreaController, obstacles, spriteY, gameOver, score, gravity, velocity]);
+  }, [
+    ourPlayer,
+    otherSpriteY,
+    gameAreaController,
+    obstacles,
+    spriteY,
+    gameOver,
+    score,
+    gravity,
+    velocity,
+  ]);
 
   useEffect(() => {
     const handleJumpEvent = () => {
@@ -359,11 +374,34 @@ export default function NewMultiplayerSillySharkCanvas({
       }
     };
 
+    const handleLoserUpdate = (winner: PlayerController) => {
+      if (!messageShown) {
+        if (winner === ourPlayer) {
+          toast({
+            title: 'You Won!',
+          });
+        } else {
+          toast({
+            title: 'You Lost :(',
+          });
+        }
+        setMessageShown(true); // Ensure the message is shown only once
+      }
+    };
+
     gameAreaController.addListener('positionUpdated', handlePositionUpdate);
+    gameAreaController.addListener('loserUpdated', handleLoserUpdate);
     return () => {
       gameAreaController.removeListener('positionUpdated', handlePositionUpdate);
+      gameAreaController.removeListener('loserUpdated', handleLoserUpdate);
     };
-  }, [gameAreaController, ourPlayer.id, otherPlayer]);
+  }, [gameAreaController, ourPlayer.id, otherPlayer, messageShown, ourPlayer, toast]);
+
+  useEffect(() => {
+    if (!isOpen) {
+      setMessageShown(false); // Reset the message state when the modal is closed
+    }
+  }, [isOpen]);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {

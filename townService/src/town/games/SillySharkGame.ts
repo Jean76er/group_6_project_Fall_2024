@@ -131,31 +131,38 @@ export default class SillySharkGame extends Game<SillySharkGameState & SillyShar
     this._updateScore(player, score);
   }
 
-  private _checkForWinner() {
-    const player1Id = this.state.player1;
-    const player2Id = this.state.player2;
+  private _checkForWinner(playerId: string) {
+    const { player1, player2 } = this.state;
 
-    const player1Score = player1Id !== undefined ? this.state.score[player1Id] || 0 : 0;
-    const player2Score = player2Id !== undefined ? this.state.score[player2Id] || 0 : 0;
-    if (player1Id !== undefined && player2Id !== undefined) {
-      if (player1Score > player2Score) {
-        this.state.lost[player2Id] = true;
-        this.state.lost[player1Id] = false;
-        this.state.winner = player1Id;
-      } else if (player2Score > player1Score) {
-        this.state.lost[player1Id] = true;
-        this.state.lost[player2Id] = false;
-        this.state.winner = player2Id;
-      } else {
-        this.state.lost[player1Id] = true;
-        this.state.lost[player2Id] = true;
-        this.state.winner = undefined;
-      }
+    // Ensure that both players exist
+    if (!player1 || !player2) {
+      throw new InvalidParametersError('Both players must be in the game to determine a winner.');
+    }
+
+    // If the player has already been identified as the winner, no need to continue
+    if (this.state.winner) {
+      return;
+    }
+
+    // If the playerId is player1, then player2 is the winner, and vice versa
+    if (playerId === player1) {
+      this.state.winner = player2;
+    } else if (playerId === player2) {
+      this.state.winner = player1;
+    } else {
+      throw new InvalidParametersError('Invalid player ID.');
+    }
+
+    // Set the "lost" status for the other player
+    if (this.state.winner === player1) {
+      this.state.lost = { [player2]: true, [player1]: false };
+    } else if (this.state.winner === player2) {
+      this.state.lost = { [player1]: true, [player2]: false };
     }
   }
 
-  public checkForWinner() {
-    this._checkForWinner();
+  public checkForWinner(playerId: string) {
+    this._checkForWinner(playerId);
   }
 
   /**
