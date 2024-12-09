@@ -233,6 +233,7 @@ export type InteractableCommandReturnType<CommandType extends InteractableComman
   CommandType extends SetReadyCommand ? undefined :
   CommandType extends LeaveGameCommand ? undefined :
   CommandType extends SetSkinCommand ? undefined :
+  CommandType extends CheckForWinnerCommand ? undefined:
   never;
 
 export type InteractableCommandResponse<MessageType> = {

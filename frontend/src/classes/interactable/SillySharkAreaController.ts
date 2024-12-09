@@ -12,6 +12,7 @@ export type SillySharkEvents = GameEventTypes & {
   skinChanged: (data: [string, Skin | undefined][]) => void;
   gameStarted: () => void;
   positionUpdated: (data: [string, number][]) => void;
+  loserUpdated: (player: PlayerController) => void;
 };
 export default class SillySharkAreaController extends GameAreaController<
   SillySharkGameState,
@@ -42,6 +43,16 @@ export default class SillySharkAreaController extends GameAreaController<
     });
 
     this.skin = skin;
+  }
+
+  public async setLoser(player: PlayerController): Promise<void> {
+    const instanceID = this._ensureInstanceID();
+    // Send the ready command to the server
+    await this._townController.sendInteractableCommand(this.id, {
+      type: 'CheckForWinner',
+      gameID: instanceID,
+      playerID: player.id,
+    });
   }
 
   public async setPosition(positionY: number): Promise<void> {
@@ -160,8 +171,6 @@ export default class SillySharkAreaController extends GameAreaController<
 
     super._updateFrom(newModel);
 
-    console.log('Current status', this.status);
-
     const currentReadyCount = this.readyCount;
     const currentSkinsState = this.skinsState;
     const currentPlayerIds = this._players.map(player => player.id);
@@ -175,6 +184,10 @@ export default class SillySharkAreaController extends GameAreaController<
       if (currentReadyCount === 2) {
         this.startGame(true).catch(console.error);
       }
+    }
+
+    if (this.winner ) {
+      this.emit('loserUpdated', this.winner);
     }
 
     if (!this._arraysEqual(previousSkinsState, currentSkinsState)) {
