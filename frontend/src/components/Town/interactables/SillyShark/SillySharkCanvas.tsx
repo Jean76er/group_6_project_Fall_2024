@@ -218,13 +218,12 @@ export default function NewSillySharkCanvas({
 
       /** Check for collision */
       if (checkCollision()) {
-        const playerId = ourPlayer.id; // Get the current player's ID
-        const updatedScores = { ...gameAreaController.scores }; // Copy existing scores
-        updatedScores[playerId] = score; // Set the player's score
+        gameAreaController.setLoser(ourPlayer); // Mark the player as the loser
 
-        gameAreaController.scores = updatedScores; // Update scores in the game controller
-
-        setGameOverScore(score)
+        setGameOverScore(score);
+        if (score > ourPlayer.highScore) {
+          ourPlayer.highScore = score;
+        }
         setGameOver(true);
         setScore(0);
       }
@@ -302,7 +301,7 @@ export default function NewSillySharkCanvas({
     }, 1000 / 60);
 
     return () => clearInterval(interval);
-  }, [obstacles, spriteY, gameOver, score, gravity, velocity]);
+  }, [obstacles, spriteY, gameOver, score, gravity, velocity, gameAreaController, ourPlayer]);
 
   useEffect(() => {
     const handleJumpEvent = () => {
@@ -353,7 +352,11 @@ export default function NewSillySharkCanvas({
         <canvas ref={canvas} width='500' height='720' />
       </ModalContent>
       {gameOver && (
-        <NewGameOverScreen gameArea={gameArea} coveyTownController={coveyTownController} score={gameOverScore}/>
+        <NewGameOverScreen
+          gameArea={gameArea}
+          coveyTownController={coveyTownController}
+          score={gameOverScore}
+        />
       )}
     </Modal>
   );

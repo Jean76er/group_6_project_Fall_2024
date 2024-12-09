@@ -22,7 +22,6 @@ export default class SillySharkAreaController extends GameAreaController<
 
   protected _ready: { [playerID: string]: boolean } = {};
 
-
   public async setReady(playerId: string): Promise<void> {
     const instanceID = this._ensureInstanceID();
     // Send the ready command to the server
@@ -77,26 +76,6 @@ export default class SillySharkAreaController extends GameAreaController<
 
     this.emit('gameStarted');
   }
-
-  public get scores(): { [playerId: string]: number } {
-    // Returns the current scores from the game state
-    return this._model.game?.state.score || {};
-  }
-  
-  public set scores(newScores: { [playerId: string]: number }) {
-    // Ensures the game state is available
-    const gameState = this._model.game?.state;
-    if (!gameState) {
-      throw new Error(NO_GAME_IN_PROGRESS_ERROR);
-    }
-    
-    // Updates the scores in the game state
-    Object.entries(newScores).forEach(([playerId, score]) => {
-      gameState.score[playerId] = score;
-    });
-  
-  }
-  
 
   public get skinsState(): [string, Skin | undefined][] {
     const skinsmap = this._model.game?.state.skins;

@@ -30,6 +30,8 @@ export interface Player {
   id: string;
   userName: string;
   location: PlayerLocation;
+  highScore?: number;
+  
 };
 
 export type XY = { x: number, y: number };
@@ -130,7 +132,6 @@ export interface SillySharkGameState extends WinnableGameState {
   player1?: PlayerID;
   player2?: PlayerID;
   skins?: {[playerId: string]: Skin } //Comments needed
-  score: {[playerId: string]: number}
   lost: {[playerId: string]: boolean}
   ready: { [playerId: string]: boolean };
   spritesData: { [playerId: string]: number}; 

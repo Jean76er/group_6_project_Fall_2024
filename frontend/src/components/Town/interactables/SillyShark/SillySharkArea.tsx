@@ -8,6 +8,7 @@ import {
   useToast,
   Center,
   Image,
+  Text,
 } from '@chakra-ui/react';
 import React, { useCallback, useEffect, useState } from 'react';
 import TownController, {
@@ -43,10 +44,9 @@ function SillySharkArea({
   const [joining, setJoin] = useState(false);
   const [canJoinSinglePlayer, setCanJoinSinglePlayer] = useState(false);
   const [canJoinMultiPlayer, setCanJoinMultiPlayer] = useState(false);
-  const [showSkinSelection, setShowSkinSelection] = useState(false); //Used to determine if the next screen should be called
-  const [showMultiplayerSkinSelection, setShowMultiplayerSkinSelection] = useState(false); // For multiplayer skin selection
+  const [showSkinSelection, setShowSkinSelection] = useState(false);
+  const [showMultiplayerSkinSelection, setShowMultiplayerSkinSelection] = useState(false);
   const [playerCount, setPlayerCount] = useState(coveyTownController.players.length);
-
   const toast = useToast();
 
   const renderMultiSkinScreen = useCallback(() => {
@@ -143,6 +143,7 @@ function SillySharkArea({
 
       toast({ description: message });
     };
+
     const updatePlayerCount = () => {
       setPlayerCount(coveyTownController.players.length);
     };
@@ -172,27 +173,38 @@ function SillySharkArea({
 
   return (
     <>
+      <Center>
+        <Text fontSize='4xl' fontWeight='bold' color='white' mt={2}>
+          Best Score: {ourPlayer.highScore}
+        </Text>
+      </Center>
+
       {canJoinSinglePlayer && (
         <Center paddingTop='400'>
           <Button
             onClick={handleJoinSinglePlayerGame}
             isDisabled={joining}
             size='lg'
-            bg='blue'
-            color='white'>
-            {joining ? 'Loading...' : 'Start'}
+            bg='blue.400'
+            color='white'
+            _hover={{ bg: 'blue.500' }}
+            _active={{ bg: 'blue.600' }}>
+            {joining ? 'Loading...' : 'Single Player'}
           </Button>
         </Center>
       )}
+
       {canJoinMultiPlayer && (
         <Center paddingTop='10px'>
           <Button
             onClick={handleJoinMultiplayerGame}
             isDisabled={joining || playerCount <= 1}
             size='lg'
-            bg='blue'
-            color='white'>
-            Join
+            bg='blue.400'
+            color='white'
+            _hover={{ bg: 'blue.500' }}
+            _active={{ bg: 'blue.600' }}>
+            Multi Player
           </Button>
         </Center>
       )}
@@ -204,6 +216,7 @@ function SillySharkArea({
           coveyTownController={coveyTownController}
         />
       )}
+
       {showMultiplayerSkinSelection && renderMultiSkinScreen()}
     </>
   );
@@ -212,6 +225,7 @@ function SillySharkArea({
 export default function SillySharkAreaWrapper(): JSX.Element {
   const gameArea = useInteractable<GameAreaInteractable>('gameArea');
   const coveyTownController = useTownController();
+
   const closeModal = useCallback(() => {
     if (gameArea) {
       coveyTownController.interactEnd(gameArea);
@@ -224,11 +238,13 @@ export default function SillySharkAreaWrapper(): JSX.Element {
     return (
       <Modal isOpen={true} onClose={closeModal} closeOnOverlayClick={false}>
         <ModalOverlay />
-        <ModalContent maxW='500px' h='720px' bg='skyblue'>
-          <ModalHeader>
+        <ModalContent maxW='500px' h='720px' bg='skyblue' borderRadius='lg'>
+          <ModalHeader textAlign='center'>
             <Image
               src='https://see.fontimg.com/api/rf5/Exl8/NjhmNTJiODNkNDBjNDgwNWE0ZmM5N2JmM2IxMWNlNDcudHRm/U2lsbHkgU2hhcms/botsmatic3d.png?r=fs&h=68&w=1040&fg=000000&bg=FFFFFF&tb=1&s=65'
               alt='Minecraft fonts'
+              objectFit='contain'
+              maxW='full'
             />
           </ModalHeader>
           <ModalCloseButton />
