@@ -186,7 +186,7 @@ export default class SillySharkAreaController extends GameAreaController<
       }
     }
 
-    if (this.winner ) {
+    if (this.winner) {
       this.emit('loserUpdated', this.winner);
     }
 
