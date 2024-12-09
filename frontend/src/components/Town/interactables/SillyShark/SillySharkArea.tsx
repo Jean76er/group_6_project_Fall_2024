@@ -35,6 +35,16 @@ function SillySharkArea({
   gameArea: GameAreaInteractable;
   coveyTownController: TownController;
 }): JSX.Element {
+
+
+  useEffect(() => {
+    if (gameArea) {
+      coveyTownController.pause();
+    } else {
+      coveyTownController.unPause();
+    }
+  }, [coveyTownController, gameArea]);
+  
   const singleGameAreaController =
     useInteractableAreaController<SillySharkAreaController>(interactableID);
 

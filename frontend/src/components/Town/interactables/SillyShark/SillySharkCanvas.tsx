@@ -29,16 +29,6 @@ export default function NewSillySharkCanvas({
   const ourPlayer = coveyTownController.ourPlayer;
   const [gameOverScore, setGameOverScore] = useState(0);
 
-  // const ourPlayer = townController.ourPlayer;
-
-  useEffect(() => {
-    if (newSillySharkGame) {
-      coveyTownController.pause();
-    } else {
-      coveyTownController.unPause();
-    }
-  }, [coveyTownController, newSillySharkGame]);
-
   const closeModal = useCallback(() => {
     if (newSillySharkGame) {
       coveyTownController.interactEnd(newSillySharkGame);

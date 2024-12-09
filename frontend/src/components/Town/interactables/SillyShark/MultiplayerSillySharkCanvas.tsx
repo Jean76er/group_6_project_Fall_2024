@@ -31,14 +31,6 @@ export default function NewMultiplayerSillySharkCanvas({
   const otherPlayer = gameAreaController.players.find(player => player.id !== ourPlayer.id);
   const [messageShown, setMessageShown] = useState(false);
 
-  useEffect(() => {
-    if (newSillySharkGame) {
-      coveyTownController.pause();
-    } else {
-      coveyTownController.unPause();
-    }
-  }, [coveyTownController, newSillySharkGame]);
-
   const closeModal = useCallback(() => {
     if (newSillySharkGame) {
       coveyTownController.interactEnd(newSillySharkGame);
