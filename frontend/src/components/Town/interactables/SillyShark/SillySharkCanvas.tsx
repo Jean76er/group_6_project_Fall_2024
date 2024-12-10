@@ -30,10 +30,13 @@ export default function NewSillySharkCanvas({
   const [gameOverScore, setGameOverScore] = useState(0);
 
   const closeModal = useCallback(() => {
-    if (newSillySharkGame) {
-      coveyTownController.interactEnd(newSillySharkGame);
+    if (gameArea) {
+      coveyTownController.unPause();
+      coveyTownController.interactEnd(gameArea);
+      // const controller = coveyTownController.getGameAreaController(gameArea);
+      // controller.leaveGame();
     }
-  }, [coveyTownController, newSillySharkGame]);
+  }, [coveyTownController, gameArea]);
 
   /** Define an obstacle pair */
   interface ObstaclePair {
@@ -208,8 +211,7 @@ export default function NewSillySharkCanvas({
 
       /** Check for collision */
       if (checkCollision()) {
-        gameAreaController.setLoser(ourPlayer); // Mark the player as the loser
-
+        // Mark the player as the loser
         setGameOverScore(score);
         if (score > ourPlayer.highScore) {
           ourPlayer.highScore = score;
@@ -322,13 +324,7 @@ export default function NewSillySharkCanvas({
   }, [gameAreaController]);
 
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={() => {
-        closeModal();
-        coveyTownController.unPause();
-      }}
-      size='xs'>
+    <Modal isOpen={true} onClose={closeModal} closeOnOverlayClick={false}>
       <ModalOverlay style={{ pointerEvents: 'none' }} />
       <ModalContent
         maxW='500px'
@@ -346,6 +342,7 @@ export default function NewSillySharkCanvas({
           gameArea={gameArea}
           coveyTownController={coveyTownController}
           score={gameOverScore}
+          multiplayer={false}
         />
       )}
     </Modal>

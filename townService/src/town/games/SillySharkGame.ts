@@ -154,15 +154,21 @@ export default class SillySharkGame extends Game<SillySharkGameState & SillyShar
     if (this.state.player1 === player.id || this.state.player2 === player.id) {
       throw new InvalidParametersError(paramerrors.PLAYER_ALREADY_IN_GAME_MESSAGE);
     }
+    const updatedSkins = { ...this.state.skins };
+    delete updatedSkins[player.id]; 
     if (!this.state.player1) {
       this.state = {
         ...this.state,
+        skins:
+            updatedSkins,
         player1: player.id,
         ready: { ...this.state.ready, [player.id]: false },
       };
     } else if (!this.state.player2) {
       this.state = {
         ...this.state,
+        skins:
+            updatedSkins,
         player2: player.id,
         ready: { ...this.state.ready, [player.id]: false },
       };
@@ -182,14 +188,23 @@ export default class SillySharkGame extends Game<SillySharkGameState & SillyShar
       throw new InvalidParametersError(paramerrors.PLAYER_NOT_IN_GAME_MESSAGE);
     }
 
-    if (this.state.status === 'SINGLE_PLAYER_IN_PROGRESS') {
-      this.state = {
-        status: 'WAITING_TO_START',
-        ready: {},
-        spritesData: {},
-        canvasHeight: 720,
-        lost: {},
-      };
+    if (this.state.status === 'WAITING_TO_START') {
+// Explicitly remove the player's skin
+      if (this.state.player1 === player.id) {
+        this.state = {
+          ...this.state,
+          player1: undefined,
+          ready: {},
+          spritesData: {},
+        };
+      } else {
+        this.state = {
+          ...this.state,
+          player2: undefined,
+          ready: {},
+          spritesData: {},
+        };
+      }
     } else if (this.state.status === 'MULTI_PLAYER_IN_PROGRESS') {
       if (this.state.player1 === player.id) {
         this.state = {

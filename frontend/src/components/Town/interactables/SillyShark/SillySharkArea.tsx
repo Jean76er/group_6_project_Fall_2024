@@ -1,7 +1,6 @@
 import {
   Button,
   Modal,
-  ModalCloseButton,
   ModalContent,
   ModalHeader,
   ModalOverlay,
@@ -35,8 +34,6 @@ function SillySharkArea({
   gameArea: GameAreaInteractable;
   coveyTownController: TownController;
 }): JSX.Element {
-
-
   useEffect(() => {
     if (gameArea) {
       coveyTownController.pause();
@@ -44,7 +41,7 @@ function SillySharkArea({
       coveyTownController.unPause();
     }
   }, [coveyTownController, gameArea]);
-  
+
   const singleGameAreaController =
     useInteractableAreaController<SillySharkAreaController>(interactableID);
 
@@ -72,17 +69,17 @@ function SillySharkArea({
   const handleJoinSinglePlayerGame = useCallback(async () => {
     setJoin(true);
     setShowSkinSelection(true);
-    try {
-      await singleGameAreaController.joinGame();
-    } catch (error) {
-      toast({
-        description: `${error}`,
-        status: 'error',
-      });
-    } finally {
-      setJoin(false);
-    }
-  }, [singleGameAreaController, toast]);
+    // try {
+    //   //await singleGameAreaController.joinGame();
+    // } catch (error) {
+    //   toast({
+    //     description: `${error}`,
+    //     status: 'error',
+    //   });
+    // } finally {
+    //   setJoin(false);
+    // }
+  }, []);
 
   const handleJoinMultiplayerGame = useCallback(async () => {
     setJoin(true);
@@ -238,6 +235,7 @@ export default function SillySharkAreaWrapper(): JSX.Element {
 
   const closeModal = useCallback(() => {
     if (gameArea) {
+      coveyTownController.unPause();
       coveyTownController.interactEnd(gameArea);
       const controller = coveyTownController.getGameAreaController(gameArea);
       controller.leaveGame();
@@ -257,7 +255,6 @@ export default function SillySharkAreaWrapper(): JSX.Element {
               maxW='full'
             />
           </ModalHeader>
-          <ModalCloseButton />
           <SillySharkArea
             interactableID={gameArea.name}
             gameArea={gameArea}
