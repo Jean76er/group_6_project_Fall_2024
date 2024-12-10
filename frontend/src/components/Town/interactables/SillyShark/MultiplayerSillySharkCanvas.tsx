@@ -25,7 +25,7 @@ export default function NewMultiplayerSillySharkCanvas({
 }): JSX.Element {
   const isOpen = newSillySharkGame !== undefined;
   const [gameOver, setGameOver] = useState(false);
-  const gravity = 1; /**Makes spirte fall faster or slower*/
+  const gravity = 1.2; /**Makes spirte fall faster or slower*/
   const [velocity, setVelocity] = useState(0);
   const ourPlayer = coveyTownController.ourPlayer;
   const otherPlayer = gameAreaController.players.find(player => player.id !== ourPlayer.id);
@@ -246,8 +246,10 @@ export default function NewMultiplayerSillySharkCanvas({
           canvasCurr.height - obstacle.top.obstacleHeight - gapHeight,
         );
         context.fillStyle = 'white';
-        context.font = '30px Arial';
-        context.fillText(`Score: ${score}`, 20, 50);
+        context.font = 'bold 50px Arial';
+        context.textAlign = 'center';
+        context.fillText(`${score}`, canvasCurr.width / 2, 100);
+        
       });
 
       /** Check for collision */
