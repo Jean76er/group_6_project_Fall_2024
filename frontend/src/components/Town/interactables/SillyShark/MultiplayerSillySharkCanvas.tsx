@@ -249,7 +249,6 @@ export default function NewMultiplayerSillySharkCanvas({
         context.font = 'bold 50px Arial';
         context.textAlign = 'center';
         context.fillText(`${score}`, canvasCurr.width / 2, 100);
-        
       });
 
       /** Check for collision */
