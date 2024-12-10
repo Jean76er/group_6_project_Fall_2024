@@ -13,6 +13,7 @@ export type SillySharkEvents = GameEventTypes & {
   gameStarted: () => void;
   positionUpdated: (data: [string, number][]) => void;
   loserUpdated: (player: PlayerController) => void;
+  gamePlayersChanged: (players: PlayerController[]) => void;
 };
 export default class SillySharkAreaController extends GameAreaController<
   SillySharkGameState,
@@ -145,22 +146,15 @@ export default class SillySharkAreaController extends GameAreaController<
 
   get status(): GameStatus {
     const gameState = this._model.game?.state;
-    if (gameState?.status === 'SINGLE_PLAYER_IN_PROGRESS') {
-      return 'SINGLE_PLAYER_IN_PROGRESS';
-    } else if (gameState?.status === 'MULTI_PLAYER_IN_PROGRESS') {
-      return 'MULTI_PLAYER_IN_PROGRESS';
-    } else if (gameState?.status === 'OVER') {
-      return 'OVER';
+    if (gameState?.status === 'IN_PROGRESS') {
+      return 'IN_PROGRESS';
     }
     return 'WAITING_TO_START';
   }
 
   public isActive(): boolean {
     const gameState = this._model.game?.state;
-    return (
-      gameState?.status === 'SINGLE_PLAYER_IN_PROGRESS' ||
-      gameState?.status === 'MULTI_PLAYER_IN_PROGRESS'
-    );
+    return gameState?.status === 'IN_PROGRESS';
   }
 
   public updateFrom(newModel: GameArea<SillySharkGameState>): void {
@@ -168,6 +162,8 @@ export default class SillySharkAreaController extends GameAreaController<
     const previousSkinsState = this.skinsState;
     const previousPlayerIds = this._players.map(player => player.id);
     const previousPosition = this.renderPlayerState;
+    const previousGamePlayers = this.players;
+    console.log('previousGameplayer:', previousGamePlayers);
 
     super._updateFrom(newModel);
 
@@ -175,11 +171,23 @@ export default class SillySharkAreaController extends GameAreaController<
     const currentSkinsState = this.skinsState;
     const currentPlayerIds = this._players.map(player => player.id);
     const currentPosition = this.renderPlayerState;
+    const currentGamePlayers = this.players;
+    console.log('current:', currentGamePlayers);
 
     if (!this._arraysEqual(previousPlayerIds, currentPlayerIds)) {
-      this.emit('playersUpdated', this._players);
+      this.emit('playersUpdated', this.players);
     }
     if (previousReadyCount !== currentReadyCount) {
+      this.emit('playersReadyUpdated', currentReadyCount);
+      if (currentReadyCount === 2) {
+        this.startGame(true).catch(console.error);
+      }
+    }
+    if (previousGamePlayers !== currentGamePlayers) {
+      this.emit('gamePlayersChanged', currentGamePlayers);
+    }
+
+    if (previousGamePlayers !== currentGamePlayers) {
       this.emit('playersReadyUpdated', currentReadyCount);
       if (currentReadyCount === 2) {
         this.startGame(true).catch(console.error);

@@ -25,25 +25,20 @@ export default function NewMultiplayerSillySharkCanvas({
 }): JSX.Element {
   const isOpen = newSillySharkGame !== undefined;
   const [gameOver, setGameOver] = useState(false);
-  const gravity = 1; /**Makes spirte fall faster or slower*/
+  const gravity = 1.2; /**Makes spirte fall faster or slower*/
   const [velocity, setVelocity] = useState(0);
   const ourPlayer = coveyTownController.ourPlayer;
   const otherPlayer = gameAreaController.players.find(player => player.id !== ourPlayer.id);
   const [messageShown, setMessageShown] = useState(false);
 
-  useEffect(() => {
-    if (newSillySharkGame) {
-      coveyTownController.pause();
-    } else {
-      coveyTownController.unPause();
-    }
-  }, [coveyTownController, newSillySharkGame]);
-
   const closeModal = useCallback(() => {
-    if (newSillySharkGame) {
-      coveyTownController.interactEnd(newSillySharkGame);
+    if (gameArea) {
+      coveyTownController.unPause();
+      coveyTownController.interactEnd(gameArea);
+      const controller = coveyTownController.getGameAreaController(gameArea);
+      controller.leaveGame();
     }
-  }, [coveyTownController, newSillySharkGame]);
+  }, [coveyTownController, gameArea]);
 
   /** Define an obstacle pair */
   interface ObstaclePair {
@@ -73,6 +68,7 @@ export default function NewMultiplayerSillySharkCanvas({
   const spriteHeight = 50;
   const spriteImage = useRef(new Image());
   const otherSpriteImage = useRef(new Image());
+  const [isOtherPlayerInGame, setIsOtherPlayerInGame] = useState(true);
 
   /** adding state for the score*/
   const [score, setScore] = useState(0);
@@ -208,6 +204,21 @@ export default function NewMultiplayerSillySharkCanvas({
 
       context.clearRect(0, 0, canvasCurr.width, canvasCurr.height);
 
+      if (isOtherPlayerInGame && otherSpriteImage.current.complete) {
+        context.globalAlpha = 0.5;
+        context.drawImage(
+          otherSpriteImage.current,
+          canvasCurr.width / 4,
+          otherSpriteY,
+          spriteWidth,
+          spriteHeight,
+        );
+        context.globalAlpha = 1; // Reset alpha after drawing
+      } else {
+        // Remove the other player's sprite by clearing its canvas area
+        context.clearRect(canvasCurr.width / 4, otherSpriteY, spriteWidth, spriteHeight);
+      }
+
       if (spriteImage.current.complete) {
         context.drawImage(
           spriteImage.current,
@@ -217,19 +228,6 @@ export default function NewMultiplayerSillySharkCanvas({
           spriteHeight,
         );
       }
-
-      if (otherSpriteImage.current.complete) {
-        context.globalAlpha = 0.5;
-        context.drawImage(
-          otherSpriteImage.current,
-          canvasCurr.width / 4,
-          otherSpriteY,
-          spriteWidth,
-          spriteHeight,
-        );
-        context.globalAlpha = 1;
-      }
-
       /** Drawing obstacles on the canvas */
       obstacles.forEach(obstacle => {
         context.drawImage(
@@ -248,8 +246,9 @@ export default function NewMultiplayerSillySharkCanvas({
           canvasCurr.height - obstacle.top.obstacleHeight - gapHeight,
         );
         context.fillStyle = 'white';
-        context.font = '30px Arial';
-        context.fillText(`Score: ${score}`, 20, 50);
+        context.font = 'bold 50px Arial';
+        context.textAlign = 'center';
+        context.fillText(`${score}`, canvasCurr.width / 2, 100);
       });
 
       /** Check for collision */
@@ -339,6 +338,7 @@ export default function NewMultiplayerSillySharkCanvas({
 
     return () => clearInterval(interval);
   }, [
+    isOtherPlayerInGame,
     ourPlayer,
     otherSpriteY,
     gameAreaController,
@@ -379,6 +379,7 @@ export default function NewMultiplayerSillySharkCanvas({
     const handleLoserUpdate = (winner: PlayerController) => {
       if (!messageShown) {
         if (winner === ourPlayer) {
+          setIsOtherPlayerInGame(false);
           toast({
             title: 'You Won!',
           });
@@ -422,13 +423,7 @@ export default function NewMultiplayerSillySharkCanvas({
   }, [gameAreaController]);
 
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={() => {
-        closeModal();
-        coveyTownController.unPause();
-      }}
-      size='xs'>
+    <Modal isOpen={true} onClose={closeModal} closeOnOverlayClick={false}>
       <ModalOverlay style={{ pointerEvents: 'none' }} />
       <ModalContent
         maxW='500px'
@@ -446,6 +441,7 @@ export default function NewMultiplayerSillySharkCanvas({
           gameArea={gameArea}
           coveyTownController={coveyTownController}
           score={gameOverScore}
+          multiplayer={true}
         />
       )}
     </Modal>

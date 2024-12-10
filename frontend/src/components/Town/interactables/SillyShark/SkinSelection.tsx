@@ -6,6 +6,7 @@ import {
   ModalHeader,
   Container,
   Center,
+  Modal,
 } from '@chakra-ui/react';
 import React, { useCallback, useState } from 'react';
 import SillySharkAreaController from '../../../../classes/interactable/SillySharkAreaController';
@@ -67,6 +68,15 @@ export default function SkinSelectionScreen({
   const [skinSelected, setSkinSelected] = useState<Skin | undefined>(undefined);
   const ourPlayer = coveyTownController.ourPlayer;
 
+  const closeModal = useCallback(() => {
+    if (gameArea) {
+      coveyTownController.unPause();
+      coveyTownController.interactEnd(gameArea);
+      const controller = coveyTownController.getGameAreaController(gameArea);
+      controller.leaveGame();
+    }
+  }, [coveyTownController, gameArea]);
+
   const handleSkinSelection = useCallback(
     (skin: Skin) => {
       setSkinSelected(skin);
@@ -82,34 +92,36 @@ export default function SkinSelectionScreen({
     }
 
     setShowCanvas(true);
-    gameAreaController.startGame(false);
-  }, [gameAreaController, skinSelected]);
+    //gameAreaController.startGame(false);
+  }, [skinSelected]);
 
   const renderSkins = useCallback(() => {
     return (
       <>
-        <ModalContent maxW='500px' h='720px' bg='skyblue'>
-          <ModalHeader>
-            <Center>Select your skin {ourPlayer.userName}!</Center>
-          </ModalHeader>
+        <Modal isOpen={true} onClose={closeModal} closeOnOverlayClick={false}>
+          <ModalContent maxW='500px' h='720px' bg='skyblue'>
+            <ModalHeader>
+              <Center>Select your skin {ourPlayer.userName}!</Center>
+            </ModalHeader>
 
-          <StyledSelectionContainer>
-            {SKINS.map(skin => (
-              <StyledSelectionSquare
-                key={skin}
-                onClick={() => handleSkinSelection(skin)}
-                border={skinSelected === skin ? '8px solid blue' : 'none'}>
-                <Image src={skin} alt='Skin Image' objectFit='contain' boxSize='100%' />
-              </StyledSelectionSquare>
-            ))}
-          </StyledSelectionContainer>
+            <StyledSelectionContainer>
+              {SKINS.map(skin => (
+                <StyledSelectionSquare
+                  key={skin}
+                  onClick={() => handleSkinSelection(skin)}
+                  border={skinSelected === skin ? '8px solid blue' : 'none'}>
+                  <Image src={skin} alt='Skin Image' objectFit='contain' boxSize='100%' />
+                </StyledSelectionSquare>
+              ))}
+            </StyledSelectionContainer>
 
-          <Center paddingTop='10px'>
-            <Button size='sm' width='fit-content' onClick={handleCanvas}>
-              Continue
-            </Button>
-          </Center>
-        </ModalContent>
+            <Center paddingTop='10px'>
+              <Button size='sm' width='fit-content' onClick={handleCanvas}>
+                Continue
+              </Button>
+            </Center>
+          </ModalContent>
+        </Modal>
         {showCanvas && (
           <NewSillySharkCanvas
             gameAreaController={gameAreaController}
@@ -118,7 +130,6 @@ export default function SkinSelectionScreen({
             gameArea={gameArea}
           />
         )}
-        <></>
       </>
     );
   }, [
@@ -130,6 +141,7 @@ export default function SkinSelectionScreen({
     skinSelected,
     coveyTownController,
     ourPlayer,
+    closeModal,
   ]);
 
   return <>{renderSkins()}</>;

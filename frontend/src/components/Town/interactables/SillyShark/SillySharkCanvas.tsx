@@ -24,26 +24,19 @@ export default function NewSillySharkCanvas({
 }): JSX.Element {
   const isOpen = newSillySharkGame !== undefined;
   const [gameOver, setGameOver] = useState(false);
-  const gravity = 1; /**Makes spirte fall faster or slower*/
+  const gravity = 1.2; /**Makes spirte fall faster or slower*/
   const [velocity, setVelocity] = useState(0);
   const ourPlayer = coveyTownController.ourPlayer;
   const [gameOverScore, setGameOverScore] = useState(0);
 
-  // const ourPlayer = townController.ourPlayer;
-
-  useEffect(() => {
-    if (newSillySharkGame) {
-      coveyTownController.pause();
-    } else {
-      coveyTownController.unPause();
-    }
-  }, [coveyTownController, newSillySharkGame]);
-
   const closeModal = useCallback(() => {
-    if (newSillySharkGame) {
-      coveyTownController.interactEnd(newSillySharkGame);
+    if (gameArea) {
+      coveyTownController.unPause();
+      coveyTownController.interactEnd(gameArea);
+      // const controller = coveyTownController.getGameAreaController(gameArea);
+      // controller.leaveGame();
     }
-  }, [coveyTownController, newSillySharkGame]);
+  }, [coveyTownController, gameArea]);
 
   /** Define an obstacle pair */
   interface ObstaclePair {
@@ -212,14 +205,14 @@ export default function NewSillySharkCanvas({
           canvasCurr.height - obstacle.top.obstacleHeight - gapHeight,
         );
         context.fillStyle = 'white';
-        context.font = '30px Arial';
-        context.fillText(`Score: ${score}`, 20, 50);
+        context.font = 'bold 50px Arial';
+        context.textAlign = 'center';
+        context.fillText(`${score}`, canvasCurr.width / 2, 100);
       });
 
       /** Check for collision */
       if (checkCollision()) {
-        gameAreaController.setLoser(ourPlayer); // Mark the player as the loser
-
+        // Mark the player as the loser
         setGameOverScore(score);
         if (score > ourPlayer.highScore) {
           ourPlayer.highScore = score;
@@ -332,13 +325,7 @@ export default function NewSillySharkCanvas({
   }, [gameAreaController]);
 
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={() => {
-        closeModal();
-        coveyTownController.unPause();
-      }}
-      size='xs'>
+    <Modal isOpen={true} onClose={closeModal} closeOnOverlayClick={false}>
       <ModalOverlay style={{ pointerEvents: 'none' }} />
       <ModalContent
         maxW='500px'
@@ -356,6 +343,7 @@ export default function NewSillySharkCanvas({
           gameArea={gameArea}
           coveyTownController={coveyTownController}
           score={gameOverScore}
+          multiplayer={false}
         />
       )}
     </Modal>

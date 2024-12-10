@@ -100,7 +100,7 @@ export type Skin = string;
  * OVER: Game is over when both players have crashed into an obstacle and players are either restarting the game or leaving
  * WAITING_TO_START: Game is waiting for player(s) to join
  */
-export type GameStatus = 'SINGLE_PLAYER_IN_PROGRESS' | 'MULTI_PLAYER_IN_PROGRESS' | 'OVER' | 'WAITING_TO_START';
+export type GameStatus = 'IN_PROGRESS' | 'WAITING_TO_START';
 
 /** 
  * Base type for the state of the game
