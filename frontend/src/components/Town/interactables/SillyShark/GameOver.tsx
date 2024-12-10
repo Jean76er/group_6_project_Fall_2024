@@ -59,7 +59,13 @@ export default function NewGameOverScreen({
             </Text>
           </Center>
           <Center paddingTop='200'>
-            <Button size='lg' bg='blue' color='white' onClick={closeModal}>
+            <Button
+              size='lg'
+              bg='blue.400'
+              color='white'
+              _hover={{ bg: 'blue.500' }}
+              _active={{ bg: 'blue.600' }}
+              onClick={closeModal}>
               Exit
             </Button>
           </Center>

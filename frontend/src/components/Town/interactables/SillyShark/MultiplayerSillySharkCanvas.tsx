@@ -204,16 +204,6 @@ export default function NewMultiplayerSillySharkCanvas({
 
       context.clearRect(0, 0, canvasCurr.width, canvasCurr.height);
 
-      if (spriteImage.current.complete) {
-        context.drawImage(
-          spriteImage.current,
-          canvasCurr.width / 4,
-          spriteY,
-          spriteWidth,
-          spriteHeight,
-        );
-      }
-
       if (isOtherPlayerInGame && otherSpriteImage.current.complete) {
         context.globalAlpha = 0.5;
         context.drawImage(
@@ -223,11 +213,21 @@ export default function NewMultiplayerSillySharkCanvas({
           spriteWidth,
           spriteHeight,
         );
-        context.globalAlpha = 1;        
-      }else{
-        context.restore
+        context.globalAlpha = 1; // Reset alpha after drawing
+      } else {
+        // Remove the other player's sprite by clearing its canvas area
+        context.clearRect(canvasCurr.width / 4, otherSpriteY, spriteWidth, spriteHeight);
       }
 
+      if (spriteImage.current.complete) {
+        context.drawImage(
+          spriteImage.current,
+          canvasCurr.width / 4,
+          spriteY,
+          spriteWidth,
+          spriteHeight,
+        );
+      }
       /** Drawing obstacles on the canvas */
       obstacles.forEach(obstacle => {
         context.drawImage(
@@ -337,6 +337,7 @@ export default function NewMultiplayerSillySharkCanvas({
 
     return () => clearInterval(interval);
   }, [
+    isOtherPlayerInGame,
     ourPlayer,
     otherSpriteY,
     gameAreaController,
@@ -382,7 +383,6 @@ export default function NewMultiplayerSillySharkCanvas({
             title: 'You Won!',
           });
         } else {
-          
           toast({
             title: 'You Lost :(',
           });

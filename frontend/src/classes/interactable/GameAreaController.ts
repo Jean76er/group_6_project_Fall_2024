@@ -84,10 +84,6 @@ export default abstract class GameAreaController<
   }
 
   protected _updateFrom(newModel: GameArea<State>): void {
-    const gameEnding =
-      this._model.game?.state.status === 'SINGLE_PLAYER_IN_PROGRESS' ||
-      (this._model.game?.state.status === 'MULTI_PLAYER_IN_PROGRESS' &&
-        newModel.game?.state.status === 'OVER');
     const newPlayers =
       newModel.game?.players.map(playerID => this._townController.getPlayer(playerID)) ?? [];
     if (!newPlayers && this._players.length > 0) {
@@ -113,12 +109,6 @@ export default abstract class GameAreaController<
     // @ts-ignore
     this.emit('gameUpdated');
     this._instanceID = newModel.game?.id ?? this._instanceID;
-    if (gameEnding) {
-      //TODO - Bounty for figuring out how to make the types work here
-      //eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      this.emit('gameEnd');
-    }
   }
 
   toInteractableAreaModel(): GameArea<State> {
