@@ -18,9 +18,7 @@ export type TownJoinResponse = {
 }
 export type Interactable = ViewingArea | ConversationArea | GameArea;
 export type InteractableType = 'ConversationArea' | 'ViewingArea' | 'SillySharkArea';
-// export type Interactable = {
 
-// }
 
 export type TownSettingsUpdate = {
   friendlyName?: string;
@@ -32,6 +30,8 @@ export interface Player {
   id: string;
   userName: string;
   location: PlayerLocation;
+  highScore?: number;
+  
 };
 
 export type XY = { x: number, y: number };
@@ -100,7 +100,7 @@ export type Skin = string;
  * OVER: Game is over when both players have crashed into an obstacle and players are either restarting the game or leaving
  * WAITING_TO_START: Game is waiting for player(s) to join
  */
-export type GameStatus = 'SINGLE_PLAYER_IN_PROGRESS' | 'MULTI_PLAYER_IN_PROGRESS' | 'OVER' | 'WAITING_TO_START';
+export type GameStatus = 'IN_PROGRESS' | 'WAITING_TO_START';
 
 /** 
  * Base type for the state of the game
@@ -132,7 +132,6 @@ export interface SillySharkGameState extends WinnableGameState {
   player1?: PlayerID;
   player2?: PlayerID;
   skins?: {[playerId: string]: Skin }
-  score: {[playerId: string]: number}
   lost: {[playerId: string]: boolean}
   ready: { [playerId: string]: boolean };
   spritesData: { [playerId: string]: number}; 
@@ -233,6 +232,7 @@ export type InteractableCommandReturnType<CommandType extends InteractableComman
   CommandType extends SetReadyCommand ? undefined :
   CommandType extends LeaveGameCommand ? undefined :
   CommandType extends SetSkinCommand ? undefined :
+  CommandType extends CheckForWinnerCommand ? undefined:
   never;
 
 export type InteractableCommandResponse<MessageType> = {

@@ -8,6 +8,8 @@ import {
   Center,
   List,
   ListItem,
+  useToast,
+  Modal,
 } from '@chakra-ui/react';
 import React, { useCallback, useEffect, useState } from 'react';
 import SillySharkAreaController from '../../../../classes/interactable/SillySharkAreaController';
@@ -66,6 +68,8 @@ export default function MultiplayerSkinSelectionScreen({
   const [hasClickedContinue, setHasClickedContinue] = useState(false);
   const ourPlayer = coveyTownController.ourPlayer;
 
+  const toast = useToast();
+
   const handleSkinSelection = useCallback(
     (skin: Skin) => {
       setSkinSelected(skin);
@@ -79,7 +83,9 @@ export default function MultiplayerSkinSelectionScreen({
       return;
     }
     if (!skinSelected) {
-      alert('Please select a skin before continuing!');
+      toast({
+        title: 'Select a skin before continuing',
+      });
       return;
     }
     setHasClickedContinue(true);
@@ -89,7 +95,7 @@ export default function MultiplayerSkinSelectionScreen({
       setShowCanvas(true); // Start the game when both players are ready
       gameAreaController.startGame(true); // Call startGame when both players are ready
     }
-  }, [skinSelected, playersReady, gameAreaController, ourPlayer.id, hasClickedContinue]);
+  }, [toast, skinSelected, playersReady, gameAreaController, ourPlayer.id, hasClickedContinue]);
 
   useEffect(() => {
     const handlePlayersReadyUpdated = (readyCount: number) => {
@@ -115,73 +121,84 @@ export default function MultiplayerSkinSelectionScreen({
     };
   }, [gameAreaController]);
 
+  const closeModal = useCallback(() => {
+    if (gameArea) {
+      coveyTownController.unPause();
+      coveyTownController.interactEnd(gameArea);
+      const controller = coveyTownController.getGameAreaController(gameArea);
+      controller.leaveGame();
+    }
+  }, [coveyTownController, gameArea]);
+
   const renderSkins = useCallback(
     () => (
-      <ModalContent maxW='500px' h='720px' bg='skyblue'>
-        <ModalHeader>
-          <Center>Select your skin, {ourPlayer.userName}!</Center>
-        </ModalHeader>
+      <Modal isOpen={true} onClose={closeModal} closeOnOverlayClick={false}>
+        <ModalContent maxW='500px' h='720px' bg='skyblue'>
+          <ModalHeader>
+            <Center>Select your skin, {ourPlayer.userName}!</Center>
+          </ModalHeader>
 
-        <StyledSelectionContainer>
-          {SKINS.map(skin => {
-            const isOwnedByUs = skinSelected === skin; // Check if this player selected the skin
-            const isOwnedByOther = skinsState.some(
-              ([playerID, selectedSkin]) => playerID !== ourPlayer.id && selectedSkin === skin,
-            );
+          <StyledSelectionContainer>
+            {SKINS.map(skin => {
+              const isOwnedByUs = skinSelected === skin; // Check if this player selected the skin
+              const isOwnedByOther = skinsState.some(
+                ([playerID, selectedSkin]) => playerID !== ourPlayer.id && selectedSkin === skin,
+              );
 
-            // Set the border color based on ownership
-            let borderStyle = 'none';
-            if (isOwnedByUs) {
-              borderStyle = '8px solid blue'; // Blue border for the player's selected skin
-            } else if (isOwnedByOther) {
-              borderStyle = '8px solid red'; // Red border for skins selected by the other player
-            }
-
-            return (
-              <StyledSelectionSquare
-                key={skin}
-                onClick={() => handleSkinSelection(skin)}
-                border={borderStyle}
-                isDisabled={isOwnedByOther}>
-                <Image src={skin} alt='Skin Image' objectFit='contain' boxSize='100%' />
-              </StyledSelectionSquare>
-            );
-          })}
-        </StyledSelectionContainer>
-
-        <Center>
-          <List aria-label='list of players in the game'>
-            {skinsState.map(([playerID, skin]) => {
-              const player =
-                gameAreaController.player1?.id === playerID
-                  ? gameAreaController.player1
-                  : gameAreaController.player2?.id === playerID
-                  ? gameAreaController.player2
-                  : null;
+              // Set the border color based on ownership
+              let borderStyle = 'none';
+              if (isOwnedByUs) {
+                borderStyle = '8px solid blue'; // Blue border for the player's selected skin
+              } else if (isOwnedByOther) {
+                borderStyle = '8px solid red'; // Red border for skins selected by the other player
+              }
 
               return (
-                <ListItem key={playerID}>
-                  {player?.userName || 'Unknown Player'}:{' '}
-                  {skin ? <Image src={skin} boxSize='20px' /> : '(No skin selected)'}
-                </ListItem>
+                <StyledSelectionSquare
+                  key={skin}
+                  onClick={() => handleSkinSelection(skin)}
+                  border={borderStyle}
+                  isDisabled={isOwnedByOther}>
+                  <Image src={skin} alt='Skin Image' objectFit='contain' boxSize='100%' />
+                </StyledSelectionSquare>
               );
             })}
-          </List>
-        </Center>
+          </StyledSelectionContainer>
 
-        <Center paddingTop='10px'>
-          <Button
-            size='sm'
-            width='fit-content'
-            onClick={handleCanvas}
-            isDisabled={hasClickedContinue}>
-            Continue
-          </Button>
-        </Center>
-        <Center paddingTop='10px'>
-          <p>{playersReady}/2 players are ready</p>
-        </Center>
-      </ModalContent>
+          <Center>
+            <List aria-label='list of players in the game'>
+              {skinsState.map(([playerID, skin]) => {
+                const player =
+                  gameAreaController.player1?.id === playerID
+                    ? gameAreaController.player1
+                    : gameAreaController.player2?.id === playerID
+                    ? gameAreaController.player2
+                    : null;
+
+                return (
+                  <ListItem key={playerID}>
+                    {player?.userName || 'Unknown Player'}:{' '}
+                    {skin ? <Image src={skin} boxSize='20px' /> : '(No skin selected)'}
+                  </ListItem>
+                );
+              })}
+            </List>
+          </Center>
+
+          <Center paddingTop='10px'>
+            <Button
+              size='sm'
+              width='fit-content'
+              onClick={handleCanvas}
+              isDisabled={hasClickedContinue}>
+              Continue
+            </Button>
+          </Center>
+          <Center paddingTop='10px'>
+            <p>{playersReady}/2 players are ready</p>
+          </Center>
+        </ModalContent>
+      </Modal>
     ),
     [
       gameAreaController.player1,
@@ -194,6 +211,7 @@ export default function MultiplayerSkinSelectionScreen({
       ourPlayer.userName,
       ourPlayer.id,
       hasClickedContinue,
+      closeModal,
     ],
   );
 

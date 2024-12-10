@@ -10,8 +10,6 @@ import {
 } from '../../types/CoveyTownSocket';
 
 const DEFAULT_SKIN = '/SillySharkResources/skins/sillyshark.png';
-const DEFAULT_SCORE = 0;
-
 export default class SillySharkGame extends Game<SillySharkGameState & SillySharkCanvasState> {
   /* This constructor may need to be revised later with further development. */
   public constructor() {
@@ -20,7 +18,6 @@ export default class SillySharkGame extends Game<SillySharkGameState & SillyShar
       ready: {},
       spritesData: {},
       canvasHeight: 720,
-      score: {},
       lost: {},
     });
   }
@@ -30,21 +27,8 @@ export default class SillySharkGame extends Game<SillySharkGameState & SillyShar
     return readyCount === 2;
   }
 
-  public startSinglePlayer(): void {
-    if (this.state.status === 'SINGLE_PLAYER_IN_PROGRESS') {
-      throw new Error(paramerrors.GAME_ALREADY_IN_PROGRESS_MESSAGE);
-    }
-
-    if (this.state.status === 'WAITING_TO_START') {
-      this.state = {
-        ...this.state,
-        status: 'SINGLE_PLAYER_IN_PROGRESS',
-      };
-    }
-  }
-
-  public startMultiPlayer(): void {
-    if (this.state.status === 'MULTI_PLAYER_IN_PROGRESS') {
+  public startGame(): void {
+    if (this.state.status === 'IN_PROGRESS') {
       throw new Error(paramerrors.GAME_ALREADY_IN_PROGRESS_MESSAGE);
     }
 
@@ -53,11 +37,11 @@ export default class SillySharkGame extends Game<SillySharkGameState & SillyShar
       throw new InvalidParametersError(paramerrors.BOTH_PLAYERS_READY_MESSAGE);
     }
 
-    // Only set status to MULTI_PLAYER_IN_PROGRESS if players are ready and status is WAITING_TO_START
+    // Only set status to IN_PROGRESS if players are ready and status is WAITING_TO_START
     if (this.state.status === 'WAITING_TO_START') {
       this.state = {
         ...this.state,
-        status: 'MULTI_PLAYER_IN_PROGRESS',
+        status: 'IN_PROGRESS',
       };
     }
   }
@@ -114,48 +98,38 @@ export default class SillySharkGame extends Game<SillySharkGameState & SillyShar
     };
   }
 
-  private _updateScore(player: Player, score: number) {
-    this.state = {
-      ...this.state,
-      score: {
-        ...(this.state.score || {}),
-        [player.id]: score || DEFAULT_SCORE,
-      },
-    };
-  }
+  private _checkForWinner(playerId: string) {
+    const { player1, player2 } = this.state;
 
-  public updateScore(player: Player, score: number) {
-    if (!this._players.some(p => p.id === player.id)) {
-      throw new InvalidParametersError(paramerrors.PLAYER_NOT_IN_GAME_MESSAGE);
+    // Ensure that both players exist
+    if (!player1 || !player2) {
+      throw new InvalidParametersError('Both players must be in the game to determine a winner.');
     }
-    this._updateScore(player, score);
-  }
 
-  private _checkForWinner() {
-    const player1Id = this.state.player1;
-    const player2Id = this.state.player2;
+    // If the player has already been identified as the winner, no need to continue
+    if (this.state.winner) {
+      return;
+    }
 
-    const player1Score = player1Id !== undefined ? this.state.score[player1Id] || 0 : 0;
-    const player2Score = player2Id !== undefined ? this.state.score[player2Id] || 0 : 0;
-    if (player1Id !== undefined && player2Id !== undefined) {
-      if (player1Score > player2Score) {
-        this.state.lost[player2Id] = true;
-        this.state.lost[player1Id] = false;
-        this.state.winner = player1Id;
-      } else if (player2Score > player1Score) {
-        this.state.lost[player1Id] = true;
-        this.state.lost[player2Id] = false;
-        this.state.winner = player2Id;
-      } else {
-        this.state.lost[player1Id] = true;
-        this.state.lost[player2Id] = true;
-        this.state.winner = undefined;
-      }
+    // If the playerId is player1, then player2 is the winner, and vice versa
+    if (playerId === player1) {
+      this.state.winner = player2;
+    } else if (playerId === player2) {
+      this.state.winner = player1;
+    } else {
+      throw new InvalidParametersError('Invalid player ID.');
+    }
+
+    // Set the "lost" status for the other player
+    if (this.state.winner === player1) {
+      this.state.lost = { [player2]: true, [player1]: false };
+    } else if (this.state.winner === player2) {
+      this.state.lost = { [player1]: true, [player2]: false };
     }
   }
 
-  public checkForWinner() {
-    this._checkForWinner();
+  public checkForWinner(playerId: string) {
+    this._checkForWinner(playerId);
   }
 
   /**
@@ -167,15 +141,19 @@ export default class SillySharkGame extends Game<SillySharkGameState & SillyShar
     if (this.state.player1 === player.id || this.state.player2 === player.id) {
       throw new InvalidParametersError(paramerrors.PLAYER_ALREADY_IN_GAME_MESSAGE);
     }
+    const updatedSkins = { ...this.state.skins };
+    delete updatedSkins[player.id];
     if (!this.state.player1) {
       this.state = {
         ...this.state,
+        skins: updatedSkins,
         player1: player.id,
         ready: { ...this.state.ready, [player.id]: false },
       };
     } else if (!this.state.player2) {
       this.state = {
         ...this.state,
+        skins: updatedSkins,
         player2: player.id,
         ready: { ...this.state.ready, [player.id]: false },
       };
@@ -195,16 +173,24 @@ export default class SillySharkGame extends Game<SillySharkGameState & SillyShar
       throw new InvalidParametersError(paramerrors.PLAYER_NOT_IN_GAME_MESSAGE);
     }
 
-    if (this.state.status === 'SINGLE_PLAYER_IN_PROGRESS') {
-      this.state = {
-        status: 'WAITING_TO_START',
-        ready: {},
-        spritesData: {},
-        canvasHeight: 720,
-        score: {},
-        lost: {},
-      };
-    } else if (this.state.status === 'MULTI_PLAYER_IN_PROGRESS') {
+    if (this.state.status === 'WAITING_TO_START') {
+      // Explicitly remove the player's skin
+      if (this.state.player1 === player.id) {
+        this.state = {
+          ...this.state,
+          player1: undefined,
+          ready: {},
+          spritesData: {},
+        };
+      } else {
+        this.state = {
+          ...this.state,
+          player2: undefined,
+          ready: {},
+          spritesData: {},
+        };
+      }
+    } else if (this.state.status === 'IN_PROGRESS') {
       if (this.state.player1 === player.id) {
         this.state = {
           ...this.state,
