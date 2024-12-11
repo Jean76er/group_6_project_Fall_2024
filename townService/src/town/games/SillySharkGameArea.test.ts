@@ -7,12 +7,7 @@ import {
   INVALID_COMMAND_MESSAGE,
 } from '../../lib/InvalidParametersError';
 import Player from '../../lib/Player';
-import {
-  GameInstanceID,
-  SillySharkGameState,
-  SillySharkCanvasState,
-  TownEmitter,
-} from '../../types/CoveyTownSocket';
+import { SillySharkGameState, TownEmitter } from '../../types/CoveyTownSocket';
 import Game from './Game';
 import SillySharkGameArea from './SillySharkGameArea';
 import * as SillySharkGameModule from './SillySharkGame';
@@ -23,7 +18,6 @@ class TestingGame extends Game<SillySharkGameState> {
       player1: undefined,
       player2: undefined,
       skins: {},
-      score: {},
       lost: {},
       ready: {},
       spritesData: {},
@@ -35,9 +29,46 @@ class TestingGame extends Game<SillySharkGameState> {
   public endGame(winner?: string) {
     this.state = {
       ...this.state,
-      status: 'OVER',
+      status: 'WAITING_TO_START',
       winner,
     };
+  }
+
+  public setReady(player: Player): void {
+    this.state.ready[player.id] = true;
+  }
+
+  public checkForWinner(playerID: string): void {
+    if (this.state.player1 === playerID || this.state.player2 === playerID) {
+      this.state.winner = playerID;
+    }
+  }
+
+  public setSkin(player: Player, skin: string): void {
+    if (!this.state.skins) {
+      this.state.skins = {};
+    }
+    this.state.skins[player.id] = skin;
+  }
+
+  public isReady(): boolean {
+    if (!this.state.player1 || !this.state.player2) {
+      return false;
+    }
+    return this.state.ready[this.state.player1] && this.state.ready[this.state.player2];
+  }
+
+  public startGame(): void {
+    if (this.state.status === 'WAITING_TO_START') {
+      this.state.status = 'IN_PROGRESS';
+    }
+  }
+
+  public setPosition(player: Player, positionY: number): void {
+    if (!this.state.spritesData) {
+      this.state.spritesData = {};
+    }
+    this.state.spritesData[player.id] = positionY; // Update the sprite's position
   }
 
   protected _join(player: Player): void {
@@ -131,6 +162,199 @@ describe('SillySharkGameArea', () => {
         INVALID_COMMAND_MESSAGE,
       );
       expect(interactableUpdateSpy).not.toHaveBeenCalled();
+    });
+  });
+  describe('[T3.3] when given a LeaveGame command', () => {
+    describe('when there is no game in progress', () => {
+      it('should throw an error', () => {
+        expect(() =>
+          gameArea.handleCommand({ type: 'LeaveGame', gameID: nanoid() }, player1),
+        ).toThrowError(GAME_NOT_IN_PROGRESS_MESSAGE);
+        expect(interactableUpdateSpy).not.toHaveBeenCalled();
+      });
+    });
+    describe('when there is a game in progress', () => {
+      it('should throw an error when the game ID does not match', () => {
+        gameArea.handleCommand({ type: 'JoinGame' }, player1);
+        interactableUpdateSpy.mockClear();
+        expect(() =>
+          gameArea.handleCommand({ type: 'LeaveGame', gameID: nanoid() }, player1),
+        ).toThrowError(GAME_ID_MISSMATCH_MESSAGE);
+        expect(interactableUpdateSpy).not.toHaveBeenCalled();
+      });
+      it('should dispatch the leave command to the game and call _emitAreaChanged', () => {
+        const { gameID } = gameArea.handleCommand({ type: 'JoinGame' }, player1);
+        if (!game) {
+          throw new Error('Game was not created by the first call to join');
+        }
+        expect(interactableUpdateSpy).toHaveBeenCalledTimes(1);
+        const leaveSpy = jest.spyOn(game, 'leave');
+        gameArea.handleCommand({ type: 'LeaveGame', gameID }, player1);
+        expect(leaveSpy).toHaveBeenCalledWith(player1);
+        expect(interactableUpdateSpy).toHaveBeenCalledTimes(2);
+      });
+      it('should not call _emitAreaChanged if the game throws an error', () => {
+        gameArea.handleCommand({ type: 'JoinGame' }, player1);
+        if (!game) {
+          throw new Error('Game was not created by the first call to join');
+        }
+        interactableUpdateSpy.mockClear();
+        const leaveSpy = jest.spyOn(game, 'leave').mockImplementationOnce(() => {
+          throw new Error('Test Error');
+        });
+        expect(() =>
+          gameArea.handleCommand({ type: 'LeaveGame', gameID: game.id }, player1),
+        ).toThrowError('Test Error');
+        expect(leaveSpy).toHaveBeenCalledWith(player1);
+        expect(interactableUpdateSpy).not.toHaveBeenCalled();
+      });
+    });
+  });
+  describe('SetReady command', () => {
+    it('marks the player as ready and emits a state update', () => {
+      const { gameID } = gameArea.handleCommand({ type: 'JoinGame' }, player1);
+
+      game.setReady = jest.fn();
+      const setReadySpy = jest.spyOn(game, 'setReady');
+
+      gameArea.handleCommand({ type: 'SetReady', gameID, playerID: player1.id }, player1);
+
+      expect(setReadySpy).toHaveBeenCalledWith(player1);
+      expect(interactableUpdateSpy).toHaveBeenCalledTimes(2);
+    });
+
+    it('throws an error if no game is in progress', () => {
+      expect(() => {
+        gameArea.handleCommand(
+          { type: 'SetReady', gameID: nanoid(), playerID: player1.id },
+          player1,
+        );
+      }).toThrowError(GAME_NOT_IN_PROGRESS_MESSAGE);
+      expect(interactableUpdateSpy).not.toHaveBeenCalled();
+    });
+
+    it('throws an error for mismatched gameID', () => {
+      gameArea.handleCommand({ type: 'JoinGame' }, player1);
+      expect(() => {
+        gameArea.handleCommand(
+          { type: 'SetReady', gameID: nanoid(), playerID: player1.id },
+          player1,
+        );
+      }).toThrowError(GAME_ID_MISSMATCH_MESSAGE);
+      expect(interactableUpdateSpy).toHaveBeenCalledTimes(1);
+    });
+  });
+  describe('CheckForWinner command', () => {
+    it('checks for the winner and emits a state update', () => {
+      const { gameID } = gameArea.handleCommand({ type: 'JoinGame' }, player1);
+
+      game.checkForWinner = jest.fn();
+      const checkForWinnerSpy = jest.spyOn(game, 'checkForWinner');
+
+      gameArea.handleCommand({ type: 'CheckForWinner', gameID, playerID: player1.id }, player1);
+
+      expect(checkForWinnerSpy).toHaveBeenCalledWith(player1.id);
+      expect(interactableUpdateSpy).toHaveBeenCalledTimes(2);
+    });
+
+    it('throws an error if no game is in progress', () => {
+      expect(() => {
+        gameArea.handleCommand(
+          { type: 'CheckForWinner', gameID: nanoid(), playerID: player1.id },
+          player1,
+        );
+      }).toThrowError(GAME_NOT_IN_PROGRESS_MESSAGE);
+      expect(interactableUpdateSpy).not.toHaveBeenCalled();
+    });
+
+    it('throws an error for mismatched gameID', () => {
+      gameArea.handleCommand({ type: 'JoinGame' }, player1);
+      expect(() => {
+        gameArea.handleCommand(
+          { type: 'CheckForWinner', gameID: nanoid(), playerID: player1.id },
+          player1,
+        );
+      }).toThrowError(GAME_ID_MISSMATCH_MESSAGE);
+      expect(interactableUpdateSpy).toHaveBeenCalledTimes(1);
+    });
+  });
+  describe('SetSkin command', () => {
+    it('sets the player skin and emits a state update', () => {
+      const { gameID } = gameArea.handleCommand({ type: 'JoinGame' }, player1);
+
+      // Mock `setSkin` method
+      game.setSkin = jest.fn();
+      const setSkinSpy = jest.spyOn(game, 'setSkin');
+
+      gameArea.handleCommand(
+        { type: 'SetSkin', gameID, playerID: player1.id, skin: 'SharkSkin' },
+        player1,
+      );
+
+      // Assert that `setSkin` is called with the correct player and skin
+      expect(setSkinSpy).toHaveBeenCalledWith(player1, 'SharkSkin');
+      // Assert that `_stateUpdated` is called
+      expect(interactableUpdateSpy).toHaveBeenCalledTimes(2); // Once for JoinGame, once for SetSkin
+    });
+
+    it('throws an error if no game is in progress', () => {
+      expect(() => {
+        gameArea.handleCommand(
+          { type: 'SetSkin', gameID: nanoid(), playerID: player1.id, skin: 'SharkSkin' },
+          player1,
+        );
+      }).toThrowError(GAME_NOT_IN_PROGRESS_MESSAGE);
+      expect(interactableUpdateSpy).not.toHaveBeenCalled();
+    });
+
+    it('throws an error for mismatched gameID', () => {
+      gameArea.handleCommand({ type: 'JoinGame' }, player1);
+      expect(() => {
+        gameArea.handleCommand(
+          { type: 'SetSkin', gameID: nanoid(), playerID: player1.id, skin: 'SharkSkin' },
+          player1,
+        );
+      }).toThrowError(GAME_ID_MISSMATCH_MESSAGE);
+      expect(interactableUpdateSpy).toHaveBeenCalledTimes(1); // Only for JoinGame
+    });
+  });
+
+  describe('RenderSprite command', () => {
+    it('updates the sprite position and emits a state update', () => {
+      const { gameID } = gameArea.handleCommand({ type: 'JoinGame' }, player1);
+
+      game.setPosition = jest.fn();
+      const setPositionSpy = jest.spyOn(game, 'setPosition');
+
+      const positionY = 100;
+      gameArea.handleCommand(
+        { type: 'RenderSprite', gameID, playerID: player1.id, positionY },
+        player1,
+      );
+
+      expect(setPositionSpy).toHaveBeenCalledWith(player1, positionY);
+      expect(interactableUpdateSpy).toHaveBeenCalledTimes(2);
+    });
+
+    it('throws an error if no game is in progress', () => {
+      expect(() => {
+        gameArea.handleCommand(
+          { type: 'RenderSprite', gameID: nanoid(), playerID: player1.id, positionY: 100 },
+          player1,
+        );
+      }).toThrowError(GAME_NOT_IN_PROGRESS_MESSAGE);
+      expect(interactableUpdateSpy).not.toHaveBeenCalled();
+    });
+
+    it('throws an error for mismatched gameID', () => {
+      gameArea.handleCommand({ type: 'JoinGame' }, player1);
+      expect(() => {
+        gameArea.handleCommand(
+          { type: 'RenderSprite', gameID: nanoid(), playerID: player1.id, positionY: 100 },
+          player1,
+        );
+      }).toThrowError(GAME_ID_MISSMATCH_MESSAGE);
+      expect(interactableUpdateSpy).toHaveBeenCalledTimes(1);
     });
   });
 });
