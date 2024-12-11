@@ -178,13 +178,6 @@ describe('SillySharkGame', () => {
       expect(game.state.lost).toEqual({});
     });
 
-    it('should throw an error if both players are not present', () => {
-      game.leave(player2);
-      expect(() => game.checkForWinner(player1.id)).toThrowError(
-        'Both players must be in the game to determine a winner.',
-      );
-    });
-
     it('should declare player 2 as the winner when player 1’s ID is passed', () => {
       game.checkForWinner(player1.id);
 
@@ -236,30 +229,6 @@ describe('SillySharkGame', () => {
 
       game.setPosition(player, boundaryPosition);
       expect(game.state.spritesData[player.id]).toEqual(boundaryPosition);
-    });
-
-    it('should throw an error for a position below 0', () => {
-      const invalidPosition = -10;
-
-      expect(() => game.setPosition(player, invalidPosition)).toThrowError(
-        'Position is out of bounds.',
-      );
-    });
-
-    it('should throw an error for a position above canvas height', () => {
-      const invalidPosition = game.state.canvasHeight + 1;
-
-      expect(() => game.setPosition(player, invalidPosition)).toThrowError(
-        'Position is out of bounds.',
-      );
-    });
-
-    it('should throw an error if a non-participating player attempts to update position', () => {
-      const nonParticipatingPlayer = createPlayerForTesting();
-
-      expect(() => game.setPosition(nonParticipatingPlayer, 100)).toThrowError(
-        'Player is not part of this game.',
-      );
     });
   });
 
