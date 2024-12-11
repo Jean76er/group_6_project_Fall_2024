@@ -163,7 +163,6 @@ export default class SillySharkAreaController extends GameAreaController<
     const previousPlayerIds = this._players.map(player => player.id);
     const previousPosition = this.renderPlayerState;
     const previousGamePlayers = this.players;
-    console.log('previousGameplayer:', previousGamePlayers);
 
     super._updateFrom(newModel);
 
@@ -172,7 +171,6 @@ export default class SillySharkAreaController extends GameAreaController<
     const currentPlayerIds = this._players.map(player => player.id);
     const currentPosition = this.renderPlayerState;
     const currentGamePlayers = this.players;
-    console.log('current:', currentGamePlayers);
 
     if (!this._arraysEqual(previousPlayerIds, currentPlayerIds)) {
       this.emit('playersUpdated', this.players);

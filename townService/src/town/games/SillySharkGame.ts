@@ -18,7 +18,6 @@ export default class SillySharkGame extends Game<SillySharkGameState & SillyShar
       ready: {},
       spritesData: {},
       canvasHeight: 720,
-      lost: {},
     });
   }
 
@@ -82,11 +81,11 @@ export default class SillySharkGame extends Game<SillySharkGameState & SillyShar
     // Ensure the player is part of the game
     const gamePlayer = this._players.find(p => p.id === player.id);
     if (!gamePlayer) {
-      throw new InvalidParametersError('Player is not part of this game.');
+      throw new InvalidParametersError(paramerrors.PLAYER_NOT_IN_GAME_MESSAGE);
     }
     // Validate the position
     if (positionY < 0 || positionY > this.state.canvasHeight) {
-      throw new InvalidParametersError('Position is out of bounds.');
+      throw new InvalidParametersError(paramerrors.INVALID_MOVE_MESSAGE);
     }
     // Update the player's position in the game state'
     this.state = {
@@ -103,7 +102,7 @@ export default class SillySharkGame extends Game<SillySharkGameState & SillyShar
 
     // Ensure that both players exist
     if (!player1 || !player2) {
-      throw new InvalidParametersError('Both players must be in the game to determine a winner.');
+      throw new InvalidParametersError(paramerrors.BOTH_PLAYERS_READY_MESSAGE);
     }
 
     // If the player has already been identified as the winner, no need to continue
@@ -117,14 +116,7 @@ export default class SillySharkGame extends Game<SillySharkGameState & SillyShar
     } else if (playerId === player2) {
       this.state.winner = player1;
     } else {
-      throw new InvalidParametersError('Invalid player ID.');
-    }
-
-    // Set the "lost" status for the other player
-    if (this.state.winner === player1) {
-      this.state.lost = { [player2]: true, [player1]: false };
-    } else if (this.state.winner === player2) {
-      this.state.lost = { [player1]: true, [player2]: false };
+      throw new InvalidParametersError(paramerrors.PLAYER_NOT_IN_GAME_MESSAGE);
     }
   }
 
@@ -197,7 +189,8 @@ export default class SillySharkGame extends Game<SillySharkGameState & SillyShar
           player1: undefined,
           winner: this.state.player2,
         };
-      } else if (this.state.player2 === player.id) {
+      }
+      if (this.state.player2 === player.id) {
         this.state = {
           ...this.state,
           player2: undefined,
