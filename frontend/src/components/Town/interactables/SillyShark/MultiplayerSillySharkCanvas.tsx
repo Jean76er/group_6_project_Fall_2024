@@ -91,7 +91,7 @@ export default function NewMultiplayerSillySharkCanvas({
   const otherSpriteImage = useRef(new Image());
   const [isOtherPlayerInGame, setIsOtherPlayerInGame] = useState(true);
 
-  /** adding state for the score*/
+  /** Adding state for the score*/
   const [score, setScore] = useState(0);
   const [gameOverScore, setGameOverScore] = useState(0);
 
@@ -233,9 +233,9 @@ export default function NewMultiplayerSillySharkCanvas({
           spriteWidth,
           spriteHeight,
         );
-        context.globalAlpha = 1; // Reset alpha after drawing
+        context.globalAlpha = 1;
       } else {
-        // Remove the other player's sprite by clearing its canvas area
+        console.log('here')
         context.clearRect(canvasCurr.width / 4, otherSpriteY, spriteWidth, spriteHeight);
       }
 
@@ -273,8 +273,8 @@ export default function NewMultiplayerSillySharkCanvas({
 
       /** Check for collision */
       if (checkCollision()) {
-        gameAreaController.setLoser(ourPlayer); // Mark the player as the loser
-
+        /**Mark the player as the loser*/
+        gameAreaController.setLoser(ourPlayer); 
         setGameOverScore(score);
         if (score > ourPlayer.highScore) {
           ourPlayer.highScore = score;
@@ -384,14 +384,18 @@ export default function NewMultiplayerSillySharkCanvas({
 
   useEffect(() => {
     const handlePositionUpdate = (updatedState: [string, number][]) => {
-      // Find the entry for the other player
+      /**Find the entry for the other player*/
       if (otherPlayer) {
         const otherPlayerPosition = updatedState.find(([playerId]) => playerId === otherPlayer.id);
 
-        // If the other player is found, update their Y position
+        /**If the other player is found, update their Y position*/
         if (otherPlayerPosition) {
-          const [, position] = otherPlayerPosition; // Extract the position (second element)
-          setOtherSpriteY(position); // Update the Y position for the other player
+          /** 
+           * Extract the position (second element) and 
+           * update the Y position for the other player 
+           */
+          const [, position] = otherPlayerPosition;
+          setOtherSpriteY(position);
         }
       }
     };
