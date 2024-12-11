@@ -238,6 +238,4 @@ describe('SillySharkCanvas Tests', () => {
     expect(mockController.score).toBe(10);
     expect(mockEmit).toHaveBeenCalledWith('jumped');
   });
-
-  
 });
