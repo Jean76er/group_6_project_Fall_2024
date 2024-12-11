@@ -21,9 +21,9 @@ export type SillySharkProps = {
  * is compared to their highest score and updated if necessary. The Game Over screen is displayed, and the
  * final score is passed to the next modal.
  *
- * Utilizes React state to manage gameplay variables, including sprite positions, obstacle placements, and more. 
+ * Utilizes React state to manage gameplay variables, including sprite positions, obstacle placements, and more.
  * Listens to and responds to game-related events (e.g., jumps, position updates) using event listeners.
- * 
+ *
  * @param gameAreaController the controller for managing the SillyShark game
  * @param newSillySharkGame Instance of the interactive game in Covey Town
  * @param gameArea the interactive game area in Covey Town

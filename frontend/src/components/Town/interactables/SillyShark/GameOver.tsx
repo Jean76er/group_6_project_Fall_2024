@@ -13,9 +13,9 @@ import TownController from '../../../../classes/TownController';
  * is compared to their highest score and updated if necessary. The Game Over screen is displayed, and the
  * final score is passed to the next modal.
  *
- * Utilizes React state to manage gameplay variables, including sprite positions, obstacle placements, and more. 
+ * Utilizes React state to manage gameplay variables, including sprite positions, obstacle placements, and more.
  * Listens to and responds to game-related events (e.g., jumps, position updates) using event listeners.
- * 
+ *
  * @param gameArea the interactive game area in Covey Town
  * @param coveyTownController the main controller for managing the town and player interactions
  * @param score the most recent score from the player, passed from the previous screen.

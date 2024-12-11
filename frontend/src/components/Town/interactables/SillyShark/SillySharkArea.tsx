@@ -27,7 +27,7 @@ export type SillySharkGameProps = {
 
 /**
  * A component that handles the SillyShark game area in Covey Town.
- * 
+ *
  * Displays buttons for joining SinglePlayer or MultiPlayer modes.
  * Renders the appropriate skin selection screen based on the game mode.
  * Updates game and player states dynamically using controller listeners.

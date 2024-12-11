@@ -32,7 +32,6 @@ export enum Skins {
   PolarBear = '/SillySharkResources/skins/polarbear.png',
 }
 
-
 /**
  * A constant array that contains all the skins available for selection.
  *
@@ -77,12 +76,12 @@ const StyledSelectionContainer = chakra(Container, {
  *
  * Renders a skin selection screen as a modal, allowing players to select their desired skins.
  * The modal displays all available skins, showing visual indicators to indicate whether a skin is
- * selected by the current player (blue border) or by another player (red border). 
+ * selected by the current player (blue border) or by another player (red border).
  *
- * The component listens for updates to the player readiness status, skin selections, and game state. 
+ * The component listens for updates to the player readiness status, skin selections, and game state.
  * When both players are ready, the game starts, and a canvas is displayed.
  *
- * Players must select a skin before continuing. If a player attempts to continue without selecting 
+ * Players must select a skin before continuing. If a player attempts to continue without selecting
  * a skin, a toast is displayed. The number of players who are ready is shown at the bottom of the modal.
  *
  * @param gameAreaController - the controller for managing skin selection and game state
@@ -130,8 +129,8 @@ export default function MultiplayerSkinSelectionScreen({
     gameAreaController.setReady(ourPlayer.id);
 
     if (playersReady === 2) {
-      setShowCanvas(true); 
-      gameAreaController.startGame(true);
+      setShowCanvas(true);
+      gameAreaController.startGame();
     }
   }, [toast, skinSelected, playersReady, gameAreaController, ourPlayer.id, hasClickedContinue]);
 
@@ -185,7 +184,7 @@ export default function MultiplayerSkinSelectionScreen({
 
               let borderStyle = 'none';
               if (isOwnedByUs) {
-                borderStyle = '7px solid blue'; 
+                borderStyle = '7px solid blue';
               } else if (isOwnedByOther) {
                 borderStyle = '7px solid red';
               }
@@ -217,7 +216,7 @@ export default function MultiplayerSkinSelectionScreen({
                     {player?.userName || 'Unknown Player'}:{' '}
                     {skin ? <Image src={skin} boxSize='20px' /> : '(No skin selected)'}
                   </ListItem>
-                ); 
+                );
               })}
             </List>
           </Center>
