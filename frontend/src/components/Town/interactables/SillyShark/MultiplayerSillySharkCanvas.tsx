@@ -12,6 +12,27 @@ export type SillySharkProps = {
   gameAreaController: SillySharkAreaController;
 };
 
+/**
+ * A component that renders the Silly Shark game
+ *
+ * Displays a modal that renders two players with their respective skins, obstacles and their movement.
+ * It manages sprite movements, gravity, and collision detection.
+ * Tracks both the local player and the opponent, updating their positions and
+ * interactions in real-time. Handles scenarios like determining winners and losers based on gameplay outcomes.
+ *
+ * Tracks the current player's score during the game. When a player loses, their score
+ * is compared to their highest score and updated if necessary. The Game Over screen is displayed, and the
+ * final score is passed to the next modal.
+ *
+ * Utilizes React state to manage gameplay variables, including sprite positions, obstacle placements,
+ * game status, and more. Listens to and responds to game-related events (e.g., jumps, position updates)
+ * using event listeners.
+ *
+ * @param gameAreaController the controller for managing the SillyShark game
+ * @param newSillySharkGame Instance of the interactive game in Covey Town
+ * @param gameArea the interactive game area in Covey Town
+ * @param coveyTownController the main controller for managing the town and player interactions
+ */
 export default function NewMultiplayerSillySharkCanvas({
   gameAreaController,
   newSillySharkGame,
@@ -71,7 +92,7 @@ export default function NewMultiplayerSillySharkCanvas({
 
   const [otherPlayerGameOver, setOtherPlayerGameOver] = useState(false);
 
-  /** adding state for the score*/
+  /** Adding state for the score*/
   const [score, setScore] = useState(0);
   const [gameOverScore, setGameOverScore] = useState(0);
 
@@ -97,7 +118,6 @@ export default function NewMultiplayerSillySharkCanvas({
       }
     };
 
-    // Now call setSkins within the effect
     setSkins();
   }, [gameAreaController, ourPlayer.userName, ourPlayer.id, otherPlayer]);
 
@@ -215,6 +235,7 @@ export default function NewMultiplayerSillySharkCanvas({
           spriteHeight,
         );
         context.globalAlpha = 1;
+        context.globalAlpha = 1;
       } else {
         context.clearRect(canvasCurr.width / 4, otherSpriteY, spriteWidth, spriteHeight);
       }
@@ -253,7 +274,8 @@ export default function NewMultiplayerSillySharkCanvas({
 
       /** Check for collision */
       if (checkCollision()) {
-        gameAreaController.setLoser(ourPlayer); // Mark the player as the loser
+        /**Mark the player as the loser*/
+        gameAreaController.setLoser(ourPlayer);
         setGameOverScore(score);
         if (score > ourPlayer.highScore) {
           ourPlayer.highScore = score;
@@ -364,14 +386,18 @@ export default function NewMultiplayerSillySharkCanvas({
 
   useEffect(() => {
     const handlePositionUpdate = (updatedState: [string, number][]) => {
-      // Find the entry for the other player
+      /**Find the entry for the other player*/
       if (otherPlayer) {
         const otherPlayerPosition = updatedState.find(([playerId]) => playerId === otherPlayer.id);
 
-        // If the other player is found, update their Y position
+        /**If the other player is found, update their Y position*/
         if (otherPlayerPosition) {
-          const [, position] = otherPlayerPosition; // Extract the position (second element)
-          setOtherSpriteY(position); // Update the Y position for the other player
+          /**
+           * Extract the position (second element) and
+           * update the Y position for the other player
+           */
+          const [, position] = otherPlayerPosition;
+          setOtherSpriteY(position);
         }
       }
     };
@@ -388,7 +414,8 @@ export default function NewMultiplayerSillySharkCanvas({
             title: 'You Lost :(',
           });
         }
-        setMessageShown(true); // Ensure the message is shown only once
+        /** Ensure the message is shown only once*/
+        setMessageShown(true);
       }
     };
 
@@ -413,7 +440,8 @@ export default function NewMultiplayerSillySharkCanvas({
 
   useEffect(() => {
     if (!isOpen) {
-      setMessageShown(false); // Reset the message state when the modal is closed
+      /**Reset the message state when the modal is closed*/
+      setMessageShown(false);
     }
   }, [isOpen]);
 
@@ -442,7 +470,6 @@ export default function NewMultiplayerSillySharkCanvas({
         bg='skyblue'
         style={{ pointerEvents: 'auto' }}
         onClick={() => {
-          console.log('Click event triggered');
           gameAreaController.emit('JUMP');
         }}>
         <canvas ref={canvas} width='500' height='720' />

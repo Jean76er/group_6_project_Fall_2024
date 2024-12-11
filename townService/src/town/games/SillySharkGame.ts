@@ -1,4 +1,3 @@
-import SillySharkPlayer from './SillySharkPlayer';
 import InvalidParametersError from '../../lib/InvalidParametersError';
 import * as paramerrors from '../../lib/InvalidParametersError';
 import Game from './Game';
@@ -31,12 +30,12 @@ export default class SillySharkGame extends Game<SillySharkGameState & SillyShar
       throw new Error(paramerrors.GAME_ALREADY_IN_PROGRESS_MESSAGE);
     }
 
-    // Ensure both players are ready
+    /** Ensure both players are ready */
     if (!this.isReady()) {
       throw new InvalidParametersError(paramerrors.BOTH_PLAYERS_READY_MESSAGE);
     }
 
-    // Only set status to IN_PROGRESS if players are ready and status is WAITING_TO_START
+    /** Only set status to IN_PROGRESS if players are ready and status is WAITING_TO_START */
     if (this.state.status === 'WAITING_TO_START') {
       this.state = {
         ...this.state,
@@ -65,7 +64,7 @@ export default class SillySharkGame extends Game<SillySharkGameState & SillyShar
       ...this.state,
       skins: {
         ...(this.state.skins || {}),
-        [player.id]: skin || DEFAULT_SKIN, // Set skin or default to SillyShark
+        [player.id]: skin || DEFAULT_SKIN,
       },
     };
   }
@@ -82,12 +81,13 @@ export default class SillySharkGame extends Game<SillySharkGameState & SillyShar
     const gamePlayer = this._players.find(p => p.id === player.id);
     if (!gamePlayer) {
       throw new InvalidParametersError(paramerrors.PLAYER_NOT_IN_GAME_MESSAGE);
+      throw new InvalidParametersError(paramerrors.PLAYER_NOT_IN_GAME_MESSAGE);
     }
     // Validate the position
     if (positionY < 0 || positionY > this.state.canvasHeight) {
       throw new InvalidParametersError(paramerrors.INVALID_MOVE_MESSAGE);
     }
-    // Update the player's position in the game state'
+    /** Update the player's position in the game state' */
     this.state = {
       ...this.state,
       spritesData: {
@@ -102,6 +102,7 @@ export default class SillySharkGame extends Game<SillySharkGameState & SillyShar
 
     // Ensure that both players exist
     if (!player1 || !player2) {
+      throw new InvalidParametersError(paramerrors.BOTH_PLAYERS_READY_MESSAGE);
       throw new InvalidParametersError(paramerrors.BOTH_PLAYERS_READY_MESSAGE);
     }
 
@@ -127,9 +128,11 @@ export default class SillySharkGame extends Game<SillySharkGameState & SillyShar
   /**
    * Adds a player to the game.
    * Updates the game's state to reflect the addition of the new player.
+   * Makes sure to set the players ready state to false.
+   * it also deletes they are trying to join after leaving a game where they chose a skin
    * @param player The player to join the game
    */
-  public _join(player: SillySharkPlayer) {
+  public _join(player: Player) {
     if (this.state.player1 === player.id || this.state.player2 === player.id) {
       throw new InvalidParametersError(paramerrors.PLAYER_ALREADY_IN_GAME_MESSAGE);
     }
@@ -155,30 +158,29 @@ export default class SillySharkGame extends Game<SillySharkGameState & SillyShar
   }
 
   /**
-   * Allows a player to exit the game and declares a winner if in multi player mode
-   * Allows a player to continue playing in single player mode if second player leave prematurely
-   * DOES NOT handle instances where players want a rematch
+   * Allows a player to exit the game and declares a winner if the game is IN_PROGRESS
+   * If the game hasn't started yet, it removes every data related to the player, such as thir ready state.
    * @param player The player to remove from the game
    */
-  public _leave(player: SillySharkPlayer) {
+  public _leave(player: Player) {
     if (this.state.player1 !== player.id && this.state.player2 !== player.id) {
       throw new InvalidParametersError(paramerrors.PLAYER_NOT_IN_GAME_MESSAGE);
     }
 
     if (this.state.status === 'WAITING_TO_START') {
-      // Explicitly remove the player's skin
+      /** Explicitly remove the player's skin */
       if (this.state.player1 === player.id) {
         this.state = {
           ...this.state,
           player1: undefined,
-          ready: {},
+          ready: { ...this.state.ready, [player.id]: false },
           spritesData: {},
         };
       } else {
         this.state = {
           ...this.state,
           player2: undefined,
-          ready: {},
+          ready: { ...this.state.ready, [player.id]: false },
           spritesData: {},
         };
       }
@@ -197,8 +199,7 @@ export default class SillySharkGame extends Game<SillySharkGameState & SillyShar
           winner: this.state.player1,
         };
       }
-
-      // Check if both players are undefined
+      /** Check if both players are undefined */
       if (!this.state.player1 && !this.state.player2) {
         this.state = {
           ...this.state,
