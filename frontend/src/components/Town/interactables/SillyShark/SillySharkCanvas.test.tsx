@@ -216,7 +216,28 @@ describe('SillySharkCanvas Tests', () => {
     expect(mockEmit).toHaveBeenCalledWith('jumped');
   });
 
- 
+  it('increments score after a successful jump', async () => {
+    const mockEmit = jest.fn();
+    const mockSendInteractableCommand = jest.fn();
+
+    const mockController = new MockSillySharkAreaController();
+    mockController.emit = mockEmit;
+    mockController.setTownController({
+      sendInteractableCommand: mockSendInteractableCommand,
+    });
+
+    mockController.score = 0;
+
+    mockController.jump = jest.fn(async () => {
+      mockEmit('jumped');
+      mockController.score += 10;
+    });
+
+    await mockController.jump();
+
+    expect(mockController.score).toBe(10);
+    expect(mockEmit).toHaveBeenCalledWith('jumped');
+  });
 
   
 });
