@@ -18,7 +18,6 @@ class TestingGame extends Game<SillySharkGameState> {
       player1: undefined,
       player2: undefined,
       skins: {},
-      lost: {},
       ready: {},
       spritesData: {},
       status: 'WAITING_TO_START',
