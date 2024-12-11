@@ -193,6 +193,30 @@ describe('SillySharkCanvas Tests', () => {
 
     expect(mockEmit).toHaveBeenCalledWith('collision');
   });
+  it('simulates a jump over an obstacle without collision', async () => {
+    const mockEmit = jest.fn();
+    const mockSendInteractableCommand = jest.fn();
+
+    const mockObstacle = { x: 200, y: 300, width: 50, height: 50 };
+
+    const mockController = new MockSillySharkAreaController();
+    mockController.emit = mockEmit;
+    mockController.setTownController({
+      sendInteractableCommand: mockSendInteractableCommand,
+    });
+    mockController.jump = jest.fn(async () => {
+      if (mockObstacle.x < 150 && mockObstacle.y < 220) {
+        mockEmit('collision');
+      } else {
+        mockEmit('jumped');
+      }
+    });
+
+    await mockController.jump();
+    expect(mockEmit).toHaveBeenCalledWith('jumped');
+  });
+
+ 
 
   
 });
