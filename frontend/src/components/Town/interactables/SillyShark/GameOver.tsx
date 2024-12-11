@@ -3,6 +3,26 @@ import React, { useCallback } from 'react';
 import GameArea from '../GameArea';
 import TownController from '../../../../classes/TownController';
 
+/**
+ * A component that renders the Game Over screen
+ *
+ * Displays a modal that renders one player with their respective skin, obstacles and their movement.
+ * It manages sprite movements, gravity, and collision detection.
+ *
+ * Tracks the player's score during the game. When a player loses, their score
+ * is compared to their highest score and updated if necessary. The Game Over screen is displayed, and the
+ * final score is passed to the next modal.
+ *
+ * Utilizes React state to manage gameplay variables, including sprite positions, obstacle placements, and more.
+ * Listens to and responds to game-related events (e.g., jumps, position updates) using event listeners.
+ *
+ * @param gameArea the interactive game area in Covey Town
+ * @param coveyTownController the main controller for managing the town and player interactions
+ * @param score the most recent score from the player, passed from the previous screen.
+ * @param multipalyer boolean that indicates whether or not the game was multiplayer, this is used
+ * to handle exiting the game.
+ */
+
 export default function NewGameOverScreen({
   gameArea,
   coveyTownController,
