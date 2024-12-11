@@ -8,6 +8,8 @@ import {
   Center,
   List,
   ListItem,
+  useToast,
+  Modal,
 } from '@chakra-ui/react';
 import React, { useCallback, useEffect, useState } from 'react';
 import SillySharkAreaController from '../../../../classes/interactable/SillySharkAreaController';
@@ -16,6 +18,13 @@ import { Skin } from '../../../../types/CoveyTownSocket';
 import TownController from '../../../../classes/TownController';
 import NewMultiplayerSillySharkCanvas from './MultiplayerSillySharkCanvas';
 
+/**
+ * An enum that defines the file paths for the available skins in the SillyShark game.
+ *
+ * Each key in the enum represents a skin's name, and its value is the relative path to the corresponding
+ * image file for that skin. These paths are used to dynamically load and display the skin options
+ * for the player during the selection process.
+ */
 export enum Skins {
   SillyShark = '/SillySharkResources/skins/sillyshark.png',
   Walrus = '/SillySharkResources/skins/walrus.png',
@@ -23,6 +32,17 @@ export enum Skins {
   PolarBear = '/SillySharkResources/skins/polarbear.png',
 }
 
+/**
+ * A constant array that contains all the skins available for selection.
+ *
+ * This array is populated using the values from the Skins enum and is used to dynamically render
+ * the skin selection options in the SkinSelectionScreen component.
+ */
+const SKINS = [Skins.SillyShark, Skins.Walrus, Skins.Penguin, Skins.PolarBear];
+
+/**
+ * This component renders a square that contains an image of the skin to be chosen
+ */
 const StyledSelectionSquare = chakra(Button, {
   baseStyle: {
     justifyContent: 'center',
@@ -38,6 +58,9 @@ const StyledSelectionSquare = chakra(Button, {
   },
 });
 
+/**
+ * A component that will render the Container for the skins
+ */
 const StyledSelectionContainer = chakra(Container, {
   baseStyle: {
     display: 'flex',
@@ -48,7 +71,23 @@ const StyledSelectionContainer = chakra(Container, {
   },
 });
 
-const SKINS = [Skins.SillyShark, Skins.Walrus, Skins.Penguin, Skins.PolarBear];
+/**
+ * A component that renders the Multiplayer Skin Selection Screen
+ *
+ * Renders a skin selection screen as a modal, allowing players to select their desired skins.
+ * The modal displays all available skins, showing visual indicators to indicate whether a skin is
+ * selected by the current player (blue border) or by another player (red border).
+ *
+ * The component listens for updates to the player readiness status, skin selections, and game state.
+ * When both players are ready, the game starts, and a canvas is displayed.
+ *
+ * Players must select a skin before continuing. If a player attempts to continue without selecting
+ * a skin, a toast is displayed. The number of players who are ready is shown at the bottom of the modal.
+ *
+ * @param gameAreaController - the controller for managing skin selection and game state
+ * @param gameArea - the current game area interactable
+ * @param coveyTownController - the controller for managing the town and interactions
+ */
 
 export default function MultiplayerSkinSelectionScreen({
   gameAreaController,
@@ -66,6 +105,8 @@ export default function MultiplayerSkinSelectionScreen({
   const [hasClickedContinue, setHasClickedContinue] = useState(false);
   const ourPlayer = coveyTownController.ourPlayer;
 
+  const toast = useToast();
+
   const handleSkinSelection = useCallback(
     (skin: Skin) => {
       setSkinSelected(skin);
@@ -79,17 +120,19 @@ export default function MultiplayerSkinSelectionScreen({
       return;
     }
     if (!skinSelected) {
-      alert('Please select a skin before continuing!');
+      toast({
+        title: 'Select a skin before continuing',
+      });
       return;
     }
     setHasClickedContinue(true);
-    gameAreaController.setReady(ourPlayer.id); // Mark the player as ready
+    gameAreaController.setReady(ourPlayer.id);
 
     if (playersReady === 2) {
-      setShowCanvas(true); // Start the game when both players are ready
-      gameAreaController.startGame(true); // Call startGame when both players are ready
+      setShowCanvas(true);
+      gameAreaController.startGame();
     }
-  }, [skinSelected, playersReady, gameAreaController, ourPlayer.id, hasClickedContinue]);
+  }, [toast, skinSelected, playersReady, gameAreaController, ourPlayer.id, hasClickedContinue]);
 
   useEffect(() => {
     const handlePlayersReadyUpdated = (readyCount: number) => {
@@ -115,73 +158,83 @@ export default function MultiplayerSkinSelectionScreen({
     };
   }, [gameAreaController]);
 
+  const closeModal = useCallback(() => {
+    if (gameArea) {
+      coveyTownController.unPause();
+      coveyTownController.interactEnd(gameArea);
+      const controller = coveyTownController.getGameAreaController(gameArea);
+      controller.leaveGame();
+    }
+  }, [coveyTownController, gameArea]);
+
   const renderSkins = useCallback(
     () => (
-      <ModalContent maxW='500px' h='720px' bg='skyblue'>
-        <ModalHeader>
-          <Center>Select your skin, {ourPlayer.userName}!</Center>
-        </ModalHeader>
+      <Modal isOpen={true} onClose={closeModal} closeOnOverlayClick={false}>
+        <ModalContent maxW='500px' h='720px' bg='skyblue'>
+          <ModalHeader>
+            <Center>Select your skin, {ourPlayer.userName}!</Center>
+          </ModalHeader>
 
-        <StyledSelectionContainer>
-          {SKINS.map(skin => {
-            const isOwnedByUs = skinSelected === skin; // Check if this player selected the skin
-            const isOwnedByOther = skinsState.some(
-              ([playerID, selectedSkin]) => playerID !== ourPlayer.id && selectedSkin === skin,
-            );
+          <StyledSelectionContainer>
+            {SKINS.map(skin => {
+              const isOwnedByUs = skinSelected === skin;
+              const isOwnedByOther = skinsState.some(
+                ([playerID, selectedSkin]) => playerID !== ourPlayer.id && selectedSkin === skin,
+              );
 
-            // Set the border color based on ownership
-            let borderStyle = 'none';
-            if (isOwnedByUs) {
-              borderStyle = '8px solid blue'; // Blue border for the player's selected skin
-            } else if (isOwnedByOther) {
-              borderStyle = '8px solid red'; // Red border for skins selected by the other player
-            }
-
-            return (
-              <StyledSelectionSquare
-                key={skin}
-                onClick={() => handleSkinSelection(skin)}
-                border={borderStyle}
-                isDisabled={isOwnedByOther}>
-                <Image src={skin} alt='Skin Image' objectFit='contain' boxSize='100%' />
-              </StyledSelectionSquare>
-            );
-          })}
-        </StyledSelectionContainer>
-
-        <Center>
-          <List aria-label='list of players in the game'>
-            {skinsState.map(([playerID, skin]) => {
-              const player =
-                gameAreaController.player1?.id === playerID
-                  ? gameAreaController.player1
-                  : gameAreaController.player2?.id === playerID
-                  ? gameAreaController.player2
-                  : null;
+              let borderStyle = 'none';
+              if (isOwnedByUs) {
+                borderStyle = '7px solid blue';
+              } else if (isOwnedByOther) {
+                borderStyle = '7px solid red';
+              }
 
               return (
-                <ListItem key={playerID}>
-                  {player?.userName || 'Unknown Player'}:{' '}
-                  {skin ? <Image src={skin} boxSize='20px' /> : '(No skin selected)'}
-                </ListItem>
+                <StyledSelectionSquare
+                  key={skin}
+                  onClick={() => handleSkinSelection(skin)}
+                  border={borderStyle}
+                  isDisabled={isOwnedByOther}>
+                  <Image src={skin} alt='Skin Image' objectFit='contain' boxSize='100%' />
+                </StyledSelectionSquare>
               );
             })}
-          </List>
-        </Center>
+          </StyledSelectionContainer>
 
-        <Center paddingTop='10px'>
-          <Button
-            size='sm'
-            width='fit-content'
-            onClick={handleCanvas}
-            isDisabled={hasClickedContinue}>
-            Continue
-          </Button>
-        </Center>
-        <Center paddingTop='10px'>
-          <p>{playersReady}/2 players are ready</p>
-        </Center>
-      </ModalContent>
+          <Center>
+            <List aria-label='list of players in the game'>
+              {skinsState.map(([playerID, skin]) => {
+                const player =
+                  gameAreaController.player1?.id === playerID
+                    ? gameAreaController.player1
+                    : gameAreaController.player2?.id === playerID
+                    ? gameAreaController.player2
+                    : null;
+
+                return (
+                  <ListItem key={playerID}>
+                    {player?.userName || 'Unknown Player'}:{' '}
+                    {skin ? <Image src={skin} boxSize='20px' /> : '(No skin selected)'}
+                  </ListItem>
+                );
+              })}
+            </List>
+          </Center>
+
+          <Center paddingTop='10px'>
+            <Button
+              size='sm'
+              width='fit-content'
+              onClick={handleCanvas}
+              isDisabled={hasClickedContinue}>
+              Continue
+            </Button>
+          </Center>
+          <Center paddingTop='10px'>
+            <p>{playersReady}/2 players are ready</p>
+          </Center>
+        </ModalContent>
+      </Modal>
     ),
     [
       gameAreaController.player1,
@@ -194,6 +247,7 @@ export default function MultiplayerSkinSelectionScreen({
       ourPlayer.userName,
       ourPlayer.id,
       hasClickedContinue,
+      closeModal,
     ],
   );
 
@@ -202,7 +256,6 @@ export default function MultiplayerSkinSelectionScreen({
       {renderSkins()}
       {showCanvas && (
         <NewMultiplayerSillySharkCanvas
-          key={gameArea.id} // Ensure the canvas re-renders when the game state changes
           gameAreaController={gameAreaController}
           newSillySharkGame={gameArea}
           coveyTownController={coveyTownController}

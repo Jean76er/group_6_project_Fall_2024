@@ -100,7 +100,7 @@ export type Skin = string;
  * OVER: Game is over when both players have crashed into an obstacle and players are either restarting the game or leaving
  * WAITING_TO_START: Game is waiting for player(s) to join
  */
-export type GameStatus = 'SINGLE_PLAYER_IN_PROGRESS' | 'MULTI_PLAYER_IN_PROGRESS' | 'OVER' | 'WAITING_TO_START';
+export type GameStatus = 'IN_PROGRESS' | 'WAITING_TO_START';
 
 /** 
  * Base type for the state of the game
@@ -179,7 +179,7 @@ interface InteractableCommandBase {
 
 
 
-export type InteractableCommand =  ViewingAreaUpdateCommand | JoinGameCommand | LeaveGameCommand | SetReadyCommand | SetSkinCommand | UpdateScoreCommand | CheckForWinnerCommand | StartGame | RenderSprite;
+export type InteractableCommand =  ViewingAreaUpdateCommand | JoinGameCommand | LeaveGameCommand | SetReadyCommand | SetSkinCommand  | CheckForWinnerCommand | StartGame | RenderSprite;
 export interface ViewingAreaUpdateCommand  {
   type: 'ViewingAreaUpdate';
   update: ViewingArea;
@@ -203,13 +203,6 @@ export interface SetSkinCommand {
   skin: Skin;
 }
 
-export interface UpdateScoreCommand {
-  type: 'UpdateScore';
-  gameID: GameInstanceID;
-  playerID: PlayerID;
-  score: number;
-}
-
 export interface CheckForWinnerCommand {
   type: 'CheckForWinner'
   gameID: GameInstanceID;
@@ -218,7 +211,6 @@ export interface CheckForWinnerCommand {
 export interface StartGame {
   type: 'StartGame';
   gameID: GameInstanceID;
-  multiPlayer: boolean;
 }
 export interface RenderSprite {
   type: 'RenderSprite';

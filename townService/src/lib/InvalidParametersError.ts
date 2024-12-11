@@ -10,6 +10,8 @@ export const GAME_ALREADY_IN_PROGRESS_MESSAGE = 'Game already in progress.';
 export const BOTH_PLAYERS_READY_MESSAGE = 'Both players must be ready to start the game.';
 export const PLAYER_NOT_IN_GAME_MESSAGE = 'Player is not in this game';
 export const PLAYER_ALREADY_IN_GAME_MESSAGE = 'Player is already in this game';
+
+export const INVALID_POSITION = 'Position is out of bounds';
 export default class InvalidParametersError extends Error {
   public message: string;
 
