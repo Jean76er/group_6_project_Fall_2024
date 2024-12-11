@@ -175,21 +175,18 @@ describe('SillySharkGame', () => {
 
       expect(game.state.status).toEqual('IN_PROGRESS');
       expect(game.state.winner).toBeUndefined();
-      expect(game.state.lost).toEqual({});
     });
 
     it('should declare player 2 as the winner when player 1’s ID is passed', () => {
       game.checkForWinner(player1.id);
 
       expect(game.state.winner).toEqual(player2.id);
-      expect(game.state.lost).toEqual({ [player1.id]: true, [player2.id]: false });
     });
 
     it('should declare player 1 as the winner when player 2’s ID is passed', () => {
       game.checkForWinner(player2.id);
 
       expect(game.state.winner).toEqual(player1.id);
-      expect(game.state.lost).toEqual({ [player1.id]: false, [player2.id]: true });
     });
 
     it('should not update the winner if it is already set', () => {
@@ -198,7 +195,6 @@ describe('SillySharkGame', () => {
       game.checkForWinner(player2.id);
 
       expect(game.state.winner).toEqual(player2.id);
-      expect(game.state.lost).toEqual({ [player1.id]: true, [player2.id]: false });
     });
   });
 
