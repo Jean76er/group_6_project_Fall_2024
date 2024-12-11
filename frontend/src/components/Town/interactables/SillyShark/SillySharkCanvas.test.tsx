@@ -128,5 +128,21 @@ describe('SillySharkCanvas Tests', () => {
     expect(mockSendInteractableCommand).not.toHaveBeenCalled();
   });
 
+  it('calls sendInteractableCommand with the correct arguments when setReady is called', async () => {
+    const playerId = 'testPlayerId';
+    const mockSendInteractableCommand = jest.fn();
+    const mockTownController = { sendInteractableCommand: mockSendInteractableCommand } as any;
+
+    const controller = new SillySharkAreaController('testAreaId', {} as any, mockTownController);
+    controller.instanceID = 'testInstanceID';
+    await controller.setReady(playerId);
+
+    expect(mockSendInteractableCommand).toHaveBeenCalledWith(controller.id, {
+      type: 'SetReady',
+      gameID: 'testInstanceID',
+      playerID: playerId,
+    });
+  });
+
  
 });
