@@ -93,6 +93,22 @@ describe('SillySharkCanvas Tests', () => {
       positionY,
     });
   });
+  it('emits "gameStarted" and sends the correct arguments when startGame is called', async () => {
+    const mockSendInteractableCommand = jest.fn();
+    const mockEmit = jest.spyOn(SillySharkAreaController.prototype, 'emit');
+    const mockTownController = { sendInteractableCommand: mockSendInteractableCommand } as any;
+
+    const controller = new SillySharkAreaController('testAreaId', {} as any, mockTownController);
+    controller.instanceID = 'testInstanceID';
+
+    await controller.startGame();
+
+    expect(mockSendInteractableCommand).toHaveBeenCalledWith(controller.id, {
+      type: 'StartGame',
+      gameID: 'testInstanceID',
+    });
+    expect(mockEmit).toHaveBeenCalledWith('gameStarted');
+  });
 
 
 });
