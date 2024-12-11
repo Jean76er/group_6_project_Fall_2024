@@ -144,5 +144,14 @@ describe('SillySharkCanvas Tests', () => {
     });
   });
 
- 
+  it('correctly calculates readyCount based on the game state', () => {
+    const mockGameState = { ready: { player1: true, player2: false, player3: true } };
+    const controller = new SillySharkAreaController('testAreaId', {} as any, {} as any);
+
+    controller.model = { game: { state: mockGameState } } as any;
+
+    expect(controller.readyCount).toBe(2);
+  });
+
+  
 });
