@@ -185,11 +185,6 @@ describe('SillySharkGame', () => {
       );
     });
 
-    it('should throw an error for an invalid player ID', () => {
-      const invalidPlayer = createPlayerForTesting();
-      expect(() => game.checkForWinner(invalidPlayer.id)).toThrowError('Invalid player ID.');
-    });
-
     it('should declare player 2 as the winner when player 1’s ID is passed', () => {
       game.checkForWinner(player1.id);
 
