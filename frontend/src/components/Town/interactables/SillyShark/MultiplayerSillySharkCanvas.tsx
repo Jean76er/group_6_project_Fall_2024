@@ -89,7 +89,8 @@ export default function NewMultiplayerSillySharkCanvas({
   const spriteHeight = 50;
   const spriteImage = useRef(new Image());
   const otherSpriteImage = useRef(new Image());
-  const [isOtherPlayerInGame, setIsOtherPlayerInGame] = useState(true);
+
+  const [otherPlayerGameOver, setOtherPlayerGameOver] = useState(false);
 
   /** Adding state for the score*/
   const [score, setScore] = useState(0);
@@ -224,7 +225,7 @@ export default function NewMultiplayerSillySharkCanvas({
 
       context.clearRect(0, 0, canvasCurr.width, canvasCurr.height);
 
-      if (isOtherPlayerInGame && otherSpriteImage.current.complete) {
+      if (!otherPlayerGameOver && otherSpriteImage.current.complete) {
         context.globalAlpha = 0.5;
         context.drawImage(
           otherSpriteImage.current,
@@ -233,6 +234,7 @@ export default function NewMultiplayerSillySharkCanvas({
           spriteWidth,
           spriteHeight,
         );
+        context.globalAlpha = 1;
         context.globalAlpha = 1;
       } else {
         context.clearRect(canvasCurr.width / 4, otherSpriteY, spriteWidth, spriteHeight);
@@ -353,11 +355,12 @@ export default function NewMultiplayerSillySharkCanvas({
       updateSpritePosition();
       draw();
       updateObstacles();
+      requestAnimationFrame(draw);
     }, 1000 / 60);
 
     return () => clearInterval(interval);
   }, [
-    isOtherPlayerInGame,
+    otherPlayerGameOver,
     ourPlayer,
     otherSpriteY,
     gameAreaController,
@@ -402,7 +405,7 @@ export default function NewMultiplayerSillySharkCanvas({
     const handleLoserUpdate = (winner: PlayerController) => {
       if (!messageShown) {
         if (winner === ourPlayer) {
-          setIsOtherPlayerInGame(false);
+          setOtherPlayerGameOver(true);
           toast({
             title: 'You Won!',
           });
@@ -416,9 +419,20 @@ export default function NewMultiplayerSillySharkCanvas({
       }
     };
 
+    /**If other player leaves then ourPlayer wins */
+    const handleGamePlayerCount = () => {
+      setOtherPlayerGameOver(true);
+      toast({
+        title: 'You Won!',
+      });
+      setMessageShown(true);
+    };
+
+    gameAreaController.addListener('gamePlayersChanged', handleGamePlayerCount);
     gameAreaController.addListener('positionUpdated', handlePositionUpdate);
     gameAreaController.addListener('loserUpdated', handleLoserUpdate);
     return () => {
+      gameAreaController.removeListener('gamePlayersChanged', handleGamePlayerCount);
       gameAreaController.removeListener('positionUpdated', handlePositionUpdate);
       gameAreaController.removeListener('loserUpdated', handleLoserUpdate);
     };
