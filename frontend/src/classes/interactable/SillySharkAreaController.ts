@@ -1,6 +1,7 @@
 import { GameArea, GameStatus, SillySharkGameState, Skin } from '../../types/CoveyTownSocket';
 import PlayerController from '../PlayerController';
 import GameAreaController, { GameEventTypes } from './GameAreaController';
+import TownController from '../TownController';
 
 export const PLAYER_NOT_IN_GAME_ERROR = 'Player is not in game';
 export const NO_GAME_IN_PROGRESS_ERROR = 'No game in progress';
@@ -301,5 +302,25 @@ export default class SillySharkAreaController extends GameAreaController<
   /** Emits 'jump' event */
   public async jump(): Promise<void> {
     this.emit('jump');
+  }
+
+  public get instanceID(): string {
+    return this._instanceID ?? '';
+  }
+
+  public set instanceID(value: string) {
+    this._instanceID = value;
+  }
+
+  public get model(): GameArea<SillySharkGameState> {
+    return this._model;
+  }
+
+  public set model(value: GameArea<SillySharkGameState>) {
+    this._model = value;
+  }
+
+  public get townController(): TownController {
+    return this._townController;
   }
 }
