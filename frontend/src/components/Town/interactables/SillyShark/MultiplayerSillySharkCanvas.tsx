@@ -235,7 +235,6 @@ export default function NewMultiplayerSillySharkCanvas({
         );
         context.globalAlpha = 1;
       } else {
-        console.log('here')
         context.clearRect(canvasCurr.width / 4, otherSpriteY, spriteWidth, spriteHeight);
       }
 
@@ -274,7 +273,7 @@ export default function NewMultiplayerSillySharkCanvas({
       /** Check for collision */
       if (checkCollision()) {
         /**Mark the player as the loser*/
-        gameAreaController.setLoser(ourPlayer); 
+        gameAreaController.setLoser(ourPlayer);
         setGameOverScore(score);
         if (score > ourPlayer.highScore) {
           ourPlayer.highScore = score;
@@ -390,9 +389,9 @@ export default function NewMultiplayerSillySharkCanvas({
 
         /**If the other player is found, update their Y position*/
         if (otherPlayerPosition) {
-          /** 
-           * Extract the position (second element) and 
-           * update the Y position for the other player 
+          /**
+           * Extract the position (second element) and
+           * update the Y position for the other player
            */
           const [, position] = otherPlayerPosition;
           setOtherSpriteY(position);

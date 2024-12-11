@@ -31,7 +31,7 @@ export default class SillySharkAreaController extends GameAreaController<
    * Uses the this._townController.sendInteractableCommand method to send the request.
    * The request should be of type 'SetReady',
    * and send the gameID provided by `this._instanceID`.
-   * 
+   *
    * @param playerId id of the player that's ready
    */
   public async setReady(playerId: string): Promise<void> {
@@ -48,7 +48,7 @@ export default class SillySharkAreaController extends GameAreaController<
    * Uses the this._townController.sendInteractableCommand method to send the request.
    * The request should be of type 'SetSkin',
    * and send the gameID provided by `this._instanceID`.
-   * 
+   *
    * @param playerId id of the player
    * @param skin the skin that the player will get
    */
@@ -64,12 +64,11 @@ export default class SillySharkAreaController extends GameAreaController<
     this.skin = skin;
   }
 
-
   /** Sends a request to the server to set player as the loser of the game.
    * Uses the this._townController.sendInteractableCommand method to send the request.
    * The request should be of type 'CheckForWinner',
    * and send the gameID provided by `this._instanceID`.
-   * 
+   *
    * @param player the player that lost
    */
   public async setLoser(player: PlayerController): Promise<void> {
@@ -86,7 +85,7 @@ export default class SillySharkAreaController extends GameAreaController<
    * Uses the this._townController.sendInteractableCommand method to send the request.
    * The request should be of type 'RenderSprite',
    * and send the gameID provided by `this._instanceID`.
-   * 
+   *
    * @param positionY the position of the player that called this method
    */
   public async setPosition(positionY: number): Promise<void> {
@@ -102,7 +101,7 @@ export default class SillySharkAreaController extends GameAreaController<
    * Uses the this._townController.sendInteractableCommand method to send the request.
    * The request should be of type 'StartGame',
    * and send the gameID provided by `this._instanceID`.
-   * 
+   *
    */
   public async startGame(): Promise<void> {
     const instanceID = this._ensureInstanceID();
@@ -127,7 +126,7 @@ export default class SillySharkAreaController extends GameAreaController<
     return [];
   }
 
-  /** 
+  /**
    * Returns how many players are ready, if the ready players array is not initialized it returns 0.
    */
   public get readyCount(): number {
@@ -138,8 +137,7 @@ export default class SillySharkAreaController extends GameAreaController<
     return 0;
   }
 
-  
-  /** 
+  /**
    * Returns the array with the renderState (A player and their current position), returns empty array if
    * the positions are not initialized.
    */
@@ -153,20 +151,19 @@ export default class SillySharkAreaController extends GameAreaController<
     return [];
   }
 
-  /** 
+  /**
    * Returns player1 if there is one, or undefined otherwise
    */
   get player1(): PlayerController | undefined {
     return this._players[0] || undefined;
   }
 
-  /** 
+  /**
    * Returns player2 if there is one, or undefined otherwise
    */
   get player2(): PlayerController | undefined {
     return this._players[1] || undefined;
   }
-
 
   /**
    * Returns the skin of the player
@@ -227,25 +224,24 @@ export default class SillySharkAreaController extends GameAreaController<
     return gameState?.status === 'IN_PROGRESS';
   }
 
-
   /**
    * Updates the internal state of this SillySharkAreaControler to match the new model.
    *
    * Calls super._updateFrom, which updates common properties in th game area (including this._model).
    *
    * If the amount of players in the town changed, emits a 'playerUpdated' event.
-   * 
+   *
    * If a new player clicks ready, emits 'playersReadyUpdated' and starts game if the amount of
    * ready players is two.
-   * 
+   *
    * If the amount of players in the SillyShark game changes, emits 'gamePlayersChanged'
-   * 
+   *
    * If there's a winner in the game, emits 'loserUpdated'.
-   * 
+   *
    * If a player changes their skin, emits 'skinChanged'.
-   * 
+   *
    * If the players position changes, emits 'positionUpdated'
-   * 
+   *
    */
   public updateFrom(newModel: GameArea<SillySharkGameState>): void {
     const previousReadyCount = this.readyCount;
@@ -288,7 +284,6 @@ export default class SillySharkAreaController extends GameAreaController<
     }
   }
 
-
   /** Helper function to compare arrays */
   private _arraysEqual<T>(a: T[], b: T[]): boolean {
     return a.length === b.length && a.every((value, index) => value === b[index]);
@@ -302,7 +297,6 @@ export default class SillySharkAreaController extends GameAreaController<
     }
     return instanceID;
   }
-
 
   /** Emits 'jump' event */
   public async jump(): Promise<void> {
