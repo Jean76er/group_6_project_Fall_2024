@@ -66,7 +66,7 @@ describe('SillySharkCanvas Tests', () => {
     } as any;
 
     const controller = new SillySharkAreaController('testAreaId', {} as any, mockTownController);
-    controller.instanceID = 'testInstanceID'; // Use public getter/setter
+    controller.instanceID = 'testInstanceID';
 
     await controller.setSkin(playerId, skin);
 
@@ -103,12 +103,11 @@ describe('SillySharkCanvas Tests', () => {
     const controller = new SillySharkAreaController('testAreaId', {} as any, mockTownController);
     controller.instanceID = 'testInstanceID';
 
-    await controller.startGame(true);
+    await controller.startGame();
 
     expect(mockSendInteractableCommand).toHaveBeenCalledWith(controller.id, {
       type: 'StartGame',
       gameID: 'testInstanceID',
-      multiPlayer: true,
     });
     expect(mockEmit).toHaveBeenCalledWith('gameStarted');
   });
@@ -151,7 +150,7 @@ describe('SillySharkCanvas Tests', () => {
     const mockGameState = { ready: { player1: true, player2: false, player3: true } };
     const controller = new SillySharkAreaController('testAreaId', {} as any, {} as any);
 
-    controller.model = { game: { state: mockGameState } } as any; // Use public getter/setter
+    controller.model = { game: { state: mockGameState } } as any;
 
     expect(controller.readyCount).toBe(2);
   });
@@ -162,8 +161,7 @@ describe('SillySharkCanvas Tests', () => {
     const mockPlayer = { id: 'player1' } as PlayerController;
 
     const controller = new SillySharkAreaController('testAreaId', {} as any, mockTownController);
-    controller.instanceID = 'testInstanceID'; // Use public getter/setter
-
+    controller.instanceID = 'testInstanceID';
     await controller.setLoser(mockPlayer);
 
     expect(mockSendInteractableCommand).toHaveBeenCalledWith(controller.id, {
