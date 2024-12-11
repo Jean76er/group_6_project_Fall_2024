@@ -25,6 +25,21 @@ export type SillySharkGameProps = {
   gameAreaController: SillySharkAreaController;
 };
 
+/**
+ * A component that handles the SillyShark game area in Covey Town.
+ * 
+ * Displays buttons for joining SinglePlayer or MultiPlayer modes.
+ * Renders the appropriate skin selection screen based on the game mode.
+ * Updates game and player states dynamically using controller listeners.
+ * Provides real-time feedback to players, such as displaying scores.
+ *
+ * The modal is always open during gameplay and closes when the game interaction ends or the player leaves.
+ * The `closeModal` function handles unpausing the town, ending the interaction, and removing the player from the game area.
+ *
+ * @param interactableID - The unique identifier for the interactable game area.
+ * @param gameArea - The current game area object containing relevant data and methods.
+ * @param coveyTownController - The main controller for managing the town and player interactions.
+ */
 function SillySharkArea({
   interactableID,
   gameArea,
@@ -105,13 +120,13 @@ function SillySharkArea({
 
       toast({ description: message });
     };
-
+    /**Checks Players in town to only enable multiplayer button when there's more than one player */
     const updatePlayerCount = () => {
       setPlayerCount(coveyTownController.players.length);
     };
 
+    /**Check players inside the game to disable multiplayer button if game is full */
     const updateGamePlayerCount = () => {
-      console.log('players: ', multiGameAreaController.players.length);
       setGamePlayerCount(multiGameAreaController.players.length);
     };
     coveyTownController.addListener('playersChanged', updatePlayerCount);

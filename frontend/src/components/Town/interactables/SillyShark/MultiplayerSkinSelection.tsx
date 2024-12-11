@@ -18,6 +18,13 @@ import { Skin } from '../../../../types/CoveyTownSocket';
 import TownController from '../../../../classes/TownController';
 import NewMultiplayerSillySharkCanvas from './MultiplayerSillySharkCanvas';
 
+/**
+ * An enum that defines the file paths for the available skins in the SillyShark game.
+ *
+ * Each key in the enum represents a skin's name, and its value is the relative path to the corresponding
+ * image file for that skin. These paths are used to dynamically load and display the skin options
+ * for the player during the selection process.
+ */
 export enum Skins {
   SillyShark = '/SillySharkResources/skins/sillyshark.png',
   Walrus = '/SillySharkResources/skins/walrus.png',
@@ -25,6 +32,18 @@ export enum Skins {
   PolarBear = '/SillySharkResources/skins/polarbear.png',
 }
 
+
+/**
+ * A constant array that contains all the skins available for selection.
+ *
+ * This array is populated using the values from the Skins enum and is used to dynamically render
+ * the skin selection options in the SkinSelectionScreen component.
+ */
+const SKINS = [Skins.SillyShark, Skins.Walrus, Skins.Penguin, Skins.PolarBear];
+
+/**
+ * This component renders a square that contains an image of the skin to be chosen
+ */
 const StyledSelectionSquare = chakra(Button, {
   baseStyle: {
     justifyContent: 'center',
@@ -40,6 +59,9 @@ const StyledSelectionSquare = chakra(Button, {
   },
 });
 
+/**
+ * A component that will render the Container for the skins
+ */
 const StyledSelectionContainer = chakra(Container, {
   baseStyle: {
     display: 'flex',
@@ -50,7 +72,23 @@ const StyledSelectionContainer = chakra(Container, {
   },
 });
 
-const SKINS = [Skins.SillyShark, Skins.Walrus, Skins.Penguin, Skins.PolarBear];
+/**
+ * A component that renders the Multiplayer Skin Selection Screen
+ *
+ * Renders a skin selection screen as a modal, allowing players to select their desired skins.
+ * The modal displays all available skins, showing visual indicators to indicate whether a skin is
+ * selected by the current player (blue border) or by another player (red border). 
+ *
+ * The component listens for updates to the player readiness status, skin selections, and game state. 
+ * When both players are ready, the game starts, and a canvas is displayed.
+ *
+ * Players must select a skin before continuing. If a player attempts to continue without selecting 
+ * a skin, a toast is displayed. The number of players who are ready is shown at the bottom of the modal.
+ *
+ * @param gameAreaController - the controller for managing skin selection and game state
+ * @param gameArea - the current game area interactable
+ * @param coveyTownController - the controller for managing the town and interactions
+ */
 
 export default function MultiplayerSkinSelectionScreen({
   gameAreaController,
@@ -89,11 +127,11 @@ export default function MultiplayerSkinSelectionScreen({
       return;
     }
     setHasClickedContinue(true);
-    gameAreaController.setReady(ourPlayer.id); // Mark the player as ready
+    gameAreaController.setReady(ourPlayer.id);
 
     if (playersReady === 2) {
-      setShowCanvas(true); // Start the game when both players are ready
-      gameAreaController.startGame(true); // Call startGame when both players are ready
+      setShowCanvas(true); 
+      gameAreaController.startGame(true);
     }
   }, [toast, skinSelected, playersReady, gameAreaController, ourPlayer.id, hasClickedContinue]);
 
@@ -140,17 +178,16 @@ export default function MultiplayerSkinSelectionScreen({
 
           <StyledSelectionContainer>
             {SKINS.map(skin => {
-              const isOwnedByUs = skinSelected === skin; // Check if this player selected the skin
+              const isOwnedByUs = skinSelected === skin;
               const isOwnedByOther = skinsState.some(
                 ([playerID, selectedSkin]) => playerID !== ourPlayer.id && selectedSkin === skin,
               );
 
-              // Set the border color based on ownership
               let borderStyle = 'none';
               if (isOwnedByUs) {
-                borderStyle = '8px solid blue'; // Blue border for the player's selected skin
+                borderStyle = '7px solid blue'; 
               } else if (isOwnedByOther) {
-                borderStyle = '8px solid red'; // Red border for skins selected by the other player
+                borderStyle = '7px solid red';
               }
 
               return (
@@ -180,7 +217,7 @@ export default function MultiplayerSkinSelectionScreen({
                     {player?.userName || 'Unknown Player'}:{' '}
                     {skin ? <Image src={skin} boxSize='20px' /> : '(No skin selected)'}
                   </ListItem>
-                );
+                ); 
               })}
             </List>
           </Center>
@@ -220,7 +257,6 @@ export default function MultiplayerSkinSelectionScreen({
       {renderSkins()}
       {showCanvas && (
         <NewMultiplayerSillySharkCanvas
-          key={gameArea.id} // Ensure the canvas re-renders when the game state changes
           gameAreaController={gameAreaController}
           newSillySharkGame={gameArea}
           coveyTownController={coveyTownController}
