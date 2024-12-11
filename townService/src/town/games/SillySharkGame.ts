@@ -77,13 +77,12 @@ export default class SillySharkGame extends Game<SillySharkGameState & SillyShar
   }
 
   public setPosition(player: Player, positionY: number): void {
-    // Ensure the player is part of the game
+    /** Ensure the player is part of the game */
     const gamePlayer = this._players.find(p => p.id === player.id);
     if (!gamePlayer) {
       throw new InvalidParametersError(paramerrors.PLAYER_NOT_IN_GAME_MESSAGE);
-      throw new InvalidParametersError(paramerrors.PLAYER_NOT_IN_GAME_MESSAGE);
     }
-    // Validate the position
+    /** Validate the position */
     if (positionY < 0 || positionY > this.state.canvasHeight) {
       throw new InvalidParametersError(paramerrors.INVALID_MOVE_MESSAGE);
     }
@@ -100,18 +99,17 @@ export default class SillySharkGame extends Game<SillySharkGameState & SillyShar
   private _checkForWinner(playerId: string) {
     const { player1, player2 } = this.state;
 
-    // Ensure that both players exist
+    /** Ensure that both players exist */
     if (!player1 || !player2) {
-      throw new InvalidParametersError(paramerrors.BOTH_PLAYERS_READY_MESSAGE);
       throw new InvalidParametersError(paramerrors.BOTH_PLAYERS_READY_MESSAGE);
     }
 
-    // If the player has already been identified as the winner, no need to continue
+    /** If the player has already been identified as the winner, no need to continue */
     if (this.state.winner) {
       return;
     }
 
-    // If the playerId is player1, then player2 is the winner, and vice versa
+    /** If the playerId is player1, then player2 is the winner, and vice versa */
     if (playerId === player1) {
       this.state.winner = player2;
     } else if (playerId === player2) {
