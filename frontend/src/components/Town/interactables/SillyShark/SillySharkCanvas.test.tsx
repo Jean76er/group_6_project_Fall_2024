@@ -77,4 +77,22 @@ describe('SillySharkCanvas Tests', () => {
       skin,
     });
   });
+  it('calls sendInteractableCommand with the correct arguments when setPosition is called', async () => {
+    const positionY = 150;
+    const mockSendInteractableCommand = jest.fn();
+    const mockTownController = { sendInteractableCommand: mockSendInteractableCommand } as any;
+
+    const controller = new SillySharkAreaController('testAreaId', {} as any, mockTownController);
+    controller.instanceID = 'testInstanceID';
+
+    await controller.setPosition(positionY);
+
+    expect(mockSendInteractableCommand).toHaveBeenCalledWith(controller.id, {
+      type: 'RenderSprite',
+      gameID: 'testInstanceID',
+      positionY,
+    });
+  });
+
+
 });
