@@ -110,5 +110,23 @@ describe('SillySharkCanvas Tests', () => {
     expect(mockEmit).toHaveBeenCalledWith('gameStarted');
   });
 
+  it('calls jump and emits the jump event', async () => {
+    const mockEmit = jest.fn();
+    const mockSendInteractableCommand = jest.fn();
 
+    const mockController = new MockSillySharkAreaController();
+
+    mockController.setTownController({
+      sendInteractableCommand: mockSendInteractableCommand,
+    });
+
+    mockController.emit = mockEmit;
+
+    await mockController.jump();
+
+    expect(mockEmit).toHaveBeenCalledWith('jump');
+    expect(mockSendInteractableCommand).not.toHaveBeenCalled();
+  });
+
+ 
 });
