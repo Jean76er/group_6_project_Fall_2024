@@ -179,8 +179,8 @@ describe('SillySharkGame', () => {
     });
 
     it('should throw an error if both players are not present', () => {
-      const newGame = new SillySharkGame();
-      expect(() => newGame.checkForWinner(player1.id)).toThrowError(
+      game.leave(player2);
+      expect(() => game.checkForWinner(player1.id)).toThrowError(
         'Both players must be in the game to determine a winner.',
       );
     });
