@@ -1,4 +1,5 @@
 import InvalidParametersError, {
+  BOTH_PLAYERS_READY_MESSAGE,
   GAME_ID_MISSMATCH_MESSAGE,
   GAME_NOT_IN_PROGRESS_MESSAGE,
   INVALID_COMMAND_MESSAGE,
@@ -30,12 +31,14 @@ export default class SillySharkGameArea extends GameArea<SillySharkGame> {
    * Handle a command from a player in this game area.
    * Supported commands:
    * - JoinGame (joins the game `this._game`, or creates a new one if none is in progress)
-   * - GameMove (applies a move to the game)
    * - LeaveGame (leaves the game)
-   *
-   * If the command ended the game, records the outcome in this._history
+   * - SetReady (sets the player state to ready, this is used in multiplayer)
+   * - CheckForWinner (Check's if there's a winner)
+   * - SetSkin (Sets the player's skin)
+   * - StartGame (Starts a game only if both players are ready and the game is WAITING_TO_START)
+   * - RenderSprite (Sents the position of the player)
    * If the command is successful (does not throw an error), calls this._emitAreaChanged (necessary
-   *  to notify any listeners of a state update, including any change to history)
+   *  to notify any listeners of a state update.
    * If the command is unsuccessful (throws an error), the error is propagated to the caller
    *
    * @see InteractableCommand
@@ -44,9 +47,9 @@ export default class SillySharkGameArea extends GameArea<SillySharkGame> {
    * @param player player making the request
    * @returns response to the command, @see InteractableCommandResponse
    * @throws InvalidParametersError if the command is not supported or is invalid. Invalid commands:
-   *  - LeaveGame and GameMove: No game in progress (GAME_NOT_IN_PROGRESS_MESSAGE),
+   *  - Every Command: No game in progress (GAME_NOT_IN_PROGRESS_MESSAGE),
    *        or gameID does not match the game in progress (GAME_ID_MISSMATCH_MESSAGE)
-   *  - Any command besides LeaveGame, GameMove and JoinGame: INVALID_COMMAND_MESSAGE
+   *  - Any command besides the previously stated: INVALID_COMMAND_MESSAGE
    */
   public handleCommand<CommandType extends InteractableCommand>(
     command: CommandType,
@@ -85,28 +88,11 @@ export default class SillySharkGameArea extends GameArea<SillySharkGame> {
         throw new InvalidParametersError(GAME_ID_MISSMATCH_MESSAGE);
       }
 
-      // Mark the player as ready in the game state
       game.setReady(player);
-      // Update the state to notify listeners
       this._stateUpdated();
 
       return undefined as InteractableCommandReturnType<CommandType>;
     }
-
-    if (command.type === 'UpdateScore') {
-      const game = this._game;
-      if (!game) {
-        throw new InvalidParametersError(GAME_NOT_IN_PROGRESS_MESSAGE);
-      }
-      if (this._game?.id !== command.gameID) {
-        throw new InvalidParametersError(GAME_ID_MISSMATCH_MESSAGE);
-      }
-
-      this._stateUpdated();
-
-      return undefined as InteractableCommandReturnType<CommandType>;
-    }
-
     if (command.type === 'CheckForWinner') {
       const game = this._game;
       if (!game) {
@@ -131,9 +117,7 @@ export default class SillySharkGameArea extends GameArea<SillySharkGame> {
         throw new InvalidParametersError(GAME_ID_MISSMATCH_MESSAGE);
       }
 
-      // Set the skin for the player
       game.setSkin(player, command.skin);
-      // Update the state to notify listeners
       this._stateUpdated();
 
       return undefined as InteractableCommandReturnType<CommandType>;
@@ -148,9 +132,8 @@ export default class SillySharkGameArea extends GameArea<SillySharkGame> {
         throw new InvalidParametersError(GAME_ID_MISSMATCH_MESSAGE);
       }
 
-      // Check if both players are ready
       if (!game.isReady()) {
-        throw new InvalidParametersError('Both players must be ready to start the game.');
+        throw new InvalidParametersError(BOTH_PLAYERS_READY_MESSAGE);
       }
 
       if (game.isReady() && game.state.status === 'WAITING_TO_START') {
@@ -172,7 +155,6 @@ export default class SillySharkGameArea extends GameArea<SillySharkGame> {
       }
 
       game.setPosition(player, command.positionY);
-
       this._stateUpdated();
 
       return undefined as InteractableCommandReturnType<CommandType>;
